@@ -17,7 +17,7 @@ Introduction
 
 The `pedmut` package aims to provide a framework for modeling mutations in pedigree computations. Although the package is self-contained, its main purpose is to be imported by other packages, like [pedprobr](https://github.com/magnusdv/pedprobr), calculating pedigree likelihoods.
 
-For a simple example, consider a situation where father and son are homozygous for different alleles at an autosomal marker with 4 alleles (1,2,3,4). The following code creates the pedigree and the marker, using an "proportional" model for mutations, and computes the likelihood:
+For a simple example, consider a situation where father and son are homozygous for different alleles at an autosomal marker with 4 alleles (1,2,3,4). The following code creates the pedigree and the marker, using a "proportional" model for mutations, and computes the likelihood:
 
 ``` r
 library(pedprobr)
@@ -31,9 +31,9 @@ likelihood(x, m)
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
-In the above code `pedmut` is involved twice: first in `marker()`, translating the arguments `mutmod = "prop"` and `rate = 0.1` into a complete mutation model, consisting of mutation matrices for males and females. Secondly, `pedmut` functions are called inside `likelihood()`, in order to speed up the computation by clustering the unobserved alleles 3 and 4 into one "lump".
+In the above code `pedmut` is involved twice: first in `marker()`, translating the arguments `mutmod = "prop"` and `rate = 0.1` into a complete mutation model. And secondly inside `likelihood()`, in order to speed up the computation by clustering the unobserved alleles 3 and 4 into one "lump". (The role of `pedmut` is to check that the mutation model allows this particular lumping, and to compute the lumped mutation matrix.)
 
-To see details about the mutation model we can use the `mutmod()` accessor:
+To see details about the mutation model attached to a marker, we can use the `mutmod()` accessor:
 
 ``` r
 mutmod(m)
