@@ -2,11 +2,14 @@
 % Please edit documentation in R/mutationMatrix.R
 \name{mutationMatrix}
 \alias{mutationMatrix}
+\alias{validateMutationMatrix}
 \title{Mutation matrix}
 \usage{
 mutationMatrix(model = c("custom", "equal", "proportional", "random"),
   matrix = NULL, alleles = NULL, afreq = NULL, rate = NULL,
   seed = NULL)
+
+validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
 \item{model}{A string: either "custom", "equal", "proportional" or "random"}
@@ -25,6 +28,8 @@ labels. Required in all models, except "custom" if \code{matrix} has dimnames}
 
 \item{seed}{A single number. Optional parameter in the "random" model, passed
 on to \code{set.seed()}}
+
+\item{mutmat}{An object of class \code{mutationMatrix}}
 }
 \value{
 A square matrix with entries in \code{[0, 1]}, with the allele labels as

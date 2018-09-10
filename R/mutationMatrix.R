@@ -27,6 +27,7 @@
 #'   "proportional"
 #' @param seed A single number. Optional parameter in the "random" model, passed
 #'   on to `set.seed()`
+#' @param mutmat An object of class `mutationMatrix`
 #'
 #' @return A square matrix with entries in `[0, 1]`, with the allele labels as
 #'   both colnames and rownames.
@@ -142,12 +143,18 @@ newMutationMatrix = function(mutmat, model = "custom", afreq = NULL,
             class = "mutationMatrix")
 }
 
-validateMutationMatrix = function(mutmat) {
+
+#' @rdname mutationMatrix
+#' @export
+validateMutationMatrix = function(mutmat, alleles = NULL) {
 
   stopifnot(is.matrix(mutmat),
             is.numeric(mutmat),
             nrow(mutmat) == ncol(mutmat),
-            colnames(mutmat) == rownames(mutmat))
+            setequal(colnames(mutmat), rownames(mutmat)),
+            inherits(mutmat, "mutationMatrix"))
+
+  if(!is.null(alleles)) stopifnot(setequal(rownames(mutmat), alleles))
 
   if(any(mutmat < 0))
     stop2("Negative entries found in mutation matrix: ", mutmat[mutmat < 0])
@@ -169,11 +176,20 @@ validateMutationMatrix = function(mutmat) {
 #' A mutation model is a list of two mutation matrices, named "female" and
 #' "male".
 #'
-#' @param female,male Either objects of class "mutationMatrix", or a character
+#' @param female Either an object of class `mutationMatrix`, or a character
 #'   string. In the latter case, it is passed on to [mutationMatrix()] together
-#'   with any arguments in `...`. If `male` is not explicitly given, it defaults
-#'   to be the same as `female`.
+#'   with any arguments in `...`.
+#' @param male An object of class `mutationMatrix`. By default, this will be the
+#'   same as the female mutation matrix.
 #' @param ... Further arguments to [mutationMatrix()], e.g. `alleles`.
+#' @param mutmod A `mutationModel` object
+#' @param alleles A character vector with allele labels. (The validation method
+#'   uses this to check that the matrices have appropriate dimnames.)
+#'
+#' @return An object of class `mutationModel`.
+#'
+#' @examples
+#' mutationModel("eq", alleles = 1:2, rate = 0.1)
 #'
 #' @export
 mutationModel = function(female, male = female, ...) {
@@ -189,6 +205,20 @@ mutationModel = function(female, male = female, ...) {
   }
   structure(mod, sexEqual = identical(female, male), class = "mutationModel")
 }
+
+#' @rdname mutationModel
+#' @export
+validateMutationModel = function(mutmod, alleles = NULL) {
+
+  stopifnot(is.list(mutmod),
+            length(mutmod) == 2,
+            setequal(names(mutmod), c("male", "female")),
+            inherits(mutmod, "mutationModel"))
+
+  validateMutationMatrix(mutmod$male, alleles = alleles)
+  validateMutationMatrix(mutmod$female, alleles = alleles)
+}
+
 
 #' @export
 print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,

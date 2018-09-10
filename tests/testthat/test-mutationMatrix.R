@@ -40,7 +40,7 @@ test_that("equal model works", {
     mutationMatrix(matrix = diag(3), alleles = 1:3))
 
   m = mutationMatrix(alleles = 1:3, model = "equal", rate = 0.1)
-  expect_is(m, "mutationMatrix")
+  expect_silent(validateMutationMatrix(m, alleles = 1:3))
   expect_equivalent(diag(m), rep(0.9, 3))
   expect_equivalent(rowSums(m), rep(1,3))
 
@@ -54,7 +54,7 @@ test_that("proportional model works", {
     mutationMatrix(matrix = diag(3), alleles = 1:3))
 
   m = mutationMatrix(model = "prop", alleles = 1:3, rate = 0.1, afreq=afr)
-  expect_is(m, "mutationMatrix")
+  expect_silent(validateMutationMatrix(m, alleles = 1:3))
   expect_equivalent(rowSums(m), rep(1,3))
 
   expect_equal(c(m[2,1], m[1,2], m[1,3]), c(m[3,1], m[3,2], m[2,3]))
@@ -64,7 +64,7 @@ test_that("proportional model works", {
 
 test_that("random model works", {
   m = mutationMatrix(alleles = 1:3, model = "random")
-  expect_is(m, "mutationMatrix")
+  expect_silent(validateMutationMatrix(m, alleles = 1:3))
   expect_equivalent(rowSums(m), rep(1,3))
 
   expect_equivalent(m, mutationMatrix(matrix = m))

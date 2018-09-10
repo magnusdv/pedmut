@@ -2,19 +2,36 @@
 % Please edit documentation in R/mutationMatrix.R
 \name{mutationModel}
 \alias{mutationModel}
+\alias{validateMutationModel}
 \title{Mutation models}
 \usage{
 mutationModel(female, male = female, ...)
+
+validateMutationModel(mutmod, alleles = NULL)
 }
 \arguments{
-\item{female, male}{Either objects of class "mutationMatrix", or a character
+\item{female}{Either an object of class \code{mutationMatrix}, or a character
 string. In the latter case, it is passed on to \code{\link[=mutationMatrix]{mutationMatrix()}} together
-with any arguments in \code{...}. If \code{male} is not explicitly given, it defaults
-to be the same as \code{female}.}
+with any arguments in \code{...}.}
+
+\item{male}{An object of class \code{mutationMatrix}. By default, this will be the
+same as the female mutation matrix.}
 
 \item{...}{Further arguments to \code{\link[=mutationMatrix]{mutationMatrix()}}, e.g. \code{alleles}.}
+
+\item{mutmod}{A \code{mutationModel} object}
+
+\item{alleles}{A character vector with allele labels. (The validation method
+uses this to check that the matrices have appropriate dimnames.)}
+}
+\value{
+An object of class \code{mutationModel}.
 }
 \description{
 A mutation model is a list of two mutation matrices, named "female" and
 "male".
+}
+\examples{
+mutationModel("eq", alleles = 1:2, rate = 0.1)
+
 }
