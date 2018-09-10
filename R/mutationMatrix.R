@@ -192,18 +192,18 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
 #' mutationModel("eq", alleles = 1:2, rate = 0.1)
 #'
 #' @export
-mutationModel = function(female, male = female, ...) {
+mutationModel = function(female, male = NULL, ...) {
 
-  if(!identical(class(female), class(male)))
-    stop2("Arguments `female` and `male` must be of the same class")
+  if(class(female) != "mutationMatrix")
+    female = mutationMatrix(model = female, ...)
 
-  if(class(female) == "mutationMatrix")
-    mod = list(female = female, male = male)
-  else if(is.character(female)) {
-    mutmat = mutationMatrix(model = female, ...)
-    mod = list(female = mutmat, male = mutmat)
-  }
-  structure(mod, sexEqual = identical(female, male), class = "mutationModel")
+  if(is.null(male))
+    male = female
+
+  mod = structure(list(female = female, male = male),
+                  sexEqual = identical(female, male),
+                  class = "mutationModel")
+  validateMutationModel(mod)
 }
 
 #' @rdname mutationModel
@@ -217,6 +217,8 @@ validateMutationModel = function(mutmod, alleles = NULL) {
 
   validateMutationMatrix(mutmod$male, alleles = alleles)
   validateMutationMatrix(mutmod$female, alleles = alleles)
+
+  mutmod
 }
 
 

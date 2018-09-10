@@ -5,7 +5,7 @@
 \alias{validateMutationModel}
 \title{Mutation models}
 \usage{
-mutationModel(female, male = female, ...)
+mutationModel(female, male = NULL, ...)
 
 validateMutationModel(mutmod, alleles = NULL)
 }
