@@ -209,3 +209,7 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
     cat("Lumpable:", if(alwaysLumpable(x)) "Always" else "Not always", "\n")
   }
 }
+
+isMutationMatrix = function(x) {
+  class(x) == "mutationMatrix"
+}

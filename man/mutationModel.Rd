@@ -5,19 +5,30 @@
 \alias{validateMutationModel}
 \title{Mutation models}
 \usage{
-mutationModel(female, male = NULL, ...)
+mutationModel(model, matrix = NULL, rate = NULL, seed = NULL, ...)
 
 validateMutationModel(mutmod, alleles = NULL)
 }
 \arguments{
-\item{female}{Either an object of class \code{mutationMatrix}, or a character
-string. In the latter case, it is passed on to \code{\link[=mutationMatrix]{mutationMatrix()}} together
-with any arguments in \code{...}.}
+\item{model}{Either:
+\itemize{
+\item a single \code{mutationMatrix}
+\item a list of two \code{mutationMatrix} objects, named "male" and "female"
+\item a single character string (see \code{\link[=mutationMatrix]{mutationMatrix()}} for valid options)
+\item a list of two strings, named (named "male" and "female")
+}}
 
-\item{male}{An object of class \code{mutationMatrix}. By default, this will be the
-same as the female mutation matrix.}
+\item{matrix}{Either a single matrix, or a list of two (named "male" and
+"female")}
 
-\item{...}{Further arguments to \code{\link[=mutationMatrix]{mutationMatrix()}}, e.g. \code{alleles}.}
+\item{rate}{Either a single number or a list of two (named "male" and
+"female")}
+
+\item{seed}{Either a single integer or a list of two (named "male" and
+"female")}
+
+\item{...}{Further arguments to \code{\link[=mutationMatrix]{mutationMatrix()}}, which are reused for both
+models. Typically \code{alleles} and/or \code{afreq}.}
 
 \item{mutmod}{A \code{mutationModel} object}
 
@@ -28,10 +39,18 @@ uses this to check that the matrices have appropriate dimnames.)}
 An object of class \code{mutationModel}.
 }
 \description{
-A mutation model is a list of two mutation matrices, named "female" and
-"male".
+Constructor for the class \code{mutationModel}. An object of this class is
+essentially a list of two mutation matrices, named "female" and "male".
 }
 \examples{
-mutationModel("eq", alleles = 1:2, rate = 0.1)
+# Same model for both genders
+M1 = mutationModel("eq", alleles = 1:2, rate = 0.1)
+M1
+stopifnot(identical(M1$male, M1$female))
+
+# Different mutation rates
+M2 = mutationModel("eq", alleles = 1:2, rate = list(male = 0.1, female = 0.01))
+M2
+stopifnot(identical(M2$male, M1$male))
 
 }
