@@ -12,20 +12,19 @@ validateMutationModel(mutmod, alleles = NULL)
 \arguments{
 \item{model}{Either:
 \itemize{
-\item a single \code{mutationMatrix}
-\item a list of two \code{mutationMatrix} objects, named "male" and "female"
-\item a single character string (see \code{\link[=mutationMatrix]{mutationMatrix()}} for valid options)
-\item a list of two strings, named (named "male" and "female")
+\item a \code{mutationModel} object (returned unchanged after validation)
+\item a single \code{mutationMatrix} object (will be applied to both genders)
+\item a list of two \code{mutationMatrix} objects, named "female" and "male"
+\item a single model name (see \code{\link[=mutationMatrix]{mutationMatrix()}} for valid options)
+\item a list of two model names, named "female" and "male"
 }}
 
-\item{matrix}{Either a single matrix, or a list of two (named "male" and
-"female")}
+\item{matrix}{A matrix, or a list of two (named "female" and "male")}
 
-\item{rate}{Either a single number or a list of two (named "male" and
-"female")}
+\item{rate}{A numeric mutation rate, or a list of two (named "female" and
+"male")}
 
-\item{seed}{Either a single integer or a list of two (named "male" and
-"female")}
+\item{seed}{An integer, or a list of two (named "female" and "male")}
 
 \item{...}{Further arguments to \code{\link[=mutationMatrix]{mutationMatrix()}}, which are reused for both
 models. Typically \code{alleles} and/or \code{afreq}.}
@@ -43,14 +42,27 @@ Constructor for the class \code{mutationModel}. An object of this class is
 essentially a list of two mutation matrices, named "female" and "male".
 }
 \examples{
-# Same model for both genders
+# "Equal" model, same parameters for both genders
 M1 = mutationModel("eq", alleles = 1:2, rate = 0.1)
 M1
-stopifnot(identical(M1$male, M1$female))
 
 # Different mutation rates
 M2 = mutationModel("eq", alleles = 1:2, rate = list(male = 0.1, female = 0.01))
 M2
-stopifnot(identical(M2$male, M1$male))
+
+stopifnot(identical(M1$male, M1$female), identical(M2$male, M1$male))
+
+# A custom mutation matrix:
+mat = matrix(c(0,0,1,1), ncol = 2, dimnames = list(1:2, 1:2))
+M3 = mutationModel(model = "custom", matrix = mat)
+
+# Under the hood arguments are passed to `mutationMatrix()`.
+# Alternatively, this can be done explicitly in the `model` argument
+M4 = mutationModel(model = mutationMatrix("custom", matrix = mat))
+
+stopifnot(identical(M3, M4))
+
+# The latter strategy is needed e.g. in pedtools::marker(), which gives the
+# user access to `model`, but not `matrix`.
 
 }
