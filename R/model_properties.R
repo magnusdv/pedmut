@@ -22,9 +22,12 @@
 #' stopifnot(isStationary(m_eq, rep(1/3, 3)), isReversible(m_eq, rep(1/3, 3)))
 #' stopifnot(!isStationary(m_eq, afr), !isReversible(m_eq, afr))
 #'
-#' # "equal" and "proportional" models are always lumpable
+#' # "equal" and "proportional" models allow allele lumping
 #' stopifnot(isLumpable(m_eq, lump = 1:2))
 #' stopifnot(isLumpable(m_prop, lump = 1:2))
+#'
+#' # In fact lumpable for any allele subset
+#' stopifnot(alwaysLumpable(m_eq), alwaysLumpable(m_prop))
 #'
 #' @name model_properties
 NULL
@@ -47,9 +50,21 @@ isReversible = function(mutmat, afreq) {
 
 #' @rdname model_properties
 #' @export
-isLumpable = function(mutmat, lump) {
+isLumpable = function(mutmat, lump) {  # TODO: Make S3 methods
+  if(isMutationModel(mutmat)) {
+    always = isTRUE(attr(mutmat, 'alwaysLumpable'))
+    if(always)
+      return(TRUE)
+
+    sexEq = isTRUE(attr(mutmat, 'sexEqual'))
+    test = isLumpable(mutmat$female, lump) && (sexEq || isLumpable(mutmat$male, lump))
+    return(test)
+  }
   alleles = colnames(mutmat)
-  stopifnot(!anyDuplicated(lump), all(lump %in% alleles))
+  if(!all(lump %in% alleles))
+    stop2("Alleles not found in mutation matrix: ", setdiff(lump, alleles))
+  if(dup <- anyDuplicated(lump))
+    stop2("Duplicated entry in `lump`: ", lump[dup])
   if(length(lump) == length(alleles))
     return(TRUE)
   y = mutmat[lump, setdiff(alleles, lump), drop = F]
@@ -59,6 +74,8 @@ isLumpable = function(mutmat, lump) {
   isTRUE(test)
 }
 
+#' @rdname model_properties
+#' @export
 alwaysLumpable = function(mutmat) {
   N = dim(mutmat)[1L]
   if(N == 1) return(FALSE)

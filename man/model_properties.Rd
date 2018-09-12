@@ -5,6 +5,7 @@
 \alias{isStationary}
 \alias{isReversible}
 \alias{isLumpable}
+\alias{alwaysLumpable}
 \title{Mutation model properties}
 \usage{
 isStationary(mutmat, afreq)
@@ -12,6 +13,8 @@ isStationary(mutmat, afreq)
 isReversible(mutmat, afreq)
 
 isLumpable(mutmat, lump)
+
+alwaysLumpable(mutmat)
 }
 \arguments{
 \item{mutmat}{A mutation matrix}
@@ -41,8 +44,11 @@ m_eq = mutationMatrix(model = "eq", alleles = 1:3, rate = 0.1)
 stopifnot(isStationary(m_eq, rep(1/3, 3)), isReversible(m_eq, rep(1/3, 3)))
 stopifnot(!isStationary(m_eq, afr), !isReversible(m_eq, afr))
 
-# "equal" and "proportional" models are always lumpable
+# "equal" and "proportional" models allow allele lumping
 stopifnot(isLumpable(m_eq, lump = 1:2))
 stopifnot(isLumpable(m_prop, lump = 1:2))
+
+# In fact lumpable for any allele subset
+stopifnot(alwaysLumpable(m_eq), alwaysLumpable(m_prop))
 
 }
