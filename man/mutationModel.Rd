@@ -35,7 +35,14 @@ models. Typically \code{alleles} and/or \code{afreq}.}
 uses this to check that the matrices have appropriate dimnames.)}
 }
 \value{
-An object of class \code{mutationModel}.
+An object of class \code{mutationModel}. This is a list of two
+\code{mutationMatrix} objects, named "female" and "male", and the following
+attributes:
+\itemize{
+\item \code{sexEqual} : TRUE if both genders have identical models, otherwise FALSE
+\item \code{alwaysLumpable} : TRUE if both genders have models that are lumpable for
+any allele subset, otherwise FALSE
+}
 }
 \description{
 Constructor for the class \code{mutationModel}. An object of this class is

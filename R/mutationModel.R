@@ -25,7 +25,14 @@
 #' @param alleles A character vector with allele labels. (The validation method
 #'   uses this to check that the matrices have appropriate dimnames.)
 #'
-#' @return An object of class `mutationModel`.
+#' @return An object of class `mutationModel`. This is a list of two
+#'   `mutationMatrix` objects, named "female" and "male", and the following
+#'   attributes:
+#'
+#'   * `sexEqual` : TRUE if both genders have identical models, otherwise FALSE
+#'
+#'   * `alwaysLumpable` : TRUE if both genders have models that are lumpable for
+#'   any allele subset, otherwise FALSE
 #'
 #' @examples
 #' # "Equal" model, same parameters for both genders
@@ -90,8 +97,10 @@ mutationModel = function(model, matrix = NULL, rate = NULL, seed = NULL, ...) {
           " * a character string (see ?mutationModel for valid options)\n",
           " * a list of two characters, named 'female' and 'male'")
 
-  mutmod = structure(mod,
-                     sexEqual = identical(mod$female, mod$male),
+  sexEqual = identical(mod$female, mod$male)
+  lumpable = alwaysLumpable(mod$female) && (sexEqual || alwaysLumpable(mod$male))
+
+  mutmod = structure(mod, sexEqual = sexEqual, alwaysLumpable = lumpable,
                      class = "mutationModel")
   validateMutationModel(mutmod)
 }
