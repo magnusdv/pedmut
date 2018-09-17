@@ -101,6 +101,8 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random",
   nall = length(alleles)
   if(nall == 0)
     return(NULL)
+  if(nall == 1)
+    model = "trivial"
 
   mutmat = matrix(ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
 
