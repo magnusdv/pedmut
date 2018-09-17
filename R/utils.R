@@ -22,6 +22,14 @@ is_number = function(x, minimum = NA, maximum = NA) {
 # A safer version of base::sample
 safe_sample <- function(x, ...) x[sample.int(length(x), ...)]
 
+# Order numerically if appropriate otherwise lex
+smartOrder = function(x) {
+  if (!is.numeric(x) && !anyNA(suppressWarnings(as.numeric(x))))
+    ord = order(as.numeric(x))
+  else
+    ord = order(x)
+  ord
+}
 
 # Fast setdiff
 .mysetdiff = function(x, y) unique.default(x[match(x, y, 0L) == 0L])
