@@ -4,17 +4,19 @@
 #'
 #' Descriptions of the models:
 #'
-#' * "custom" : Allows any mutation matrix to be provided by the user, in the `matrix`
+#' * `custom` : Allows any mutation matrix to be provided by the user, in the `matrix`
 #' parameter
 #'
-#' * "equal" :  All mutations equally likely; probability \eqn{1-rate} of no
+#' * `equal` :  All mutations equally likely; probability \eqn{1-rate} of no
 #' mutation
 #'
-#' * "proportional" : Mutation probabilities are proportional to the target
+#' * `proportional` : Mutation probabilities are proportional to the target
 #' allele frequencies
 #'
-#' * "random" : This produces a matrix of random numbers, where each row is
+#' * `random` : This produces a matrix of random numbers, where each row is
 #' normalised so that it sums to 1
+#'
+#' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
 #' @param model A string: either "custom", "equal", "proportional" or "random"
 #' @param matrix When `model` is "custom", this must be a square matrix with
@@ -37,7 +39,7 @@
 #'
 #' @importFrom stats runif
 #' @export
-mutationMatrix = function(model = c("custom", "equal", "proportional", "random"),
+mutationMatrix = function(model = c("custom", "equal", "proportional", "random", "trivial"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
                           rate = NULL, seed = NULL) {
   model = match.arg(model)
@@ -97,8 +99,9 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random")
 
   ## Compute matrix according to model
   nall = length(alleles)
-  if(nall < 2)
+  if(nall == 0)
     return(NULL)
+
   mutmat = matrix(ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
 
   if(model == "equal") {
@@ -118,6 +121,9 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random")
       set.seed(seed)
     mutmat[] = runif(nall^2, min = 0, max = 1)
     mutmat = mutmat / rowSums(mutmat)
+  }
+  else if(model == "trivial") {
+    mutmat[] = diag(nall)
   }
 
   newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate, seed=seed)

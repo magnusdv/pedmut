@@ -5,9 +5,9 @@
 \alias{validateMutationMatrix}
 \title{Mutation matrix}
 \usage{
-mutationMatrix(model = c("custom", "equal", "proportional", "random"),
-  matrix = NULL, alleles = NULL, afreq = NULL, rate = NULL,
-  seed = NULL)
+mutationMatrix(model = c("custom", "equal", "proportional", "random",
+  "trivial"), matrix = NULL, alleles = NULL, afreq = NULL,
+  rate = NULL, seed = NULL)
 
 validateMutationMatrix(mutmat, alleles = NULL)
 }
@@ -41,14 +41,15 @@ Construct mutation matrices for pedigree likelihood computations.
 \details{
 Descriptions of the models:
 \itemize{
-\item "custom" : Allows any mutation matrix to be provided by the user, in the \code{matrix}
+\item \code{custom} : Allows any mutation matrix to be provided by the user, in the \code{matrix}
 parameter
-\item "equal" :  All mutations equally likely; probability \eqn{1-rate} of no
+\item \code{equal} :  All mutations equally likely; probability \eqn{1-rate} of no
 mutation
-\item "proportional" : Mutation probabilities are proportional to the target
+\item \code{proportional} : Mutation probabilities are proportional to the target
 allele frequencies
-\item "random" : This produces a matrix of random numbers, where each row is
+\item \code{random} : This produces a matrix of random numbers, where each row is
 normalised so that it sums to 1
+\item \code{trivial} : The identity matrix; i.e. no mutations are possible.
 }
 }
 \examples{
