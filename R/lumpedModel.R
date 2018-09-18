@@ -13,7 +13,7 @@
 #'   labels)
 #'
 #' @return A reduced mutation model. If the original matrix has dimensions
-#'   \eqn{n\times n}, the result will be \eqn{k\times k}, where \eqn{k = n -
+#'   \eqn{n\times n}{n*n}, the result will be \eqn{k\times k}{k*k}, where \eqn{k = n -
 #'   length(lump) + 1}.
 #'
 #' @examples
@@ -27,6 +27,7 @@
 #'
 #' @export
 lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq')) {
+  # TODO: Fix/remove attributes of lumped models. Model = "Lumped"
   als = colnames(mutmat)
 
   # If all alleles are lumped, return trivial mutationModel

@@ -17,7 +17,7 @@ of \code{mutmat}}
 }
 \value{
 A reduced mutation model. If the original matrix has dimensions
-\eqn{n\times n}, the result will be \eqn{k\times k}, where \eqn{k = n -
+\eqn{n\times n}{n*n}, the result will be \eqn{k\times k}{k*k}, where \eqn{k = n -
   length(lump) + 1}.
 }
 \description{
