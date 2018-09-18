@@ -58,11 +58,12 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random",
       if(!identical(mnames, rownames(matrix)))
         stop2("Custom matrix must have identical colnames and rownames")
 
-      # If alleles are given, make sure they match, and use them to permute
+      # If alleles are given, make sure they match - and use to permute matrix
       if(!is.null(alleles)) {
-        alleles = as.character(alleles)
         if(!setequal(alleles, mnames))
           stop2("Custom matrix names don't match the `alleles` argument")
+
+        alleles = as.character(alleles)
         matrix = matrix[alleles, alleles]
       }
     }
@@ -128,6 +129,9 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random",
     mutmat[] = diag(nall)
   }
 
+  if(!is.null(afreq))
+    names(afreq) = alleles
+
   newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate, seed=seed)
 }
 
@@ -159,10 +163,23 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
   stopifnot(is.matrix(mutmat),
             is.numeric(mutmat),
             nrow(mutmat) == ncol(mutmat),
-            setequal(colnames(mutmat), rownames(mutmat)),
+            identical(colnames(mutmat), rownames(mutmat)),
             inherits(mutmat, "mutationMatrix"))
 
-  if(!is.null(alleles)) stopifnot(setequal(rownames(mutmat), alleles))
+  als = colnames(mutmat)
+  if(!is.null(alleles) && !identical(als, as.character(alleles)))
+    stop2("Dimnames of mutation matrix not consistent with indicated alleles")
+
+  afreq = attr(mutmat, "afreq")
+  if(!is.null(afreq)) {
+    if(!identical(names(afreq), als)) {
+      print(afreq)
+      stop2("Attribute `afreq` must be named with the allele labels: ", als)
+    }
+    if(sum(round(afreq, 3)) != 1)
+      stop2("Allele frequencies do not sum to 1 (after rounding to 3 decimal places): ",
+            round(afreq, 3))
+  }
 
   if(any(mutmat < 0))
     stop2("Negative entries found in mutation matrix: ", mutmat[mutmat < 0])
@@ -172,7 +189,8 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
   rs = rowSums(mutmat)
   if (any(round(rs, 3) != 1)) {
     print(rowSums(mutmat))
-    stop2("Rows which do not sum to 1 (after rounding to 3 decimal places): ", which(round(rs, 3) != 1))
+    stop2("Rows which do not sum to 1 (after rounding to 3 decimal places): ",
+          which(round(rs, 3) != 1))
   }
 
   mutmat
