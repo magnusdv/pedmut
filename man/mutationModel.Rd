@@ -5,7 +5,8 @@
 \alias{validateMutationModel}
 \title{Mutation models}
 \usage{
-mutationModel(model, matrix = NULL, rate = NULL, seed = NULL, ...)
+mutationModel(model, alleles = NULL, afreq = NULL, matrix = NULL,
+  rate = NULL, seed = NULL)
 
 validateMutationModel(mutmod, alleles = NULL)
 }
@@ -19,6 +20,12 @@ validateMutationModel(mutmod, alleles = NULL)
 \item a list of two model names, named "female" and "male"
 }}
 
+\item{alleles}{A character vector with allele labels; passed on to
+\code{\link[=mutationMatrix]{mutationMatrix()}}.}
+
+\item{afreq}{A numeric vector of allele frequencies; passed on to
+\code{\link[=mutationMatrix]{mutationMatrix()}}.}
+
 \item{matrix}{A matrix, or a list of two (named "female" and "male")}
 
 \item{rate}{A numeric mutation rate, or a list of two (named "female" and
@@ -26,13 +33,7 @@ validateMutationModel(mutmod, alleles = NULL)
 
 \item{seed}{An integer, or a list of two (named "female" and "male")}
 
-\item{...}{Further arguments to \code{\link[=mutationMatrix]{mutationMatrix()}}, which are reused for both
-models. Typically \code{alleles} and/or \code{afreq}.}
-
 \item{mutmod}{A \code{mutationModel} object}
-
-\item{alleles}{A character vector with allele labels. (The validation method
-uses this to check that the matrices have appropriate dimnames.)}
 }
 \value{
 An object of class \code{mutationModel}. This is a list of two

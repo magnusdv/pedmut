@@ -15,15 +15,15 @@
 #'
 #'   * a list of two model names, named "female" and "male"
 #'
+#' @param alleles A character vector with allele labels; passed on to
+#'   [mutationMatrix()].
+#' @param afreq A numeric vector of allele frequencies; passed on to
+#'   [mutationMatrix()].
 #' @param matrix A matrix, or a list of two (named "female" and "male")
 #' @param rate A numeric mutation rate, or a list of two (named "female" and
 #'   "male")
 #' @param seed An integer, or a list of two (named "female" and "male")
-#' @param ... Further arguments to [mutationMatrix()], which are reused for both
-#'   models. Typically `alleles` and/or `afreq`.
 #' @param mutmod A `mutationModel` object
-#' @param alleles A character vector with allele labels. (The validation method
-#'   uses this to check that the matrices have appropriate dimnames.)
 #'
 #' @return An object of class `mutationModel`. This is a list of two
 #'   `mutationMatrix` objects, named "female" and "male", and the following
@@ -59,19 +59,20 @@
 #' # user access to `model`, but not `matrix`.
 #'
 #' @export
-mutationModel = function(model, matrix = NULL, rate = NULL, seed = NULL, ...) {
+mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL, rate = NULL, seed = NULL) {
 
   if(isMutationModel(model)) {
-    return(validateMutationModel(model))
+    mod = enforceAlleleOrder(model, alleles)
   }
-
-  if(is.list(model) &&
+  else if(is.list(model) &&
           length(model) == 2 &&
           setequal(names(model), c("female", "male")) &&
           all(sapply(model, isMutationMatrix))) {
-    mod = model
+    mod = list(female = enforceAlleleOrder(model$female, alleles),
+               male = enforceAlleleOrder(model$male, alleles))
   }
   else if(isMutationMatrix(model)) {
+    model = enforceAlleleOrder(model, alleles)
     mod = list(female = model, male = model)
   }
   else if((is.character(model) && length(model) == 1) || is.list(model) && length(model) == 2) {
@@ -81,11 +82,13 @@ mutationModel = function(model, matrix = NULL, rate = NULL, seed = NULL, ...) {
     rate = validateSingleInput(rate, "numeric")
     seed = validateSingleInput(seed, "integer")
 
-    female = mutationMatrix(model = model$female, matrix = matrix$female,
-                            rate = rate$female, seed = seed$female, ...)
+    female = mutationMatrix(model = model$female, alleles = alleles,
+                            afreq = afreq, matrix = matrix$female,
+                            rate = rate$female, seed = seed$female)
 
-    male = mutationMatrix(model = model$male, matrix = matrix$male,
-                            rate = rate$male, seed = seed$male, ...)
+    male = mutationMatrix(model = model$male, alleles = alleles,
+                          afreq = afreq, matrix = matrix$male,
+                          rate = rate$male, seed = seed$male)
 
     mod = list(female = female, male = male)
   }
@@ -102,6 +105,7 @@ mutationModel = function(model, matrix = NULL, rate = NULL, seed = NULL, ...) {
 
   mutmod = structure(mod, sexEqual = sexEqual, alwaysLumpable = lumpable,
                      class = "mutationModel")
+
   validateMutationModel(mutmod)
 }
 
@@ -141,11 +145,19 @@ validateMutationModel = function(mutmod, alleles = NULL) {
   stopifnot(is.list(mutmod),
             length(mutmod) == 2,
             setequal(names(mutmod), c("male", "female")),
-            identical(attr(mutmod, "sexEqual"), identical(mutmod$male, mutmod$female)),
             inherits(mutmod, "mutationModel"))
 
-  validateMutationMatrix(mutmod$male, alleles = alleles)
-  validateMutationMatrix(mutmod$female, alleles = alleles)
+  male = mutmod$male
+  female = mutmod$female
+
+  if(is.null(alleles))
+    alleles = colnames(male)
+
+  validateMutationMatrix(male, alleles = alleles)
+  validateMutationMatrix(female, alleles = alleles)
+
+  stopifnot(identical(attr(mutmod, "sexEqual"), identical(male, female)),
+            identical(attr(male, 'afreq'), attr(female, 'afreq')))
 
   mutmod
 }
@@ -169,3 +181,43 @@ print.mutationModel = function(x, ...) {
 isMutationModel = function(x) {
   class(x) ==  "mutationModel"
 }
+
+# Permute the allele order of a model or matrix
+enforceAlleleOrder = function(m, alleles) {
+  if(is.null(alleles))
+    return(m)
+
+  stopifnot(isMutationModel(m) || isMutationMatrix(m),
+            !anyDuplicated(alleles))
+
+  if(isMutationModel(m)) {
+    m$male = enforceAlleleOrder(m$male, alleles)
+    m$female = enforceAlleleOrder(m$female, alleles)
+    return(m)
+  }
+
+  stopifnot(setequal(alleles, rownames(m)),
+            setequal(alleles, colnames(m)))
+
+  # Just to make sure
+  alleles = as.character(alleles)
+
+  # If already correct order - return
+  if(identical(alleles, rownames(m)))
+    return(m)
+
+  # Permute
+  new_m = m[alleles, alleles]
+
+  # Keep all attributes of original, except `dimnames` and `afreq`
+  attrs = attributes(m)
+  attrs$dimnames = list(alleles, alleles)
+  if(!is.null(attrs$afreq))
+    attrs$afreq = attrs$afreq[alleles]
+
+  attributes(new_m) = attrs
+
+  new_m
+}
+
+
