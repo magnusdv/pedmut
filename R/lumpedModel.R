@@ -27,15 +27,12 @@
 #'
 #' @export
 lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq')) {
-  # TODO: Fix/remove attributes of lumped models. Model = "Lumped"
   als = colnames(mutmat)
 
   # If all alleles are lumped, return trivial mutationModel
   if(setequal(lump, als)) {
     newM = matrix(1, ncol=1, nrow=1, dimnames=list("lump", "lump"))
-    mod = newMutationMatrix(newM, afreq = 1, lumpedAlleles = lump,
-                     model = attr(mutmat, 'model'), rate = attr(mutmat, 'rate'),
-                     seed = attr(mutmat, 'seed'))
+    mod = newMutationMatrix(newM, model = "trivial")
     return(mod)
   }
 
