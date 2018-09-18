@@ -176,7 +176,7 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
       print(afreq)
       stop2("Attribute `afreq` must be named with the allele labels: ", als)
     }
-    if(sum(round(afreq, 3)) != 1)
+    if(round(sum(afreq), 3) != 1)
       stop2("Allele frequencies do not sum to 1 (after rounding to 3 decimal places): ",
             round(afreq, 3))
   }
