@@ -69,3 +69,11 @@ test_that("random model works", {
 
   expect_equivalent(m, mutationMatrix(matrix = m))
 })
+
+test_that("trivial model works", {
+  m = mutationMatrix(alleles = 1:3, model = "triv")
+  expect_silent(validateMutationMatrix(m, alleles = 1:3))
+  expect_equivalent(m, mutationMatrix(matrix = diag(3), alleles = 1:3))
+
+  expect_equivalent(m, mutationMatrix(matrix = m))
+})

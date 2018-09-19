@@ -91,7 +91,7 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random",
     if(round(sum(afreq), 3) != 1)
       stop2("Allele frequencies must sum to 1 after rounding to 3 decimals: ", sum(afreq))
   }
-  if(model != "random") {
+  if(model %in% c("equal", "proportional")) {
     if(is.null(rate))
       stop2("`rate` cannot be NULL with this model")
     if(!is_number(rate, minimum=0))
