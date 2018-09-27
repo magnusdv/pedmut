@@ -49,8 +49,13 @@ lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq')) {
   newM[, N] = 1 - rowSums(newM[, 1:(N-1), drop = F])
   colnames(newM)[N] = rownames(newM)[N] = "lump"
 
-  lumpedFreq = c(afreq[keep_idx], sum(afreq[lump_idx]))
-  names(lumpedFreq) = colnames(newM)
+  if(!is.null(afreq)) {
+    lumpedFreq = c(afreq[keep_idx], sum(afreq[lump_idx]))
+    names(lumpedFreq) = colnames(newM)
+  }
+  else {
+    lumpedFreq = NULL
+  }
 
   newMutationMatrix(newM, afreq = lumpedFreq, lumpedAlleles = lump,
                    model = attr(mutmat, 'model'), rate = attr(mutmat, 'rate'),
