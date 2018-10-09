@@ -6,13 +6,14 @@
 \title{Mutation matrix}
 \usage{
 mutationMatrix(model = c("custom", "equal", "proportional", "random",
-  "trivial"), matrix = NULL, alleles = NULL, afreq = NULL,
-  rate = NULL, seed = NULL)
+  "trivial", "stepwise"), matrix = NULL, alleles = NULL,
+  afreq = NULL, rate = NULL, seed = NULL, rate2 = NULL,
+  range = NULL)
 
 validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
-\item{model}{A string: either "custom", "equal", "proportional" or "random"}
+\item{model}{A string: either "custom", "equal", "proportional", "random" or "stepwise"}
 
 \item{matrix}{When \code{model} is "custom", this must be a square matrix with
 nonnegative real entries and row sums equal to 1}
@@ -23,11 +24,15 @@ labels. Required in all models, except "custom" if \code{matrix} has dimnames}
 \item{afreq}{A numeric vector of allele frequencies. Required in model
 "proportional"}
 
-\item{rate}{A number between 0 and 1. Required in models "equal" and
-"proportional"}
+\item{rate}{A number between 0 and 1. Required in models "equal",
+"proportional", and "stewise"}
 
 \item{seed}{A single number. Optional parameter in the "random" model, passed
 on to \code{set.seed()}}
+
+\item{rate2}{A number between 0 and 1. Required  in the "stepwise" model}
+
+\item{range}{A positive number . Required  in the "stepwise" model}
 
 \item{mutmat}{An object of class \code{mutationMatrix}}
 }
