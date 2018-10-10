@@ -9,7 +9,7 @@ Install from GitHub as follows:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("magnusdv/pedmut")
+devtools::install_github("thoree/pedmut")
 ```
 
 Introduction
