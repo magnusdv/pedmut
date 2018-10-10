@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 Install from GitHub as follows:
 ```{r eval = FALSE}
 # install.packages("devtools")
-devtools::install_github("magnusdv/pedmut")
+devtools::install_github("thoree/pedmut")
 ```
 
 ## Introduction
