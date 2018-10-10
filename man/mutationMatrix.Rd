@@ -25,14 +25,16 @@ labels. Required in all models, except "custom" if \code{matrix} has dimnames}
 "proportional"}
 
 \item{rate}{A number between 0 and 1. Required in models "equal",
-"proportional", and "stewise"}
+"proportional", and "stepwise"}
 
 \item{seed}{A single number. Optional parameter in the "random" model, passed
 on to \code{set.seed()}}
 
-\item{rate2}{A number between 0 and 1. Required  in the "stepwise" model}
+\item{rate2}{A number between 0 and 1. The mutation rate between integer alleles
+and microvariants. Required  in the "stepwise" model}
 
-\item{range}{A positive number . Required  in the "stepwise" model}
+\item{range}{A positive number. The relative probability of mutating n+1
+steps versus mutating n steps. Required  in the "stepwise" model}
 
 \item{mutmat}{An object of class \code{mutationMatrix}}
 }
@@ -55,6 +57,10 @@ allele frequencies
 \item \code{random} : This produces a matrix of random numbers, where each row is
 normalised so that it sums to 1
 \item \code{trivial} : The identity matrix; i.e. no mutations are possible.
+\item \code{stepwise}: Allows for mutation rates bewtween integer alleles (like '16')
+and non-integer (microvariants like 9.3) to differ.
+Mutations  also depend on the size of the mutation if the parameter 'range'
+differ from 1.
 }
 }
 \examples{

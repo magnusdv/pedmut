@@ -18,6 +18,12 @@
 #'
 #' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
+#' * `stepwise`: Allows for mutation rates bewtween integer alleles (like '16')
+#' and non-integer (microvariants like 9.3) to differ.
+#' Mutations  also depend on the size of the mutation if the parameter 'range'
+#' differ from 1.
+#'
+#'
 #' @param model A string: either "custom", "equal", "proportional", "random" or "stepwise"
 #' @param matrix When `model` is "custom", this must be a square matrix with
 #'   nonnegative real entries and row sums equal to 1
@@ -26,11 +32,13 @@
 #' @param afreq A numeric vector of allele frequencies. Required in model
 #'   "proportional"
 #' @param rate A number between 0 and 1. Required in models "equal",
-#'   "proportional", and "stewise"
+#'   "proportional", and "stepwise"
 #' @param seed A single number. Optional parameter in the "random" model, passed
 #'   on to `set.seed()`
-#' @param rate2 A number between 0 and 1. Required  in the "stepwise" model
-#' @param range A positive number . Required  in the "stepwise" model
+#' @param rate2 A number between 0 and 1. The mutation rate between integer alleles
+#'   and microvariants. Required  in the "stepwise" model
+#' @param range A positive number. The relative probability of mutating n+1
+#' steps versus mutating n steps. Required  in the "stepwise" model
 #' @param mutmat An object of class `mutationMatrix`
 #'
 #' @return A square matrix with entries in `[0, 1]`, with the allele labels as
@@ -269,8 +277,8 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
     if(model == "random")
       cat("Seed: ", if(!is.null(seed)) seed else NA, "\n")
     if(model == "stepwise"){
-      cat("Range: ", range,  "\n")
-      cat("Rate2: ", rate2, "\n")
+      cat("range: ", range,  "\n")
+      cat("rate2: ", rate2, "\n")
     }
   }
 
