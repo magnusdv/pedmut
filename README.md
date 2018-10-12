@@ -9,7 +9,7 @@ Install from GitHub as follows:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("thoree/pedmut")
+devtools::install_github("magnusdv/pedmut")
 ```
 
 Introduction
@@ -68,9 +68,22 @@ The mutations models currently implemented in `pedmut` are:
 -   "random" : This produces a matrix of random numbers, each row normalised to have sum 1. Parameters: `seed`.
 -   "custom" : Allows any valid mutation matrix to be provided by the user. Parameters: `matrix`.
 -   "trivial" : Diagonal mutation matrix with 1 on the diagonal.
--   "stepwise" : Mutation rates depend on whether transitions are within the same group or not, i.e., between integer alleles (like '17') and microvariants (like '17.1'). Mutations also depend on the size of the mutation as modelled by the parameter 'range', the relative probability of mutating n+1 steps versus mutating n steps.
+-   "stepwise" : For this model alleles must be integers or decimal numbers with a single decimal, such as '17.1', indicating a microvariant. Mutation rates depend on whether transitions are within the same group or not, i.e., between integer alleles and microvariants in the latter case. Mutations also depend on the size of the mutation as modelled by the parameter `range`, the relative probability of mutating n+1 steps versus mutating n steps.
 
-For example, the following creates a 3\*3 mutation matrix under the "equal" model:
+Model properties
+----------------
+
+Certain properties of mutation models are of particular interest - both theoretical and practical - for likelihood computations. The pedmut package provides utility functions for quickly checking whether a given model these properties:
+
+-   `isStationary(M, afreq)` : Checks if `afreq` is a right eigenvector of the mutation matrix `M`
+-   `isReversible(M, afreq)` : Checks if `M` together with `afreq` form a *reversible* Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
+-   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the neccessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
+-   `alwaysLumpable(M)` : Checks if `M` allows lumping of any allele subset
+
+Examples
+--------
+
+The following creates a 3\*3 mutation matrix under the "equal" model:
 
 ``` r
 pedmut::mutationMatrix("equal", rate = 0.1, alleles = 1:3)
@@ -85,7 +98,7 @@ pedmut::mutationMatrix("equal", rate = 0.1, alleles = 1:3)
 #> Lumpable: Always
 ```
 
-The mutation matrix in Section 2.1.3 of Simonsson and Mostad (FSI: Genetics 2015) is obtained by
+The "stepwise" mutation matrix in Section 2.1.3 of Simonsson and Mostad (FSI: Genetics 2015) is obtained by
 
 ``` r
 pedmut::mutationMatrix(model = "stepwise",
@@ -105,13 +118,3 @@ pedmut::mutationMatrix(model = "stepwise",
 #> 
 #> Lumpable: Not always
 ```
-
-Model properties
-----------------
-
-Certain properties of mutation models are of particular interest - both theoretical and practical - for likelihood computations. The pedmut package provides utility functions for quickly checking whether a given model these properties:
-
--   `isStationary(M, afreq)` : Checks if `afreq` is a right eigenvector of the mutation matrix `M`
--   `isReversible(M, afreq)` : Checks if `M` together with `afreq` form a *reversible* Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
--   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the neccessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
--   `alwaysLumpable(M)` : Checks if `M` allows lumping of any allele subset

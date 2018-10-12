@@ -57,10 +57,10 @@ allele frequencies
 \item \code{random} : This produces a matrix of random numbers, where each row is
 normalised so that it sums to 1
 \item \code{trivial} : The identity matrix; i.e. no mutations are possible.
-\item \code{stepwise}: Allows for mutation rates bewtween integer alleles (like '16')
+\item \code{stepwise}: Allows for mutation rates between integer alleles (like '16')
 and non-integer (microvariants like 9.3) to differ.
 Mutations  also depend on the size of the mutation if the parameter 'range'
-differ from 1.
+differs from 1.
 }
 }
 \examples{

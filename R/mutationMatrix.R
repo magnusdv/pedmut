@@ -105,17 +105,19 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   if(model %in% c("equal", "proportional", "stepwise")) {
     if(is.null(rate))
       stop("`rate` cannot be NULL with this model")
-    if(!pedtools:::is_number(rate, minimum=0))
+    if(!is_number(rate, minimum = 0))
       stop("`rate` must be a nonnegative number: ", rate)
   }
   if(model %in% c("stepwise")) {
     if(is.null(rate2))
-      stop("`rate2` cannot be NULL with this model")
-    if(rate2 < 0 | rate2 > 1)
-      stop("`rate2` must be in [0,1]: ", rate2)
+      stop("`rate2` cannot be NULL with the `stepwise` model")
+    if(!is_number(rate2, minimum = 0))
+      stop2("`rate2` must be a nonnegative number: ", rate2)
+    if(!is_number(rate + rate2, maximum = 1))
+      stop("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
     if(is.null(range))
-      stop("range` cannot be NULL with this model")
-    if( range <= 0)
+      stop("range` cannot be NULL with the `stepwise` model")
+    if(!is_number(range, minimum = 0))
       stop("`range` must be a positive number: ", range)
   }
 
@@ -172,8 +174,6 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
       if (any(microcompats))
         mutmat[i,microcompats] <- mutmat[i,microcompats]/sum(mutmat[i,microcompats]) * rate
     }
-    if(any(mutmat > 1) | any(mutmat < 0))
-      stop("Impossible mutation matrix; try reducing `rate` or `rate2`")
   }
 
   if(!is.null(afreq))
