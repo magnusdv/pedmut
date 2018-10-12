@@ -104,21 +104,21 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   }
   if(model %in% c("equal", "proportional", "stepwise")) {
     if(is.null(rate))
-      stop("`rate` cannot be NULL with this model")
+      stop2("`rate` cannot be NULL with this model")
     if(!is_number(rate, minimum = 0))
-      stop("`rate` must be a nonnegative number: ", rate)
+      stop2("`rate` must be a nonnegative number: ", rate)
   }
   if(model %in% c("stepwise")) {
     if(is.null(rate2))
-      stop("`rate2` cannot be NULL with the `stepwise` model")
+      stop2("`rate2` cannot be NULL with the `stepwise` model")
     if(!is_number(rate2, minimum = 0))
       stop2("`rate2` must be a nonnegative number: ", rate2)
     if(!is_number(rate + rate2, maximum = 1))
-      stop("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
+      stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
     if(is.null(range))
-      stop("range` cannot be NULL with the `stepwise` model")
+      stop2("range` cannot be NULL with the `stepwise` model")
     if(!is_number(range, minimum = 0))
-      stop("`range` must be a positive number: ", range)
+      stop2("`range` must be a positive number: ", range)
   }
 
   ## Compute matrix according to model
@@ -154,9 +154,9 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   else if (model == "stepwise") {
     numfreq <- as.numeric(alleles)
     if (any(is.na(numfreq)))
-      stop("The 'stepwise' mutation model requires all alleles to have numerical names.")
+      stop2("The 'stepwise' mutation model requires all alleles to have numerical names.")
     if (any(round(numfreq, 1) != numfreq))
-      stop("Microvariants must be named as a decimal number with one decimal.")
+      stop2("Microvariants must be named as a decimal number with one decimal.")
     microgroup <- (numfreq - round(numfreq))*10
     for (i in 1:nall) {
       microcompats <- (microgroup == microgroup[i])
