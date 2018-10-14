@@ -6,13 +6,14 @@
 \title{Mutation matrix}
 \usage{
 mutationMatrix(model = c("custom", "equal", "proportional", "random",
-  "trivial"), matrix = NULL, alleles = NULL, afreq = NULL,
-  rate = NULL, seed = NULL)
+  "trivial", "stepwise"), matrix = NULL, alleles = NULL,
+  afreq = NULL, rate = NULL, seed = NULL, rate2 = NULL,
+  range = NULL)
 
 validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
-\item{model}{A string: either "custom", "equal", "proportional" or "random"}
+\item{model}{A string: either "custom", "equal", "proportional", "random" or "stepwise"}
 
 \item{matrix}{When \code{model} is "custom", this must be a square matrix with
 nonnegative real entries and row sums equal to 1}
@@ -23,11 +24,17 @@ labels. Required in all models, except "custom" if \code{matrix} has dimnames}
 \item{afreq}{A numeric vector of allele frequencies. Required in model
 "proportional"}
 
-\item{rate}{A number between 0 and 1. Required in models "equal" and
-"proportional"}
+\item{rate}{A number between 0 and 1. Required in models "equal",
+"proportional", and "stepwise"}
 
 \item{seed}{A single number. Optional parameter in the "random" model, passed
 on to \code{set.seed()}}
+
+\item{rate2}{A number between 0 and 1. The mutation rate between integer alleles
+and microvariants. Required  in the "stepwise" model}
+
+\item{range}{A positive number. The relative probability of mutating n+1
+steps versus mutating n steps. Required  in the "stepwise" model}
 
 \item{mutmat}{An object of class \code{mutationMatrix}}
 }
@@ -50,6 +57,10 @@ allele frequencies
 \item \code{random} : This produces a matrix of random numbers, where each row is
 normalised so that it sums to 1
 \item \code{trivial} : The identity matrix; i.e. no mutations are possible.
+\item \code{stepwise}: Allows for mutation rates between integer alleles (like '16')
+and non-integer (microvariants like 9.3) to differ.
+Mutations  also depend on the size of the mutation if the parameter 'range'
+differs from 1.
 }
 }
 \examples{

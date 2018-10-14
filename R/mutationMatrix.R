@@ -18,17 +18,27 @@
 #'
 #' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
-#' @param model A string: either "custom", "equal", "proportional" or "random"
+#' * `stepwise`: Allows for mutation rates between integer alleles (like '16')
+#' and non-integer (microvariants like 9.3) to differ.
+#' Mutations  also depend on the size of the mutation if the parameter 'range'
+#' differs from 1.
+#'
+#'
+#' @param model A string: either "custom", "equal", "proportional", "random" or "stepwise"
 #' @param matrix When `model` is "custom", this must be a square matrix with
 #'   nonnegative real entries and row sums equal to 1
 #' @param alleles A character vector (or coercible to character) with allele
 #'   labels. Required in all models, except "custom" if `matrix` has dimnames
 #' @param afreq A numeric vector of allele frequencies. Required in model
 #'   "proportional"
-#' @param rate A number between 0 and 1. Required in models "equal" and
-#'   "proportional"
+#' @param rate A number between 0 and 1. Required in models "equal",
+#'   "proportional", and "stepwise"
 #' @param seed A single number. Optional parameter in the "random" model, passed
 #'   on to `set.seed()`
+#' @param rate2 A number between 0 and 1. The mutation rate between integer alleles
+#'   and microvariants. Required  in the "stepwise" model
+#' @param range A positive number. The relative probability of mutating n+1
+#' steps versus mutating n steps. Required  in the "stepwise" model
 #' @param mutmat An object of class `mutationMatrix`
 #'
 #' @return A square matrix with entries in `[0, 1]`, with the allele labels as
@@ -39,9 +49,10 @@
 #'
 #' @importFrom stats runif
 #' @export
-mutationMatrix = function(model = c("custom", "equal", "proportional", "random", "trivial"),
+mutationMatrix = function(model = c("custom", "equal", "proportional",
+                          "random", "trivial", "stepwise"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
-                          rate = NULL, seed = NULL) {
+                          rate = NULL, seed = NULL, rate2 = NULL, range = NULL) {
   model = match.arg(model)
 
   if(model == "custom") {
@@ -91,11 +102,23 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random",
     if(round(sum(afreq), 3) != 1)
       stop2("Allele frequencies must sum to 1 after rounding to 3 decimals: ", sum(afreq))
   }
-  if(model %in% c("equal", "proportional")) {
+  if(model %in% c("equal", "proportional", "stepwise")) {
     if(is.null(rate))
       stop2("`rate` cannot be NULL with this model")
-    if(!is_number(rate, minimum=0))
+    if(!is_number(rate, minimum = 0))
       stop2("`rate` must be a nonnegative number: ", rate)
+  }
+  if(model %in% c("stepwise")) {
+    if(is.null(rate2))
+      stop2("`rate2` cannot be NULL with the `stepwise` model")
+    if(!is_number(rate2, minimum = 0))
+      stop2("`rate2` must be a nonnegative number: ", rate2)
+    if(!is_number(rate + rate2, maximum = 1))
+      stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
+    if(is.null(range))
+      stop2("range` cannot be NULL with the `stepwise` model")
+    if(!is_number(range, minimum = 0))
+      stop2("`range` must be a positive number: ", range)
   }
 
   ## Compute matrix according to model
@@ -128,15 +151,41 @@ mutationMatrix = function(model = c("custom", "equal", "proportional", "random",
   else if(model == "trivial") {
     mutmat[] = diag(nall)
   }
+  else if (model == "stepwise") {
+    numfreq <- as.numeric(alleles)
+    if (any(is.na(numfreq)))
+      stop2("The 'stepwise' mutation model requires all alleles to have numerical names.")
+    if (any(round(numfreq, 1) != numfreq))
+      stop2("Microvariants must be named as a decimal number with one decimal.")
+    microgroup <- (numfreq - round(numfreq))*10
+    for (i in 1:nall) {
+      microcompats <- (microgroup == microgroup[i])
+      for (j in 1:nall) {
+        if (i == j) {
+          if (all(microcompats)) mutmat[i,j] <- 1 - rate
+          else if (sum(microcompats) == 1) mutmat[i,j] <- 1 - rate2
+          else mutmat[i,j] <- 1 - rate - rate2
+        } else if (microcompats[j])
+          mutmat[i,j] <- range^abs(numfreq[i]-numfreq[j])
+        else
+          mutmat[i,j] <- rate2/(nall-sum(microcompats))
+      }
+      microcompats[i] <- FALSE
+      if (any(microcompats))
+        mutmat[i,microcompats] <- mutmat[i,microcompats]/sum(mutmat[i,microcompats]) * rate
+    }
+  }
 
   if(!is.null(afreq))
     names(afreq) = alleles
 
-  newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate, seed=seed)
+  newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate, seed=seed,
+                    rate2 = rate2, range = range)
 }
 
 newMutationMatrix = function(mutmat, model = "custom", afreq = NULL,
-                            rate = NULL, lumpedAlleles = NULL, seed = NULL) {
+                            rate = NULL, lumpedAlleles = NULL, seed = NULL,
+                            rate2 = NULL, range = NULL) {
   if(!is.null(afreq)) {
     stationary = isStationary(mutmat, afreq)
     reversible = isReversible(mutmat, afreq)
@@ -148,6 +197,8 @@ newMutationMatrix = function(mutmat, model = "custom", afreq = NULL,
             model = model,
             afreq = afreq,
             rate = rate,
+            rate2 = rate2,
+            range = range,
             stationary = stationary,
             reversible = reversible,
             lumpedAlleles = lumpedAlleles,
@@ -215,6 +266,8 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
 
     model = attrs$model
     rate = attrs$rate
+    rate2 = attrs$rate2
+    range = attrs$range
     seed = attrs$seed
 
     cat("Model:", model, "\n")
@@ -223,6 +276,10 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
       cat("Frequencies:", toString(afreq), "\n")
     if(model == "random")
       cat("Seed: ", if(!is.null(seed)) seed else NA, "\n")
+    if(model == "stepwise"){
+      cat("range: ", range,  "\n")
+      cat("rate2: ", rate2, "\n")
+    }
   }
 
   if(includeProperties) {

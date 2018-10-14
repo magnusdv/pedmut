@@ -21,6 +21,7 @@ For a simple example, consider a situation where father and son are homozygous f
 
 ``` r
 library(pedprobr)
+#> Loading required package: pedtools
 library(pedtools)
 x = nuclearPed(father = "fa", mother = "mo", child = "boy")
 m = marker(x, fa = 1, boy = 2, alleles = 1:4, mutmod = "prop", rate = 0.1)
@@ -66,8 +67,23 @@ The mutations models currently implemented in `pedmut` are:
 -   "proportional" : Mutation probabilities are proportional to the target allele frequencies. Parameters: `rate`, `afreq`.
 -   "random" : This produces a matrix of random numbers, each row normalised to have sum 1. Parameters: `seed`.
 -   "custom" : Allows any valid mutation matrix to be provided by the user. Parameters: `matrix`.
+-   "trivial" : Diagonal mutation matrix with 1 on the diagonal.
+-   "stepwise" : For this model alleles must be integers or decimal numbers with a single decimal, such as '17.1', indicating a microvariant. Mutation rates depend on whether transitions are within the same group or not, i.e., between integer alleles and microvariants in the latter case. Mutations also depend on the size of the mutation as modelled by the parameter `range`, the relative probability of mutating n+1 steps versus mutating n steps.
 
-For example, the following creates a 3\*3 mutation matrix under the "equal" model:
+Model properties
+----------------
+
+Certain properties of mutation models are of particular interest - both theoretical and practical - for likelihood computations. The pedmut package provides utility functions for quickly checking whether a given model these properties:
+
+-   `isStationary(M, afreq)` : Checks if `afreq` is a right eigenvector of the mutation matrix `M`
+-   `isReversible(M, afreq)` : Checks if `M` together with `afreq` form a *reversible* Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
+-   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the neccessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
+-   `alwaysLumpable(M)` : Checks if `M` allows lumping of any allele subset
+
+Examples
+--------
+
+The following creates a 3\*3 mutation matrix under the "equal" model:
 
 ``` r
 pedmut::mutationMatrix("equal", rate = 0.1, alleles = 1:3)
@@ -82,12 +98,23 @@ pedmut::mutationMatrix("equal", rate = 0.1, alleles = 1:3)
 #> Lumpable: Always
 ```
 
-Model properties
-----------------
+The "stepwise" mutation matrix in Section 2.1.3 of Simonsson and Mostad (FSI: Genetics 2015) is obtained by
 
-Certain properties of mutation models are of particular interest - both theoretical and practical - for likelihood computations. The pedmut package provides utility functions for quickly checking whether a given model these properties:
-
--   `isStationary(M, afreq)` : Checks if `afreq` is a right eigenvector of the mutation matrix `M`
--   `isReversible(M, afreq)` : Checks if `M` together with `afreq` form a *reversible* Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
--   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the neccessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
--   `alwaysLumpable(M)` : Checks if `M` allows lumping of any allele subset
+``` r
+pedmut::mutationMatrix(model = "stepwise",
+               alleles = c("16", "17", "18", "16.1", "17.1"),
+               rate = 0.003, rate2 = 0.001, range = 0.5)
+#>                16           17           18         16.1         17.1
+#> 16   0.9960000000 0.0020000000 0.0010000000 0.0005000000 0.0005000000
+#> 17   0.0015000000 0.9960000000 0.0015000000 0.0005000000 0.0005000000
+#> 18   0.0010000000 0.0020000000 0.9960000000 0.0005000000 0.0005000000
+#> 16.1 0.0003333333 0.0003333333 0.0003333333 0.9960000000 0.0030000000
+#> 17.1 0.0003333333 0.0003333333 0.0003333333 0.0030000000 0.9960000000
+#> 
+#> Model: stepwise 
+#> Rate: 0.003 
+#> range:  0.5 
+#> rate2:  0.001 
+#> 
+#> Lumpable: Not always
+```
