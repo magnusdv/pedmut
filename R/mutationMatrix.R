@@ -4,8 +4,8 @@
 #'
 #' Descriptions of the models:
 #'
-#' * `custom` : Allows any mutation matrix to be provided by the user, in the `matrix`
-#' parameter
+#' * `custom` : Allows any mutation matrix to be provided by the user, in the
+#' `matrix` parameter
 #'
 #' * `equal` :  All mutations equally likely; probability \eqn{1-rate} of no
 #' mutation
@@ -18,13 +18,14 @@
 #'
 #' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
-#' * `stepwise`: Allows for mutation rates between integer alleles (like '16')
-#' and non-integer (microvariants like 9.3) to differ.
-#' Mutations  also depend on the size of the mutation if the parameter 'range'
-#' differs from 1.
+#' * `stepwise`: a common model in forensic science, allowing different mutation
+#' rates between integer alleles (like '16') and non-integer "microvariants" like
+#' '9.3'). Mutations also depend on the size of the mutation if the
+#' parameter 'range' differs from 1.
 #'
 #'
-#' @param model A string: either "custom", "equal", "proportional", "random" or "stepwise"
+#' @param model A string: either "custom", "equal", "proportional", "random" or
+#'   "stepwise"
 #' @param matrix When `model` is "custom", this must be a square matrix with
 #'   nonnegative real entries and row sums equal to 1
 #' @param alleles A character vector (or coercible to character) with allele
@@ -35,10 +36,10 @@
 #'   "proportional", and "stepwise"
 #' @param seed A single number. Optional parameter in the "random" model, passed
 #'   on to `set.seed()`
-#' @param rate2 A number between 0 and 1. The mutation rate between integer alleles
-#'   and microvariants. Required  in the "stepwise" model
+#' @param rate2 A number between 0 and 1. The mutation rate between integer
+#'   alleles and microvariants. Required in the "stepwise" model
 #' @param range A positive number. The relative probability of mutating n+1
-#' steps versus mutating n steps. Required  in the "stepwise" model
+#'   steps versus mutating n steps. Required  in the "stepwise" model
 #' @param mutmat An object of class `mutationMatrix`
 #'
 #' @return A square matrix with entries in `[0, 1]`, with the allele labels as
@@ -50,7 +51,7 @@
 #' @importFrom stats runif
 #' @export
 mutationMatrix = function(model = c("custom", "equal", "proportional",
-                          "random", "trivial", "stepwise"),
+                                    "random", "trivial", "stepwise"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
                           rate = NULL, seed = NULL, rate2 = NULL, range = NULL) {
   model = match.arg(model)
@@ -113,10 +114,10 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
       stop2("`rate2` cannot be NULL with the `stepwise` model")
     if(!is_number(rate2, minimum = 0))
       stop2("`rate2` must be a nonnegative number: ", rate2)
-    if(!is_number(rate + rate2, maximum = 1))
+    if(rate + rate2 > 1)
       stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
     if(is.null(range))
-      stop2("range` cannot be NULL with the `stepwise` model")
+      stop2("`range` cannot be NULL with the `stepwise` model")
     if(!is_number(range, minimum = 0))
       stop2("`range` must be a positive number: ", range)
   }
@@ -179,13 +180,13 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   if(!is.null(afreq))
     names(afreq) = alleles
 
-  newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate, seed=seed,
-                    rate2 = rate2, range = range)
+  newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate,
+                    rate2 = rate2, range = range, seed=seed)
 }
 
 newMutationMatrix = function(mutmat, model = "custom", afreq = NULL,
-                            rate = NULL, lumpedAlleles = NULL, seed = NULL,
-                            rate2 = NULL, range = NULL) {
+                            rate = NULL, rate2 = NULL, range = NULL,
+                            lumpedAlleles = NULL, seed = NULL) {
   if(!is.null(afreq)) {
     stationary = isStationary(mutmat, afreq)
     reversible = isReversible(mutmat, afreq)
@@ -213,6 +214,7 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
 
   stopifnot(is.matrix(mutmat),
             is.numeric(mutmat),
+            !anyNA(mutmat),
             nrow(mutmat) == ncol(mutmat),
             identical(colnames(mutmat), rownames(mutmat)),
             inherits(mutmat, "mutationMatrix"))
