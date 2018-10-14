@@ -77,3 +77,13 @@ test_that("trivial model works", {
 
   expect_equivalent(m, mutationMatrix(matrix = m))
 })
+
+test_that("stepwise model works", {
+  m = mutationMatrix(alleles = 1:3, model = "step",
+                     rate=0, rate2=0, range=0)
+
+  expect_silent(validateMutationMatrix(m, alleles = 1:3))
+  expect_equivalent(m, mutationMatrix(matrix = diag(3), alleles = 1:3))
+
+  expect_equivalent(m, mutationMatrix(matrix = m))
+})
