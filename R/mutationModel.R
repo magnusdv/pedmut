@@ -22,6 +22,11 @@
 #' @param matrix A matrix, or a list of two (named "female" and "male")
 #' @param rate A numeric mutation rate, or a list of two (named "female" and
 #'   "male")
+#' @param rate2 A numeric mutation rate, or a list of two (named "female" and
+#'   "male"). Required in the "stepwise" model; see [mutationMatrix()] for
+#'   details.
+#' @param range A positive number, or a list of two (named "female" and "male").
+#'   Required in the "stepwise" model; see [mutationMatrix()] for details.
 #' @param seed An integer, or a list of two (named "female" and "male")
 #' @param mutmod A `mutationModel` object
 #'
@@ -59,7 +64,8 @@
 #' # user access to `model`, but not `matrix`.
 #'
 #' @export
-mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL, rate = NULL, seed = NULL) {
+mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
+                         rate = NULL, rate2 = NULL, range = NULL, seed = NULL) {
 
   if(isMutationModel(model)) {
     mod = enforceAlleleOrder(model, alleles)
@@ -80,15 +86,19 @@ mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL, rat
     model = validateSingleInput(model, "character")
     matrix = validateMatrixInput(matrix)
     rate = validateSingleInput(rate, "numeric")
+    rate2 = validateSingleInput(rate2, "numeric")
+    range = validateSingleInput(range, "numeric")
     seed = validateSingleInput(seed, "integer")
 
     female = mutationMatrix(model = model$female, alleles = alleles,
                             afreq = afreq, matrix = matrix$female,
-                            rate = rate$female, seed = seed$female)
+                            rate = rate$female, rate2 = rate2$female,
+                            range= range$female, seed = seed$female)
 
     male = mutationMatrix(model = model$male, alleles = alleles,
                           afreq = afreq, matrix = matrix$male,
-                          rate = rate$male, seed = seed$male)
+                          rate = rate$male, rate2 = rate2$male,
+                          range = range$male, seed = seed$male)
 
     mod = list(female = female, male = male)
   }

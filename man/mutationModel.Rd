@@ -6,7 +6,7 @@
 \title{Mutation models}
 \usage{
 mutationModel(model, alleles = NULL, afreq = NULL, matrix = NULL,
-  rate = NULL, seed = NULL)
+  rate = NULL, rate2 = NULL, range = NULL, seed = NULL)
 
 validateMutationModel(mutmod, alleles = NULL)
 }
@@ -30,6 +30,13 @@ validateMutationModel(mutmod, alleles = NULL)
 
 \item{rate}{A numeric mutation rate, or a list of two (named "female" and
 "male")}
+
+\item{rate2}{A numeric mutation rate, or a list of two (named "female" and
+"male"). Required in the "stepwise" model; see \code{\link[=mutationMatrix]{mutationMatrix()}} for
+details.}
+
+\item{range}{A positive number, or a list of two (named "female" and "male").
+Required in the "stepwise" model; see \code{\link[=mutationMatrix]{mutationMatrix()}} for details.}
 
 \item{seed}{An integer, or a list of two (named "female" and "male")}
 
