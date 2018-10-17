@@ -111,14 +111,14 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   }
   if(model %in% c("stepwise")) {
     if(is.null(rate2))
-      stop2("`rate2` cannot be NULL with the `stepwise` model")
+      stop2("`rate2` cannot be NULL with the 'stepwise' model")
     if(!is_number(rate2, minimum = 0))
       stop2("`rate2` must be a nonnegative number: ", rate2)
     if(rate + rate2 > 1)
       stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
     if(is.null(range))
-      stop2("`range` cannot be NULL with the `stepwise` model")
-    if(!is_number(range, minimum = 0))
+      stop2("`range` cannot be NULL with the 'stepwise' model")
+    if(!(is_number(range, minimum = 0) && range > 0))
       stop2("`range` must be a positive number: ", range)
   }
 
@@ -277,10 +277,10 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
     if(!is.null(afreq))
       cat("Frequencies:", toString(afreq), "\n")
     if(model == "random")
-      cat("Seed: ", if(!is.null(seed)) seed else NA, "\n")
+      cat("Seed:", if(!is.null(seed)) seed else NA, "\n")
     if(model == "stepwise"){
-      cat("range: ", range,  "\n")
-      cat("rate2: ", rate2, "\n")
+      cat("Rate2:", rate2, "\n")
+      cat("Range:", range,  "\n")
     }
   }
 
