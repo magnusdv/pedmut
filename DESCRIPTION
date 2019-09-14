@@ -1,7 +1,8 @@
 Package: pedmut
 Title: Mutation Models for Pedigree Likelihood Computations
-Version: 0.0.0.9000
-Authors@R: person("Magnus Dehli", "Vigeland", email = "magnusdv@medisin.uio.no", role = c("aut", "cre"))
+Version: 0.1.0
+Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
 Description: A collection of functions for modeling mutations in pedigrees with marker data.
 Depends: R (>= 3.5.0)
 License: GPL-3
