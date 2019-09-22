@@ -77,7 +77,7 @@ Certain properties of mutation models are of particular interest - both theoreti
 
 -   `isStationary(M, afreq)` : Checks if `afreq` is a right eigenvector of the mutation matrix `M`
 -   `isReversible(M, afreq)` : Checks if `M` together with `afreq` form a *reversible* Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
--   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the neccessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
+-   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the necessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
 -   `alwaysLumpable(M)` : Checks if `M` allows lumping of any allele subset
 
 Examples
