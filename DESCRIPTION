@@ -3,7 +3,12 @@ Title: Mutation Models for Pedigree Likelihood Computations
 Version: 0.1.0
 Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
-Description: A collection of functions for modeling mutations in pedigrees with marker data.
+Description: A collection of functions for modeling mutations in pedigrees with 
+    marker data, as used e.g. in likelihood computations with microsatelite data.
+    Implemented models include the common "equal", "proprtional", and "stepwise" 
+    models, but also "random" models for experimental work, and "custom" models 
+    allowing the user to apply any valid mutation matrix. Allele lumping is done 
+    following the lumpability criteria of Kemeny and Snell (1976).
 Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
