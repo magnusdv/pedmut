@@ -116,13 +116,13 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   }
   if(model %in% c("stepwise")) {
     if(is.null(rate2))
-      stop2("`rate2` cannot be NULL with the 'stepwise' model")
+      stop2("`rate2` cannot be NULL with the `stepwise` model")
     if(!is_number(rate2, minimum = 0))
       stop2("`rate2` must be a nonnegative number: ", rate2)
     if(rate + rate2 > 1)
       stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
     if(is.null(range))
-      stop2("`range` cannot be NULL with the 'stepwise' model")
+      stop2("`range` cannot be NULL with the `stepwise` model")
     if(!(is_number(range, minimum = 0) && range > 0))
       stop2("`range` must be a positive number: ", range)
   }
@@ -160,9 +160,9 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   else if (model == "stepwise") {
     alsNum = suppressWarnings(as.numeric(alleles))
     if (any(is.na(alsNum)))
-      stop2("The 'stepwise' mutation model requires all alleles to have numerical names.")
+      stop2("The `stepwise` mutation model requires all alleles to have numerical names")
     if (any(round(alsNum, 1) != alsNum))
-      stop2("Microvariants must be named as a decimal number with one decimal.")
+      stop2("Microvariants must be named as a decimal number with one decimal")
     microgroup = (alsNum - round(alsNum))*10
     for (i in 1:nall) {
       microcompats = (microgroup == microgroup[i])
@@ -184,7 +184,7 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   else if (model == "onestep") {
     alsNum = suppressWarnings(as.numeric(alleles))
     if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
-      stop2("The 'stepwise' mutation model requires all alleles to be integers")
+      stop2("The `onestep`` mutation model requires all alleles to be integers")
 
     diag(mutmat) = 1 - rate
 

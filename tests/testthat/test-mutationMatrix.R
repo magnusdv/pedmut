@@ -34,7 +34,7 @@ test_that("bad inputs are caught", {
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=1, rate2=0.5, range=1),
                "The total mutation rate")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0),
-               "`range` cannot be NULL with the 'stepwise' model")
+               "`range` cannot be NULL with the `stepwise` model")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0, range=0),
                "`range` must be a positive number: 0")
 })
