@@ -184,7 +184,7 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   else if (model == "onestep") {
     alsNum = suppressWarnings(as.numeric(alleles))
     if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
-      stop2("The `onestep`` mutation model requires all alleles to be integers")
+      stop2("The `onestep` mutation model requires all alleles to be integers")
 
     diag(mutmat) = 1 - rate
 
