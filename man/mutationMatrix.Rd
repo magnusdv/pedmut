@@ -6,15 +6,15 @@
 \title{Mutation matrix}
 \usage{
 mutationMatrix(model = c("custom", "equal", "proportional", "random",
-  "trivial", "stepwise"), matrix = NULL, alleles = NULL,
+  "onestep", "stepwise", "trivial"), matrix = NULL, alleles = NULL,
   afreq = NULL, rate = NULL, seed = NULL, rate2 = NULL,
   range = NULL)
 
 validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
-\item{model}{A string: either "custom", "equal", "proportional", "random" or
-"stepwise"}
+\item{model}{A string: either "custom", "equal", "proportional", "random",
+"stepwise" or "onestep"}
 
 \item{matrix}{When \code{model} is "custom", this must be a square matrix with
 nonnegative real entries and row sums equal to 1}
@@ -26,7 +26,7 @@ labels. Required in all models, except "custom" if \code{matrix} has dimnames}
 "proportional"}
 
 \item{rate}{A number between 0 and 1. Required in models "equal",
-"proportional", and "stepwise"}
+"proportional", "stepwise" and "onestep"}
 
 \item{seed}{A single number. Optional parameter in the "random" model, passed
 on to \code{set.seed()}}
@@ -57,11 +57,16 @@ mutation
 allele frequencies
 \item \code{random} : This produces a matrix of random numbers, where each row is
 normalised so that it sums to 1
+\item \code{onestep}: A mutation model for microsattelite markers, allowing mutations
+only to the nearest neighbours in the allelic ladder. For example, '10' may
+mutate to either '9' or '11', unless '10' is the lowest allele, in which case
+'11' is the only option. This model is not applicable to loci with
+non-integral microvariants.
+\item \code{stepwise}: A common model in forensic genetics, allowing different
+mutation rates between integer alleles (like '16') and non-integer
+"microvariants" like '9.3'). Mutations also depend on the size of the
+mutation if the parameter 'range' differs from 1.
 \item \code{trivial} : The identity matrix; i.e. no mutations are possible.
-\item \code{stepwise}: a common model in forensic science, allowing different mutation
-rates between integer alleles (like '16') and non-integer "microvariants" like
-'9.3'). Mutations also depend on the size of the mutation if the
-parameter 'range' differs from 1.
 }
 }
 \examples{

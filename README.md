@@ -1,4 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 pedmut
 ======
 
@@ -15,26 +16,41 @@ devtools::install_github("magnusdv/pedmut")
 Introduction
 ------------
 
-The `pedmut` package aims to provide a framework for modeling mutations in pedigree computations. Although the package is self-contained, its main purpose is to be imported by other packages, like [pedprobr](https://github.com/magnusdv/pedprobr), calculating pedigree likelihoods.
+The `pedmut` package aims to provide a framework for modeling mutations
+in pedigree computations. Although the package is self-contained, its
+main purpose is to be imported by other packages, like
+[pedprobr](https://github.com/magnusdv/pedprobr), calculating pedigree
+likelihoods.
 
-For a simple example, consider a situation where father and son are homozygous for different alleles at an autosomal marker with 4 alleles (1,2,3,4). The following code creates the pedigree and the marker, using a "proportional" model for mutations, and computes the likelihood:
+For a simple example, consider a situation where father and son are
+homozygous for different alleles at an autosomal marker with 4 alleles
+(1,2,3,4). The following code creates the pedigree and the marker, using
+a “proportional” model for mutations, and computes the likelihood:
 
 ``` r
 library(pedprobr)
 #> Loading required package: pedtools
-library(pedtools)
+
 x = nuclearPed(father = "fa", mother = "mo", child = "boy")
 m = marker(x, fa = 1, boy = 2, alleles = 1:4, mutmod = "prop", rate = 0.1)
 plot(x, marker = m)
+
 likelihood(x, m)
 #> [1] 0.0005208333
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
-In the above code `pedmut` is involved twice: first in `marker()`, translating the arguments `mutmod = "prop"` and `rate = 0.1` into a complete mutation model. And secondly inside `likelihood()`, in order to speed up the computation by clustering the unobserved alleles 3 and 4 into one "lump". (The role of `pedmut` is to check that the mutation model allows this particular lumping, and to compute the lumped mutation matrix.)
+In the above code `pedmut` is involved twice: first in `marker()`,
+translating the arguments `mutmod = "prop"` and `rate = 0.1` into a
+complete mutation model. And secondly inside `likelihood()`, in order to
+speed up the computation by clustering the unobserved alleles 3 and 4
+into one “lump”. (The role of `pedmut` is to check that the mutation
+model allows this particular lumping, and to compute the lumped mutation
+matrix.)
 
-To see details about the mutation model attached to a marker, we can use the `mutmod()` accessor:
+To see details about the mutation model attached to a marker, we can use
+the `mutmod()` accessor:
 
 ``` r
 mutmod(m)
@@ -57,36 +73,80 @@ mutmod(m)
 Mutation models
 ---------------
 
-A mutation matrix is defined in `pedmut`, as a stochastic matrix with each row summing to 1, where the rows and columns are named with allele labels.
+A mutation matrix is defined in `pedmut`, as a stochastic matrix with
+each row summing to 1, where the rows and columns are named with allele
+labels.
 
-Two central functions of package are `mutationMatrix()` and `mutationModel()`. The former of these constructs a single mutation matrix according to various model specifications. The latter is a shortcut for producing what is typically required in practical applications, namely a list of *two* mutation matrices, named "male" and "female".
+Two central functions of package are `mutationMatrix()` and
+`mutationModel()`. The former of these constructs a single mutation
+matrix according to various model specifications. The latter is a
+shortcut for producing what is typically required in practical
+applications, namely a list of *two* mutation matrices, named “male” and
+“female”.
 
 The mutations models currently implemented in `pedmut` are:
 
--   "equal" : All mutations equally likely; probability `1-rate` of no mutation. Parameters: `rate`.
--   "proportional" : Mutation probabilities are proportional to the target allele frequencies. Parameters: `rate`, `afreq`.
--   "random" : This produces a matrix of random numbers, each row normalised to have sum 1. Parameters: `seed`.
--   "custom" : Allows any valid mutation matrix to be provided by the user. Parameters: `matrix`.
--   "trivial" : Diagonal mutation matrix with 1 on the diagonal.
--   "stepwise" : For this model alleles must be integers or decimal numbers with a single decimal, such as '17.1', indicating a microvariant. Mutation rates depend on whether transitions are within the same group or not, i.e., between integer alleles and microvariants in the latter case. Mutations also depend on the size of the mutation as modelled by the parameter `range`, the relative probability of mutating n+1 steps versus mutating n steps.
+-   `equal`: All mutations equally likely; probability `1-rate` of no
+    mutation. Parameters: `rate`.
+
+-   `proportional`: Mutation probabilities are proportional to the
+    target allele frequencies. Parameters: `rate`, `afreq`.
+
+-   `random`: This produces a matrix of random numbers, each row
+    normalised to have sum 1. Parameters: `seed`.
+
+-   `custom`: Allows any valid mutation matrix to be provided by the
+    user. Parameters: `matrix`.
+
+-   `onestep`: Applicable if all alleles are integers. Mutations are
+    allowed only to the nearest integer neighbour. Parameters: `rate`.
+
+-   `stepwise`: For this model alleles must be integers or decimal
+    numbers with a single decimal, such as ‘17.1’, indicating a
+    microvariant. Mutation rates depend on whether transitions are
+    within the same group or not, i.e., between integer alleles and
+    microvariants in the latter case. Mutations also depend on the size
+    of the mutation as modelled by the parameter `range`, the relative
+    probability of mutating n+1 steps versus mutating n steps.
+    Parameters: `rate`, `rate2`, `range`.
+
+-   `trivial`: Diagonal mutation matrix with 1 on the diagonal.
+    Parameters: None.
 
 Model properties
 ----------------
 
-Certain properties of mutation models are of particular interest - both theoretical and practical - for likelihood computations. The pedmut package provides utility functions for quickly checking whether a given model these properties:
+Certain properties of mutation models are of particular interest - both
+theoretical and practical - for likelihood computations. The pedmut
+package provides utility functions for quickly checking whether a given
+model these properties:
 
--   `isStationary(M, afreq)` : Checks if `afreq` is a right eigenvector of the mutation matrix `M`
--   `isReversible(M, afreq)` : Checks if `M` together with `afreq` form a *reversible* Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
--   `isLumpable(M, lump)` : Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the necessary and sufficient condition of *strong lumpability* of Kemeny and Snell: *Finite Markov Chains*, 1960
--   `alwaysLumpable(M)` : Checks if `M` allows lumping of any allele subset
+-   `isStationary(M, afreq)`: Checks if `afreq` is a right eigenvector
+    of the mutation matrix `M`
+
+-   `isReversible(M, afreq)`: Checks if `M` together with `afreq` form a
+    *reversible* Markov chain, i.e., that they satisfy the [detailed
+    balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
+
+-   `isLumpable(M, lump)`: Checks if `M` allows clustering (“lumping”)
+    of a given subset of alleles. This implements the necessary and
+    sufficient condition of *strong lumpability* of Kemeny and Snell:
+    *Finite Markov Chains*, 1960
+
+-   `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele
+    subset
 
 Examples
 --------
 
-The following creates a 3\*3 mutation matrix under the "equal" model:
+To produce the examples below, first load the package.
 
 ``` r
-pedmut::mutationMatrix("equal", rate = 0.1, alleles = 1:3)
+library(pedmut)
+```
+
+``` r
+mutationMatrix("equal", rate = 0.1, alleles = 1:3)
 #>      1    2    3
 #> 1 0.90 0.05 0.05
 #> 2 0.05 0.90 0.05
@@ -98,10 +158,12 @@ pedmut::mutationMatrix("equal", rate = 0.1, alleles = 1:3)
 #> Lumpable: Always
 ```
 
-The "stepwise" mutation matrix in Section 2.1.3 of Simonsson and Mostad (FSI: Genetics 2015) is obtained by
+To illustrate the `stepwise` model, we recreate the mutation matrix in
+Simonsson and Mostad (FSI:Genetics, 2015), Section 2.1.3. This is done
+as follows:
 
 ``` r
-pedmut::mutationMatrix(model = "stepwise",
+mutationMatrix(model = "stepwise",
                alleles = c("16", "17", "18", "16.1", "17.1"),
                rate = 0.003, rate2 = 0.001, range = 0.5)
 #>                16           17           18         16.1         17.1
@@ -113,8 +175,28 @@ pedmut::mutationMatrix(model = "stepwise",
 #> 
 #> Model: stepwise 
 #> Rate: 0.003 
-#> range:  0.5 
-#> rate2:  0.001 
+#> Rate2: 0.001 
+#> Range: 0.5 
+#> 
+#> Lumpable: Not always
+```
+
+A simpler version of the `stepwise` model above, is the `onestep` model,
+in which only the immediate neighbouring integers are reachable by
+mutation. This model is only applicable when all alleles are integers.
+For example:
+
+``` r
+mutationMatrix(model = "onestep",
+               alleles = c("16", "17", "18"),
+               rate = 0.04)
+#>      16   17   18
+#> 16 0.96 0.04 0.00
+#> 17 0.02 0.96 0.02
+#> 18 0.00 0.04 0.96
+#> 
+#> Model: onestep 
+#> Rate: 0.04 
 #> 
 #> Lumpable: Not always
 ```

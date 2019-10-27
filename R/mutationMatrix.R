@@ -16,16 +16,21 @@
 #' * `random` : This produces a matrix of random numbers, where each row is
 #' normalised so that it sums to 1
 #'
+#' * `onestep`: A mutation model for microsattelite markers, allowing mutations
+#' only to the nearest neighbours in the allelic ladder. For example, '10' may
+#' mutate to either '9' or '11', unless '10' is the lowest allele, in which case
+#' '11' is the only option. This model is not applicable to loci with
+#' non-integral microvariants.
+#'
+#' * `stepwise`: A common model in forensic genetics, allowing different
+#' mutation rates between integer alleles (like '16') and non-integer
+#' "microvariants" like '9.3'). Mutations also depend on the size of the
+#' mutation if the parameter 'range' differs from 1.
+#'
 #' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
-#' * `stepwise`: a common model in forensic science, allowing different mutation
-#' rates between integer alleles (like '16') and non-integer "microvariants" like
-#' '9.3'). Mutations also depend on the size of the mutation if the
-#' parameter 'range' differs from 1.
-#'
-#'
-#' @param model A string: either "custom", "equal", "proportional", "random" or
-#'   "stepwise"
+#' @param model A string: either "custom", "equal", "proportional", "random",
+#'   "stepwise" or "onestep"
 #' @param matrix When `model` is "custom", this must be a square matrix with
 #'   nonnegative real entries and row sums equal to 1
 #' @param alleles A character vector (or coercible to character) with allele
@@ -33,7 +38,7 @@
 #' @param afreq A numeric vector of allele frequencies. Required in model
 #'   "proportional"
 #' @param rate A number between 0 and 1. Required in models "equal",
-#'   "proportional", and "stepwise"
+#'   "proportional", "stepwise" and "onestep"
 #' @param seed A single number. Optional parameter in the "random" model, passed
 #'   on to `set.seed()`
 #' @param rate2 A number between 0 and 1. The mutation rate between integer
@@ -51,7 +56,7 @@
 #' @importFrom stats runif
 #' @export
 mutationMatrix = function(model = c("custom", "equal", "proportional",
-                                    "random", "trivial", "stepwise"),
+                                    "random", "onestep", "stepwise", "trivial"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
                           rate = NULL, seed = NULL, rate2 = NULL, range = NULL) {
   model = match.arg(model)
@@ -103,7 +108,7 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
     if(round(sum(afreq), 3) != 1)
       stop2("Allele frequencies must sum to 1 after rounding to 3 decimals: ", sum(afreq))
   }
-  if(model %in% c("equal", "proportional", "stepwise")) {
+  if(model %in% c("equal", "proportional", "stepwise", "onestep")) {
     if(is.null(rate))
       stop2("`rate` cannot be NULL with this model")
     if(!is_number(rate, minimum = 0))
@@ -129,7 +134,7 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   if(nall == 1)
     model = "trivial"
 
-  mutmat = matrix(ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+  mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
 
   if(model == "equal") {
     mutmat[] = rate/(nall - 1)
@@ -153,27 +158,43 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
     mutmat[] = diag(nall)
   }
   else if (model == "stepwise") {
-    numfreq <- as.numeric(alleles)
-    if (any(is.na(numfreq)))
+    alsNum = suppressWarnings(as.numeric(alleles))
+    if (any(is.na(alsNum)))
       stop2("The 'stepwise' mutation model requires all alleles to have numerical names.")
-    if (any(round(numfreq, 1) != numfreq))
+    if (any(round(alsNum, 1) != alsNum))
       stop2("Microvariants must be named as a decimal number with one decimal.")
-    microgroup <- (numfreq - round(numfreq))*10
+    microgroup = (alsNum - round(alsNum))*10
     for (i in 1:nall) {
-      microcompats <- (microgroup == microgroup[i])
+      microcompats = (microgroup == microgroup[i])
       for (j in 1:nall) {
         if (i == j) {
-          if (all(microcompats)) mutmat[i,j] <- 1 - rate
-          else if (sum(microcompats) == 1) mutmat[i,j] <- 1 - rate2
-          else mutmat[i,j] <- 1 - rate - rate2
+          if (all(microcompats)) mutmat[i,j] = 1 - rate
+          else if (sum(microcompats) == 1) mutmat[i,j] = 1 - rate2
+          else mutmat[i,j] = 1 - rate - rate2
         } else if (microcompats[j])
-          mutmat[i,j] <- range^abs(numfreq[i]-numfreq[j])
+          mutmat[i,j] = range^abs(alsNum[i] - alsNum[j])
         else
-          mutmat[i,j] <- rate2/(nall-sum(microcompats))
+          mutmat[i,j] = rate2/(nall - sum(microcompats))
       }
-      microcompats[i] <- FALSE
+      microcompats[i] = FALSE
       if (any(microcompats))
-        mutmat[i,microcompats] <- mutmat[i,microcompats]/sum(mutmat[i,microcompats]) * rate
+        mutmat[i, microcompats] = mutmat[i, microcompats]/sum(mutmat[i, microcompats]) * rate
+    }
+  }
+  else if (model == "onestep") {
+    alsNum = suppressWarnings(as.numeric(alleles))
+    if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
+      stop2("The 'stepwise' mutation model requires all alleles to be integers")
+
+    diag(mutmat) = 1 - rate
+
+    # Loop over rows
+    for(i in seq_along(alsNum)) {
+      # Columns with neighbour alleles
+      nei = abs(alsNum - alsNum[i]) == 1
+
+      # Insert either rate or rate/2
+      mutmat[i, nei] = rate/sum(nei)
     }
   }
 
