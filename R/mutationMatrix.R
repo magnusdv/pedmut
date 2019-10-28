@@ -186,12 +186,12 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
     if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
       stop2("The `onestep` mutation model requires all alleles to be integers")
 
-    diag(mutmat) = 1 - rate
-
     # Loop over rows
     for(i in seq_along(alsNum)) {
       # Columns with neighbour alleles
       nei = abs(alsNum - alsNum[i]) == 1
+
+      mutmat[i, i] = if(sum(nei) > 0) 1 - rate else 1
 
       # Insert either rate or rate/2
       mutmat[i, nei] = rate/sum(nei)
