@@ -5,14 +5,14 @@ stop2 = function(...) {
 }
 
 # Test that input is a single positive (or similar) integer.
-is_count = function(x, minimum = 1) {
+isCount = function(x, minimum = 1) {
   isTRUE(length(x) == 1 &&
            (is.integer(x) || (is.numeric(x) && x == as.integer(x))) &&
            x >= minimum)
 }
 
 # Test that input is a single number, with optional range constraints
-is_number = function(x, minimum = NA, maximum = NA) {
+isNumber = function(x, minimum = NA, maximum = NA) {
   isTRUE(length(x) == 1 &&
            is.numeric(x) &&
            (is.na(minimum) || x >= minimum) &&
