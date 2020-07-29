@@ -3,10 +3,25 @@
 pedmut
 ======
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/pedmut)](https://CRAN.R-project.org/package=pedmut)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/pedmut?color=yellow)](https://cran.r-project.org/package=pedmut)
+[![](https://cranlogs.r-pkg.org/badges/last-month/pedmut?color=yellow)](https://cran.r-project.org/package=pedmut)
+<!-- badges: end -->
+
 Installation
 ------------
 
-Install from GitHub as follows:
+To get **pedmut**, install from CRAN as follows:
+
+``` r
+install.packages("pedmut")
+```
+
+Alternatively, you can obtain the latest development version from
+GitHub:
 
 ``` r
 # install.packages("devtools")
@@ -16,38 +31,52 @@ devtools::install_github("magnusdv/pedmut")
 Introduction
 ------------
 
-The `pedmut` package aims to provide a framework for modeling mutations
-in pedigree computations. Although the package is self-contained, its
-main purpose is to be imported by other packages, like
-[pedprobr](https://github.com/magnusdv/pedprobr), calculating pedigree
-likelihoods.
+The **pedmut** package aims to provide a framework for modeling
+mutations in pedigree computations. Although the package is
+self-contained, its main purpose is to be imported by other packages,
+like [pedprobr](https://github.com/magnusdv/pedprobr) and
+[forrel](https://github.com/magnusdv/forrel), in applications involving
+pedigree likelihoods.
 
-For a simple example, consider a situation where father and son are
-homozygous for different alleles at an autosomal marker with 4 alleles
-(1,2,3,4). The following code creates the pedigree and the marker, using
-a “proportional” model for mutations, and computes the likelihood:
+To run the examples below, load **pedmut** and **pedprobr**.
 
 ``` r
+library(pedmut)
 library(pedprobr)
-#> Loading required package: pedtools
+```
 
+A simple likelihood example
+---------------------------
+
+Consider the situation shown in the figure below, where father and son
+are homozygous for different alleles at an autosomal marker with 4
+alleles (1,2,3,4). This is a Mendelian error, and gives a likelihood of
+0 unless mutations are modelled.
+
+The following code creates the pedigree and the marker, using a
+“proportional” model for mutations, and computes the likelihood.
+
+``` r
+# Create pedigree
 x = nuclearPed(father = "fa", mother = "mo", child = "boy")
+
+# Create marker with mutation model
 m = marker(x, fa = 1, boy = 2, alleles = 1:4, mutmod = "prop", rate = 0.1)
+
+# Plot
 plot(x, marker = m)
 
+# Compute likelihood
 likelihood(x, m)
 #> [1] 0.0005208333
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-pedmut-example-1.png" style="display: block; margin: auto;" />
 
-In the above code `pedmut` is involved twice: first in `marker()`,
+In the above code **pedmut** is involved twice: first in `marker()`,
 translating the arguments `mutmod = "prop"` and `rate = 0.1` into a
-complete mutation model. And secondly inside `likelihood()`, in order to
-speed up the computation by clustering the unobserved alleles 3 and 4
-into one “lump”. (The role of `pedmut` is to check that the mutation
-model allows this particular lumping, and to compute the lumped mutation
-matrix.)
+complete mutation model. And secondly inside `likelihood()`, by
+processing the mutation model in setting up the likelihood calculation.
 
 To see details about the mutation model attached to a marker, we can use
 the `mutmod()` accessor:
@@ -73,7 +102,7 @@ mutmod(m)
 Mutation models
 ---------------
 
-A mutation matrix is defined in `pedmut`, as a stochastic matrix with
+A mutation matrix is defined in **pedmut**, as a stochastic matrix with
 each row summing to 1, where the rows and columns are named with allele
 labels.
 
@@ -84,7 +113,7 @@ shortcut for producing what is typically required in practical
 applications, namely a list of *two* mutation matrices, named “male” and
 “female”.
 
-The mutations models currently implemented in `pedmut` are:
+The mutations models currently implemented in **pedmut** are:
 
 -   `equal`: All mutations equally likely; probability `1-rate` of no
     mutation. Parameters: `rate`.
@@ -117,7 +146,7 @@ Model properties
 ----------------
 
 Certain properties of mutation models are of particular interest - both
-theoretical and practical - for likelihood computations. The pedmut
+theoretical and practical - for likelihood computations. The **pedmut**
 package provides utility functions for quickly checking whether a given
 model these properties:
 
@@ -136,14 +165,10 @@ model these properties:
 -   `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele
     subset
 
-Examples
---------
+Further examples
+----------------
 
-To produce the examples below, first load the package.
-
-``` r
-library(pedmut)
-```
+An `equal` model with rate 0.1:
 
 ``` r
 mutationMatrix("equal", rate = 0.1, alleles = 1:3)
@@ -184,7 +209,6 @@ mutationMatrix(model = "stepwise",
 A simpler version of the `stepwise` model above, is the `onestep` model,
 in which only the immediate neighbouring integers are reachable by
 mutation. This model is only applicable when all alleles are integers.
-For example:
 
 ``` r
 mutationMatrix(model = "onestep",
