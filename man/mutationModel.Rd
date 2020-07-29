@@ -5,8 +5,16 @@
 \alias{validateMutationModel}
 \title{Mutation models}
 \usage{
-mutationModel(model, alleles = NULL, afreq = NULL, matrix = NULL,
-  rate = NULL, rate2 = NULL, range = NULL, seed = NULL)
+mutationModel(
+  model,
+  alleles = NULL,
+  afreq = NULL,
+  matrix = NULL,
+  rate = NULL,
+  rate2 = NULL,
+  range = NULL,
+  seed = NULL
+)
 
 validateMutationModel(mutmod, alleles = NULL)
 }

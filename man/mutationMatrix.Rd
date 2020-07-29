@@ -5,10 +5,17 @@
 \alias{validateMutationMatrix}
 \title{Mutation matrix}
 \usage{
-mutationMatrix(model = c("custom", "equal", "proportional", "random",
-  "onestep", "stepwise", "trivial"), matrix = NULL, alleles = NULL,
-  afreq = NULL, rate = NULL, seed = NULL, rate2 = NULL,
-  range = NULL)
+mutationMatrix(
+  model = c("custom", "equal", "proportional", "random", "onestep", "stepwise",
+    "trivial"),
+  matrix = NULL,
+  alleles = NULL,
+  afreq = NULL,
+  rate = NULL,
+  seed = NULL,
+  rate2 = NULL,
+  range = NULL
+)
 
 validateMutationMatrix(mutmat, alleles = NULL)
 }
@@ -40,7 +47,7 @@ steps versus mutating n steps. Required  in the "stepwise" model}
 \item{mutmat}{An object of class \code{mutationMatrix}}
 }
 \value{
-A square matrix with entries in \code{[0, 1]}, with the allele labels as
+A square matrix with entries in \verb{[0, 1]}, with the allele labels as
 both colnames and rownames.
 }
 \description{

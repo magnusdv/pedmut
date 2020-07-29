@@ -2,6 +2,8 @@
 
 S3method(print,mutationMatrix)
 S3method(print,mutationModel)
+S3method(toString,mutationMatrix)
+S3method(toString,mutationModel)
 export(alwaysLumpable)
 export(isLumpable)
 export(isReversible)

@@ -316,6 +316,21 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
   }
 }
 
+#' @export
+toString.mutationMatrix = function(x, ...) {
+  attrs = attributes(x)
+  mod = attrs$model
+  param = switch(mod,
+                 equal =, proportional =, onestep = paste("rate =", attrs$rate),
+                 random = paste("seed =", attrs$seed %||% "NULL"),
+                 stepwise = sprintf("rate = %g, rate2 = %g, range = %g", attrs$rate, attrs$rate2, attrs$range),
+                 NULL)
+  if(!is.null(param))
+    mod = sprintf("%s, %s", mod, param)
+
+  mod
+}
+
 isMutationMatrix = function(x) {
   class(x) == "mutationMatrix"
 }

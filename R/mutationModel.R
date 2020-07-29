@@ -188,6 +188,14 @@ print.mutationModel = function(x, ...) {
   invisible(x)
 }
 
+#' @export
+toString.mutationModel = function(x, ...) {
+  if(attr(x, "sexEqual"))
+    toString(x$female)
+  else
+    sprintf("%s (male); %s (female)", toString(x$male), toString(x$female))
+}
+
 isMutationModel = function(x) {
   class(x) ==  "mutationModel"
 }
