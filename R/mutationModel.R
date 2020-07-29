@@ -88,7 +88,7 @@ mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
     rate = validateSingleInput(rate, "numeric")
     rate2 = validateSingleInput(rate2, "numeric")
     range = validateSingleInput(range, "numeric")
-    seed = validateSingleInput(seed, "integer")
+    seed = validateSingleInput(seed, "numeric")
 
     female = mutationMatrix(model = model$female, alleles = alleles,
                             afreq = afreq, matrix = matrix$female,
