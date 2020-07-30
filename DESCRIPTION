@@ -11,7 +11,9 @@ Description: A collection of functions for modeling mutations in pedigrees with
     of Kemeny and Snell (1976), ISBN:0387901922.
 Depends: R (>= 3.5.0)
 License: GPL-3
+URL: https://github.com/magnusdv/pedmut
 Encoding: UTF-8
+Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
