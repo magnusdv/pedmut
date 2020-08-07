@@ -8,7 +8,6 @@ This is used in `pedtools::print.marker()`.
 ## Other changes
 
 * Updated README.
-
 * Minor bug fixes.
 
 

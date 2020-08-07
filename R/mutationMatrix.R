@@ -16,7 +16,7 @@
 #' * `random` : This produces a matrix of random numbers, where each row is
 #' normalised so that it sums to 1
 #'
-#' * `onestep`: A mutation model for microsattelite markers, allowing mutations
+#' * `onestep`: A mutation model for microsatellite markers, allowing mutations
 #' only to the nearest neighbours in the allelic ladder. For example, '10' may
 #' mutate to either '9' or '11', unless '10' is the lowest allele, in which case
 #' '11' is the only option. This model is not applicable to loci with
