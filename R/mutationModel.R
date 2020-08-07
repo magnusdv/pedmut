@@ -181,8 +181,8 @@ print.mutationModel = function(x, ...) {
   else {
     cat("Female mutation matrix:\n")
     print(x$female, ...)
-
-    cat("\nMale mutation matrix:\n")
+    cat("* * * * * * * * * * *\n")
+    cat("Male mutation matrix:\n")
     print(x$male, ...)
   }
   invisible(x)
