@@ -159,8 +159,8 @@ model these properties:
 
 -   `isLumpable(M, lump)`: Checks if `M` allows clustering (“lumping”)
     of a given subset of alleles. This implements the necessary and
-    sufficient condition of *strong lumpability* of Kemeny and Snell:
-    *Finite Markov Chains*, 1960
+    sufficient condition of *strong lumpability* of Kemeny and Snell
+    (*Finite Markov Chains*, 1976)
 
 -   `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele
     subset
@@ -184,7 +184,7 @@ mutationMatrix("equal", rate = 0.1, alleles = 1:3)
 ```
 
 To illustrate the `stepwise` model, we recreate the mutation matrix in
-Simonsson and Mostad (FSI:Genetics, 2015), Section 2.1.3. This is done
+Section 2.1.3 of Simonsson and Mostad (FSI:Genetics, 2015). This is done
 as follows:
 
 ``` r

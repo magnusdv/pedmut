@@ -102,7 +102,7 @@ Certain properties of mutation models are of particular interest - both theoreti
 
 * `isReversible(M, afreq)`: Checks if `M` together with `afreq` form a _reversible_ Markov chain, i.e., that they satisfy the [detailed balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
 
-* `isLumpable(M, lump)`: Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the necessary and sufficient condition of _strong lumpability_ of Kemeny and Snell: _Finite Markov Chains_, 1960
+* `isLumpable(M, lump)`: Checks if `M` allows clustering ("lumping") of a given subset of alleles. This implements the necessary and sufficient condition of _strong lumpability_ of Kemeny and Snell (_Finite Markov Chains_, 1976)
 
 * `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele subset
 
@@ -113,7 +113,7 @@ An `equal` model with rate 0.1:
 mutationMatrix("equal", rate = 0.1, alleles = 1:3)
 ```
 
-To illustrate the `stepwise` model, we recreate the mutation matrix in Simonsson and Mostad (FSI:Genetics, 2015), Section 2.1.3. This is done as follows:
+To illustrate the `stepwise` model, we recreate the mutation matrix in Section 2.1.3 of Simonsson and Mostad (FSI:Genetics, 2015). This is done as follows:
 
 ```{r example2}
 mutationMatrix(model = "stepwise",
