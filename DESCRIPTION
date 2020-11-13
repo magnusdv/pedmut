@@ -3,7 +3,7 @@ Title: Mutation Models for Pedigree Likelihood Computations
 Version: 0.2.0.9000
 Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
     role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
-Description: A collection of functions for modeling mutations in pedigrees with 
+Description: A collection of functions for modelling mutations in pedigrees with 
     marker data, as used e.g. in likelihood computations with microsatellite data.
     Implemented models include proportional and stepwise models, as well as random 
     models for experimental work, and custom models allowing the user to apply any 
