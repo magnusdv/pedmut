@@ -1,7 +1,7 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-pedmut
-======
+# pedmut
 
 <!-- badges: start -->
 
@@ -11,57 +11,65 @@ status](https://www.r-pkg.org/badges/version/pedmut)](https://CRAN.R-project.org
 [![](https://cranlogs.r-pkg.org/badges/last-month/pedmut?color=yellow)](https://cran.r-project.org/package=pedmut)
 <!-- badges: end -->
 
-Installation
-------------
+## Introduction
 
-To get **pedmut**, install from CRAN as follows:
+The aim of **pedmut** to provide a framework for modelling mutations in
+pedigree computations. It is a core member of the [**ped
+suite**](https://magnusdv.github.io/pedsuite/) collection of packages
+for pedigree analysis in R. Although **pedmut** is self-contained, its
+main purpose is to be imported by other **ped suite** packages, in
+particular [pedprobr](https://github.com/magnusdv/pedprobr) (marker
+probabilities and pedigree likelihoods) and
+[forrel](https://github.com/magnusdv/forrel) (forensic pedigree
+analysis).
+
+For the theoretical background of mutation models and their properties
+(stationarity, reversibility, lumpability), I recommend Chapter 5 of
+[Pedigree analysis in
+R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2),
+and the references therein.
+
+## Installation
 
 ``` r
+# The easiest way to get `pedmut` is to install the entire `ped suite`:
+install.packages("pedsuite")
+
+# Alternatively, you can install just `pedmut`:
 install.packages("pedmut")
-```
 
-Alternatively, you can obtain the latest development version from
-GitHub:
-
-``` r
+# If you need the latest development version, install it from GitHub:
 # install.packages("devtools")
 devtools::install_github("magnusdv/pedmut")
 ```
 
-Introduction
-------------
+## A simple likelihood example
 
-The **pedmut** package aims to provide a framework for modeling
-mutations in pedigree computations. Although the package is
-self-contained, its main purpose is to be imported by other packages,
-like [pedprobr](https://github.com/magnusdv/pedprobr) and
-[forrel](https://github.com/magnusdv/forrel), in applications involving
-pedigree likelihoods.
-
-To run the examples below, load **pedmut** and **pedprobr**.
+The examples to follow require the packages **pedmut**, **pedprobr** and
+**pedtools**. Since all of these are core **ped suite** packages, they
+are all loaded by:
 
 ``` r
-library(pedmut)
-library(pedprobr)
+library(pedsuite)
 ```
 
-A simple likelihood example
----------------------------
+The figure below shows a father and son who are homozygous for different
+alleles. We assume that the locus is an autosomal marker with 4 alleles,
+labelled 1, 2, 3, and 4. The data clearly constitutes a *Mendelian
+error*, and would give a likelihood of 0 unless mutations are modelled.
 
-Consider the situation shown in the figure below, where father and son
-are homozygous for different alleles at an autosomal marker with 4
-alleles (1,2,3,4). This is a Mendelian error, and gives a likelihood of
-0 unless mutations are modelled.
+<img src="man/figures/README-ex1-ped-1.png" style="display: block; margin: auto;" />
 
-The following code creates the pedigree and the marker, using a
-“proportional” model for mutations, and computes the likelihood.
+The following code specifies a “proportional” mutation model (see below
+for details) for this marker and compute the pedigree likelihood under
+this model.
 
 ``` r
 # Create pedigree
 x = nuclearPed(father = "fa", mother = "mo", child = "boy")
 
 # Create marker with mutation model
-m = marker(x, fa = 1, boy = 2, alleles = 1:4, mutmod = "prop", rate = 0.1)
+m = marker(x, fa = "1/1", boy = "2/2", alleles = 1:4, mutmod = "prop", rate = 0.1)
 
 # Plot
 plot(x, marker = m)
@@ -71,12 +79,11 @@ likelihood(x, m)
 #> [1] 0.0005208333
 ```
 
-<img src="man/figures/README-pedmut-example-1.png" style="display: block; margin: auto;" />
-
-In the above code **pedmut** is involved twice: first in `marker()`,
-translating the arguments `mutmod = "prop"` and `rate = 0.1` into a
-complete mutation model. And secondly inside `likelihood()`, by
-processing the mutation model in setting up the likelihood calculation.
+Although invisible to the end user, the **pedmut** package is involved
+twice in the above code: first in `marker()`, translating the arguments
+`mutmod = "prop"` and `rate = 0.1` into a complete mutation model. And
+secondly inside `likelihood()`, by processing the mutation model in
+setting up the likelihood calculation.
 
 To see details about the mutation model attached to a marker, we can use
 the `mutmod()` accessor:
@@ -99,12 +106,10 @@ mutmod(m)
 #> Lumpable: Always
 ```
 
-Mutation models
----------------
+## Mutation models
 
-A mutation matrix is defined in **pedmut**, as a stochastic matrix with
-each row summing to 1, where the rows and columns are named with allele
-labels.
+A mutation matrix, in **pedmut**, is a stochastic matrix with each row
+summing to 1, where the rows and columns are named with allele labels.
 
 Two central functions of package are `mutationMatrix()` and
 `mutationModel()`. The former of these constructs a single mutation
@@ -142,8 +147,7 @@ The mutations models currently implemented in **pedmut** are:
 -   `trivial`: Diagonal mutation matrix with 1 on the diagonal.
     Parameters: None.
 
-Model properties
-----------------
+## Model properties
 
 Certain properties of mutation models are of particular interest - both
 theoretical and practical - for likelihood computations. The **pedmut**
@@ -165,8 +169,7 @@ model these properties:
 -   `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele
     subset
 
-Further examples
-----------------
+## Further examples
 
 An `equal` model with rate 0.1:
 
