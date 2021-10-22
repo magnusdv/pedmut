@@ -1,4 +1,3 @@
-context("properties of mutation matrices")
 
 test_that("equal model is station/revers only for equal freqs", {
   mutmat = mutationMatrix(alleles = 1:3, model = "equal", rate = 0.1)

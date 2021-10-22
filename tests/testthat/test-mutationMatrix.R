@@ -1,4 +1,3 @@
-context("creation of mutation matrices")
 
 test_that("bad inputs are caught", {
   expect_error(mutationMatrix(),

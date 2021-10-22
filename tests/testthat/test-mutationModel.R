@@ -1,4 +1,3 @@
-context("creation of mutation models")
 
 test_that("mutation models are validated", {
   alleles = 1:3

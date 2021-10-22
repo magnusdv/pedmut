@@ -1,4 +1,3 @@
-context("Allele lumping")
 
 test_that("lumping works for custum matrix", {
   m1 = mutationMatrix("custom", matrix = matrix(1/3, ncol=3, nrow=3), alleles=1:3)
