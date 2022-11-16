@@ -152,10 +152,9 @@ validateMatrixInput = function(x) {
 #' @rdname mutationModel
 #' @export
 validateMutationModel = function(mutmod, alleles = NULL) {
-  stopifnot(is.list(mutmod),
-            length(mutmod) == 2,
-            setequal(names(mutmod), c("male", "female")),
-            inherits(mutmod, "mutationModel"))
+  if(!is.list(mutmod) || length(mutmod) != 2 || !setequal(names(mutmod), c("male", "female"))) {
+    stop2("`mutmod` must be a list with elements 'male' and 'female'")
+  }
 
   male = mutmod$male
   female = mutmod$female
@@ -166,8 +165,11 @@ validateMutationModel = function(mutmod, alleles = NULL) {
   validateMutationMatrix(male, alleles = alleles)
   validateMutationMatrix(female, alleles = alleles)
 
-  stopifnot(identical(attr(mutmod, "sexEqual"), identical(male, female)),
-            identical(attr(male, 'afreq'), attr(female, 'afreq')))
+  if(attr(mutmod, "sexEqual") && !identical(male, female))
+    stop2("Mutation model attribute `sexEqual` is falsely set to TRUE")
+
+  if(!identical(attr(male, 'afreq'), attr(female, 'afreq')))
+    stop2("Mutation model attribute `afreq` differs for males and females")
 
   mutmod
 }
@@ -205,24 +207,27 @@ enforceAlleleOrder = function(m, alleles) {
   if(is.null(alleles))
     return(m)
 
-  stopifnot(isMutationModel(m) || isMutationMatrix(m),
-            !anyDuplicated(alleles))
-
   if(isMutationModel(m)) {
     m$male = enforceAlleleOrder(m$male, alleles)
     m$female = enforceAlleleOrder(m$female, alleles)
     return(m)
   }
 
-  stopifnot(setequal(alleles, rownames(m)),
-            setequal(alleles, colnames(m)))
+  if(!isMutationMatrix(m))
+    stop2("Expected a mutation matrix, not a: ", class(m))
 
-  # Just to make sure
+  nms = dimnames(m)
   alleles = as.character(alleles)
 
   # If already correct order - return
-  if(identical(alleles, rownames(m)))
+  if(identical(alleles, nms[[1]]))
     return(m)
+
+  if(!setequal(alleles, nms[[1]] || !setequal(alleles, nms[[2]])))
+    stop2("Alleles differ from names of mutation matrix")
+
+  if(length(alleles) > length(nms[[1]]))
+    stop2("Duplicated alleles indicated: ", alleles[duplicated[alleles]])
 
   # Permute
   new_m = m[alleles, alleles]
