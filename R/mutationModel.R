@@ -163,13 +163,20 @@ validateMutationModel = function(mutmod, alleles = NULL) {
     alleles = colnames(male)
 
   validateMutationMatrix(male, alleles = alleles)
-  validateMutationMatrix(female, alleles = alleles)
 
-  if(attr(mutmod, "sexEqual") && !identical(male, female))
+  sexEq = attr(mutmod, "sexEqual")
+  if(is.null(sexEq))
+    stop2("Mutation model attribute `sexEqual` is not set")
+
+  if(sexEq && !identical(male, female))
     stop2("Mutation model attribute `sexEqual` is falsely set to TRUE")
 
-  if(!identical(attr(male, 'afreq'), attr(female, 'afreq')))
-    stop2("Mutation model attribute `afreq` differs for males and females")
+  if(!sexEq) {
+    validateMutationMatrix(female, alleles = alleles)
+
+    if(!identical(attr(male, 'afreq'), attr(female, 'afreq')))
+      stop2("Mutation model attribute `afreq` differs for males and females")
+  }
 
   mutmod
 }
