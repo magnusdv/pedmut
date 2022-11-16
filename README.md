@@ -45,61 +45,64 @@ devtools::install_github("magnusdv/pedmut")
 
 ## A simple likelihood example
 
-The examples to follow require the packages **pedmut**, **pedprobr** and
-**pedtools**. Since all of these are core **ped suite** packages, they
-are all loaded by:
+The examples below require the packages **pedmut**, **pedprobr** and
+**pedtools**. While all of these belong to the **ped suite** ecosystem,
+only the latter two are core packages.
 
 ``` r
 library(pedsuite)
+library(pedmut)
 ```
 
 The figure below shows a father and son who are homozygous for different
-alleles. We assume that the locus is an autosomal marker with 4 alleles,
-labelled 1, 2, 3, and 4. The data clearly constitutes a *Mendelian
-error*, and would give a likelihood of 0 unless mutations are modelled.
-
-<img src="man/figures/README-ex1-ped-1.png" style="display: block; margin: auto;" />
-
-The following code specifies a “proportional” mutation model (see below
-for details) for this marker and compute the pedigree likelihood under
-this model.
+alleles. We assume that the locus is an autosomal marker with two
+alleles, labelled 1 and 2.
 
 ``` r
 # Create pedigree
 x = nuclearPed(father = "fa", mother = "mo", child = "boy")
 
-# Create marker with mutation model
-m = marker(x, fa = "1/1", boy = "2/2", alleles = 1:4, mutmod = "prop", rate = 0.1)
+# Add marker
+x = addMarker(x, fa = "1/1", boy = "2/2")
 
-# Plot
-plot(x, marker = m)
-
-# Compute likelihood
-likelihood(x, m)
-#> [1] 0.0005208333
+# Plot with genotypes
+plot(x, marker = 1)
 ```
 
-Although invisible to the end user, the **pedmut** package is involved
-twice in the above code: first in `marker()`, translating the arguments
-`mutmod = "prop"` and `rate = 0.1` into a complete mutation model. And
-secondly inside `likelihood()`, by processing the mutation model in
-setting up the likelihood calculation.
+<img src="man/figures/README-ex1-ped-1.png" style="display: block; margin: auto;" />
 
-To see details about the mutation model attached to a marker, we can use
-the `mutmod()` accessor:
+The data clearly constitutes a *Mendelian error*, and gives a likelihood
+of 0 without mutation modelling:
 
 ``` r
-mutmod(m)
+likelihood(x, marker = 1)
+#> [1] 0
+```
+
+The following code sets a simple mutation model and recomputes the
+pedigree likelihood.
+
+``` r
+x2 = setMutationModel(x, marker = 1, model = "equal", rate = 0.1)
+
+likelihood(x2, marker = 1)
+#> [1] 0.0125
+```
+
+Under the mutation model, the combination of genotypes is no longer
+impossible, yielding a non-zero likelihood. To see details about the
+mutation model, we can use the `mutmod()` accessor:
+
+``` r
+mutmod(x2, marker = 1)
 #> Unisex mutation matrix:
-#>            1          2          3          4
-#> 1 0.90000000 0.03333333 0.03333333 0.03333333
-#> 2 0.03333333 0.90000000 0.03333333 0.03333333
-#> 3 0.03333333 0.03333333 0.90000000 0.03333333
-#> 4 0.03333333 0.03333333 0.03333333 0.90000000
+#>     1   2
+#> 1 0.9 0.1
+#> 2 0.1 0.9
 #> 
-#> Model: proportional 
+#> Model: equal 
 #> Rate: 0.1 
-#> Frequencies: 0.25, 0.25, 0.25, 0.25 
+#> Frequencies: 0.5, 0.5 
 #> 
 #> Stationary: Yes 
 #> Reversible: Yes 
@@ -120,32 +123,31 @@ applications, namely a list of *two* mutation matrices, named “male” and
 
 The mutations models currently implemented in **pedmut** are:
 
--   `equal`: All mutations equally likely; probability `1-rate` of no
-    mutation. Parameters: `rate`.
+- `equal`: All mutations equally likely; probability `1-rate` of no
+  mutation. Parameters: `rate`.
 
--   `proportional`: Mutation probabilities are proportional to the
-    target allele frequencies. Parameters: `rate`, `afreq`.
+- `proportional`: Mutation probabilities are proportional to the target
+  allele frequencies. Parameters: `rate`, `afreq`.
 
--   `random`: This produces a matrix of random numbers, each row
-    normalised to have sum 1. Parameters: `seed`.
+- `random`: This produces a matrix of random numbers, each row
+  normalised to have sum 1. Parameters: `seed`.
 
--   `custom`: Allows any valid mutation matrix to be provided by the
-    user. Parameters: `matrix`.
+- `custom`: Allows any valid mutation matrix to be provided by the user.
+  Parameters: `matrix`.
 
--   `onestep`: Applicable if all alleles are integers. Mutations are
-    allowed only to the nearest integer neighbour. Parameters: `rate`.
+- `onestep`: Applicable if all alleles are integers. Mutations are
+  allowed only to the nearest integer neighbour. Parameters: `rate`.
 
--   `stepwise`: For this model alleles must be integers or decimal
-    numbers with a single decimal, such as ‘17.1’, indicating a
-    microvariant. Mutation rates depend on whether transitions are
-    within the same group or not, i.e., between integer alleles and
-    microvariants in the latter case. Mutations also depend on the size
-    of the mutation as modelled by the parameter `range`, the relative
-    probability of mutating n+1 steps versus mutating n steps.
-    Parameters: `rate`, `rate2`, `range`.
+- `stepwise`: For this model alleles must be integers or decimal numbers
+  with a single decimal, such as ‘17.1’, indicating a microvariant.
+  Mutation rates depend on whether transitions are within the same group
+  or not, i.e., between integer alleles and microvariants in the latter
+  case. Mutations also depend on the size of the mutation as modelled by
+  the parameter `range`, the relative probability of mutating n+1 steps
+  versus mutating n steps. Parameters: `rate`, `rate2`, `range`.
 
--   `trivial`: Diagonal mutation matrix with 1 on the diagonal.
-    Parameters: None.
+- `trivial`: Diagonal mutation matrix with 1 on the diagonal.
+  Parameters: None.
 
 ## Model properties
 
@@ -154,20 +156,19 @@ theoretical and practical - for likelihood computations. The **pedmut**
 package provides utility functions for quickly checking whether a given
 model these properties:
 
--   `isStationary(M, afreq)`: Checks if `afreq` is a right eigenvector
-    of the mutation matrix `M`
+- `isStationary(M, afreq)`: Checks if `afreq` is a right eigenvector of
+  the mutation matrix `M`
 
--   `isReversible(M, afreq)`: Checks if `M` together with `afreq` form a
-    *reversible* Markov chain, i.e., that they satisfy the [detailed
-    balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
+- `isReversible(M, afreq)`: Checks if `M` together with `afreq` form a
+  *reversible* Markov chain, i.e., that they satisfy the [detailed
+  balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
 
--   `isLumpable(M, lump)`: Checks if `M` allows clustering (“lumping”)
-    of a given subset of alleles. This implements the necessary and
-    sufficient condition of *strong lumpability* of Kemeny and Snell
-    (*Finite Markov Chains*, 1976)
+- `isLumpable(M, lump)`: Checks if `M` allows clustering (“lumping”) of
+  a given subset of alleles. This implements the necessary and
+  sufficient condition of *strong lumpability* of Kemeny and Snell
+  (*Finite Markov Chains*, 1976)
 
--   `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele
-    subset
+- `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele subset
 
 ## Further examples
 
@@ -191,8 +192,7 @@ Section 2.1.3 of Simonsson and Mostad (FSI:Genetics, 2015). This is done
 as follows:
 
 ``` r
-mutationMatrix(model = "stepwise",
-               alleles = c("16", "17", "18", "16.1", "17.1"),
+mutationMatrix(model = "stepwise", alleles = c("16", "17", "18", "16.1", "17.1"),
                rate = 0.003, rate2 = 0.001, range = 0.5)
 #>                16           17           18         16.1         17.1
 #> 16   0.9960000000 0.0020000000 0.0010000000 0.0005000000 0.0005000000
@@ -214,9 +214,7 @@ in which only the immediate neighbouring integers are reachable by
 mutation. This model is only applicable when all alleles are integers.
 
 ``` r
-mutationMatrix(model = "onestep",
-               alleles = c("16", "17", "18"),
-               rate = 0.04)
+mutationMatrix(model = "onestep", alleles = c("16", "17", "18"), rate = 0.04)
 #>      16   17   18
 #> 16 0.96 0.04 0.00
 #> 17 0.02 0.96 0.02
