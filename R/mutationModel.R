@@ -223,7 +223,7 @@ enforceAlleleOrder = function(m, alleles) {
   if(identical(alleles, nms[[1]]))
     return(m)
 
-  if(!setequal(alleles, nms[[1]] || !setequal(alleles, nms[[2]])))
+  if(!setequal(alleles, nms[[1]]) || !setequal(alleles, nms[[2]]))
     stop2("Alleles differ from names of mutation matrix")
 
   if(length(alleles) > length(nms[[1]]))
