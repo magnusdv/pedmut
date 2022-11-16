@@ -78,11 +78,13 @@ isLumpable = function(mutmat, lump) {  # TODO: Make S3 methods
 #' @export
 alwaysLumpable = function(mutmat) {
   N = dim(mutmat)[1L]
-  if(N == 1) return(FALSE)
+  if(N == 1)
+    return(FALSE)
+
   offdiag = mutmat[col(mutmat) != row(mutmat)]
   dim(offdiag) = c(N - 1, N)
-  test = all.equal(as.numeric(offdiag),
-                   rep(offdiag[1,], each = N-1),
-                   check.attributes = F)
-  isTRUE(test)
+
+  # Kemeny & Snell criterion
+
+  all(abs(as.numeric(offdiag) - rep(offdiag[1,], each = N-1)) < sqrt(.Machine$double.eps))
 }
