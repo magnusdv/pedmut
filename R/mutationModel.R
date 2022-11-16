@@ -27,8 +27,9 @@
 #'   details.
 #' @param range A positive number, or a list of two (named "female" and "male").
 #'   Required in the "stepwise" model; see [mutationMatrix()] for details.
-#' @param seed An integer, or a list of two (named "female" and "male")
-#' @param mutmod A `mutationModel` object
+#' @param seed An integer, or a list of two (named "female" and "male").
+#' @param validate A logical, by default TRUE.
+#' @param mutmod A `mutationModel` object.
 #'
 #' @return An object of class `mutationModel`. This is a list of two
 #'   `mutationMatrix` objects, named "female" and "male", and the following
@@ -65,7 +66,8 @@
 #'
 #' @export
 mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
-                         rate = NULL, rate2 = NULL, range = NULL, seed = NULL) {
+                         rate = NULL, rate2 = NULL, range = NULL, seed = NULL,
+                         validate = TRUE) {
 
   if(isMutationModel(model)) {
     mod = enforceAlleleOrder(model, alleles)
@@ -116,7 +118,10 @@ mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
   mutmod = structure(mod, sexEqual = sexEqual, alwaysLumpable = lumpable,
                      class = "mutationModel")
 
-  validateMutationModel(mutmod)
+  if(validate)
+    validateMutationModel(mutmod)
+
+  mutmod
 }
 
 validateSingleInput = function(x, mode) {

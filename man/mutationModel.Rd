@@ -13,7 +13,8 @@ mutationModel(
   rate = NULL,
   rate2 = NULL,
   range = NULL,
-  seed = NULL
+  seed = NULL,
+  validate = TRUE
 )
 
 validateMutationModel(mutmod, alleles = NULL)
@@ -46,9 +47,11 @@ details.}
 \item{range}{A positive number, or a list of two (named "female" and "male").
 Required in the "stepwise" model; see \code{\link[=mutationMatrix]{mutationMatrix()}} for details.}
 
-\item{seed}{An integer, or a list of two (named "female" and "male")}
+\item{seed}{An integer, or a list of two (named "female" and "male").}
 
-\item{mutmod}{A \code{mutationModel} object}
+\item{validate}{A logical, by default TRUE.}
+
+\item{mutmod}{A \code{mutationModel} object.}
 }
 \value{
 An object of class \code{mutationModel}. This is a list of two
