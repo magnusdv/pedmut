@@ -264,7 +264,7 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
   if(any(mutmat > 1))
     stop2("Entries exceeding 1 found in mutation matrix: ", mutmat[mutmat > 1])
 
-  rs = rowSums(mutmat)
+  rs = .rowSums(mutmat, dm[1], dm[1])
   if (any(round(rs, 3) != 1)) {
     print(rowSums(mutmat))
     stop2("Rows which do not sum to 1 (after rounding to 3 decimal places): ",
