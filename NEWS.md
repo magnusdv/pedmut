@@ -1,3 +1,10 @@
+# pedmut 0.4.0
+
+## New features
+
+* `mutationModel()` gains a new parameter `validate`.
+* Various code improvements in `validateMutationModel()` and `validateMutationMatrix()`, making them significantly faster.
+
 # pedmut 0.3.0
 
 This is maintenance release with mostly minor changes.
