@@ -13,15 +13,16 @@ status](https://www.r-pkg.org/badges/version/pedmut)](https://CRAN.R-project.org
 
 ## Introduction
 
-The aim of **pedmut** to provide a framework for modelling mutations in
-pedigree computations. It is a core member of the [**ped
-suite**](https://magnusdv.github.io/pedsuite/) collection of packages
-for pedigree analysis in R. Although **pedmut** is self-contained, its
-main purpose is to be imported by other **ped suite** packages, in
-particular [pedprobr](https://github.com/magnusdv/pedprobr) (marker
-probabilities and pedigree likelihoods) and
-[forrel](https://github.com/magnusdv/forrel) (forensic pedigree
-analysis).
+The **pedmut** package is part of the [**ped
+suite**](https://magnusdv.github.io/pedsuite/) ecosystem for pedigree
+analysis in R. Its aim is to provide a framework for modelling mutations
+in pedigree computations.
+
+Although **pedmut** is self-contained, its main purpose is to be
+imported by other **ped suite** packages, like
+[pedprobr](https://github.com/magnusdv/pedprobr) (marker probabilities
+and pedigree likelihoods), [forrel](https://github.com/magnusdv/forrel)
+(forensic pedigree analysis) and [dvir](https://github.com/thoree/dvir).
 
 For the theoretical background of mutation models and their properties
 (stationarity, reversibility, lumpability), I recommend Chapter 5 of
@@ -45,9 +46,9 @@ devtools::install_github("magnusdv/pedmut")
 
 ## A simple likelihood example
 
-The examples below require the packages **pedmut**, **pedprobr** and
-**pedtools**. While all of these belong to the **ped suite** ecosystem,
-only the latter two are core packages.
+The examples below require the packages **pedtools** and **pedprobr** in
+addition to **pedmut**. The first two are core members of the ped suite
+and can be loaded collectively with `library(pedsuite)`.
 
 ``` r
 library(pedsuite)
@@ -111,17 +112,16 @@ mutmod(x2, marker = 1)
 
 ## Mutation models
 
-A mutation matrix, in **pedmut**, is a stochastic matrix with each row
+A mutation matrix in **pedmut** is a stochastic matrix, with each row
 summing to 1, where the rows and columns are named with allele labels.
 
 Two central functions of package are `mutationMatrix()` and
-`mutationModel()`. The former of these constructs a single mutation
-matrix according to various model specifications. The latter is a
-shortcut for producing what is typically required in practical
-applications, namely a list of *two* mutation matrices, named “male” and
-“female”.
+`mutationModel()`. The first constructs a single mutation matrix
+according to various model specifications. The second produces what is
+typically required in applications, namely a list of *two* mutation
+matrices, named “male” and “female”.
 
-The mutations models currently implemented in **pedmut** are:
+The mutation models currently implemented in **pedmut** are:
 
 - `equal`: All mutations equally likely; probability `1-rate` of no
   mutation. Parameters: `rate`.
@@ -151,39 +151,59 @@ The mutations models currently implemented in **pedmut** are:
 
 ## Model properties
 
-Certain properties of mutation models are of particular interest - both
-theoretical and practical - for likelihood computations. The **pedmut**
-package provides utility functions for quickly checking whether a given
-model these properties:
+Several properties of mutation models are of interest (both theoretical
+and practical) for likelihood computations. The **pedmut** package
+provides utility functions for quickly checking these:
 
 - `isStationary(M, afreq)`: Checks if `afreq` is a right eigenvector of
-  the mutation matrix `M`
+  the mutation matrix `M`. Stationary models have the desirable property
+  that allele frequencies don’t change across generations.
 
 - `isReversible(M, afreq)`: Checks if `M` together with `afreq` form a
   *reversible* Markov chain, i.e., that they satisfy the [detailed
-  balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion
+  balance](https://en.wikipedia.org/wiki/Detailed_balance) criterion.
 
 - `isLumpable(M, lump)`: Checks if `M` allows clustering (“lumping”) of
   a given subset of alleles. This implements the necessary and
   sufficient condition of *strong lumpability* of Kemeny and Snell
-  (*Finite Markov Chains*, 1976)
+  (*Finite Markov Chains*, 1976).
 
-- `alwaysLumpable(M)`: Checks if `M` allows lumping of any allele subset
+- `alwaysLumpable(M)`: Checks if `M` allows lumping of *any* allele
+  subset.
 
 ## Further examples
 
 An `equal` model with rate 0.1:
 
 ``` r
-mutationMatrix("equal", rate = 0.1, alleles = 1:3)
-#>      1    2    3
-#> 1 0.90 0.05 0.05
-#> 2 0.05 0.90 0.05
-#> 3 0.05 0.05 0.90
+mutationMatrix("equal", rate = 0.1, alleles = c("a", "b", "c"))
+#>      a    b    c
+#> a 0.90 0.05 0.05
+#> b 0.05 0.90 0.05
+#> c 0.05 0.05 0.90
 #> 
 #> Model: equal 
 #> Rate: 0.1 
 #> 
+#> Lumpable: Always
+```
+
+Next, a `proportional` model with rate 0.1. Note that this model depends
+on the allele frequencies.
+
+``` r
+mutationMatrix("prop", rate = 0.1, alleles = c("a", "b", "c"), afreq = c(0.7, 0.2, 0.1))
+#>            a          b          c
+#> a 0.93478261 0.04347826 0.02173913
+#> b 0.15217391 0.82608696 0.02173913
+#> c 0.15217391 0.04347826 0.80434783
+#> 
+#> Model: proportional 
+#> Rate: 0.1 
+#> Frequencies: 0.7, 0.2, 0.1 
+#> 
+#> Stationary: Yes 
+#> Reversible: Yes 
 #> Lumpable: Always
 ```
 
