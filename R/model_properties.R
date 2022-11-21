@@ -52,26 +52,30 @@ isReversible = function(mutmat, afreq) {
 #' @export
 isLumpable = function(mutmat, lump) {  # TODO: Make S3 methods
   if(isMutationModel(mutmat)) {
-    always = isTRUE(attr(mutmat, 'alwaysLumpable'))
-    if(always)
+
+    if(isTRUE(attr(mutmat, 'alwaysLumpable')))
       return(TRUE)
 
-    sexEq = isTRUE(attr(mutmat, 'sexEqual'))
-    test = isLumpable(mutmat$female, lump) && (sexEq || isLumpable(mutmat$male, lump))
+    test = isLumpable(mutmat$female, lump)
+    if(!sexEqual(mutmat))
+      test = test || isLumpable(mutmat$male, lump)
     return(test)
   }
+
   alleles = colnames(mutmat)
   if(!all(lump %in% alleles))
     stop2("Alleles not found in mutation matrix: ", setdiff(lump, alleles))
+
   if(dup <- anyDuplicated(lump))
     stop2("Duplicated entry in `lump`: ", lump[dup])
+
   if(length(lump) == length(alleles))
     return(TRUE)
-  y = mutmat[lump, setdiff(alleles, lump), drop = F]
-  test = all.equal(as.numeric(y),
-                   rep(y[1, ], each = length(lump)),
-                   check.attributes = F)
-  isTRUE(test)
+
+  y = mutmat[lump, .mysetdiff(alleles, lump), drop = FALSE]
+
+  test = abs(as.numeric(y) - rep(y[1, ], each = length(lump))) < sqrt(.Machine$double.eps)
+  all(test)
 }
 
 #' @rdname model_properties
@@ -88,3 +92,4 @@ alwaysLumpable = function(mutmat) {
 
   all(abs(as.numeric(offdiag) - rep(offdiag[1,], each = N-1)) < sqrt(.Machine$double.eps))
 }
+
