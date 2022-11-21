@@ -90,7 +90,6 @@ lumpedModel = function(mutmod, lump, afreq = NULL, check = TRUE) {
   lmp = alwaysLumpable(lumpedF) && (sexeq || alwaysLumpable(lumpedM))
 
   # Create model object
-  structure(list(female = lumpedFemale, male = lumpedMale),
-            sexEqual = sexEqual, alwaysLumpable = lmp,
-            class = "mutationModel")
+  structure(list(female = lumpedF, male = lumpedM), sexEqual = sexeq,
+            alwaysLumpable = lmp, class = "mutationModel")
 }
