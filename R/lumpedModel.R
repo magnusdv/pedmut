@@ -74,11 +74,14 @@ lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'), check = TRU
 #' @export
 lumpedModel = function(mutmod, lump, afreq = NULL, check = TRUE) {
 
-  lumpedMale = lumpedMatrix(mutmod$male, lump = lump, afreq = afreq, check = check)
+  if(is.null(afreq))
+    afreq = attr(mutmod$female, "afreq")
+
+  lumpedFemale = lumpedMatrix(mutmod$female, lump = lump, afreq = afreq, check = check)
   if(sexEqual(mutmod))
-    lumpedFemale = lumpedMale
+    lumpedMale = lumpedFemale
   else
-    lumpedFemale = lumpedMatrix(mutmod$female, lump = lump, afreq = afreq, check = check)
+    lumpedMale = lumpedMatrix(mutmod$male, lump = lump, afreq = afreq, check = check)
 
   mutationModel(list(female = lumpedFemale, male = lumpedMale),
                 validate = FALSE)
