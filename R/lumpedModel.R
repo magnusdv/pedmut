@@ -77,12 +77,20 @@ lumpedModel = function(mutmod, lump, afreq = NULL, check = TRUE) {
   if(is.null(afreq))
     afreq = attr(mutmod$female, "afreq")
 
-  lumpedFemale = lumpedMatrix(mutmod$female, lump = lump, afreq = afreq, check = check)
-  if(sexEqual(mutmod))
-    lumpedMale = lumpedFemale
-  else
-    lumpedMale = lumpedMatrix(mutmod$male, lump = lump, afreq = afreq, check = check)
+  sexeq = sexEqual(mutmod)
 
-  mutationModel(list(female = lumpedFemale, male = lumpedMale),
-                validate = FALSE)
+  lumpedF = lumpedMatrix(mutmod$female, lump = lump, afreq = afreq, check = check)
+
+  if(sexeq)
+    lumpedM = lumpedF
+  else
+    lumpedM = lumpedMatrix(mutmod$male, lump = lump, afreq = afreq, check = check)
+
+  # Still lumpable?
+  lmp = alwaysLumpable(lumpedF) && (sexeq || alwaysLumpable(lumpedM))
+
+  # Create model object
+  structure(list(female = lumpedFemale, male = lumpedMale),
+            sexEqual = sexEqual, alwaysLumpable = lmp,
+            class = "mutationModel")
 }

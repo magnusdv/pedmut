@@ -211,7 +211,7 @@ toString.mutationModel = function(x, ...) {
 }
 
 isMutationModel = function(x) {
-  class(x) ==  "mutationModel"
+  inherits(x, "mutationModel")
 }
 
 # Permute the allele order of a model or matrix
