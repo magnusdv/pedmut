@@ -36,16 +36,17 @@ NULL
 #' @export
 isStationary = function(mutmat, afreq) {
   prod = as.numeric(afreq %*% mutmat)
-  test = all.equal.numeric(prod, afreq, check.attributes = F)
-  isTRUE(test)
+  tol = sqrt(.Machine$double.eps)
+  all(abs(as.numeric(afreq) - prod) < tol)
 }
 
 #' @rdname model_properties
 #' @export
 isReversible = function(mutmat, afreq) {
   pm = afreq * mutmat
-  symmetric = all.equal.numeric(pm, t.default(pm))
-  isTRUE(symmetric)
+  pmT = t.default(pm)
+  tol = sqrt(.Machine$double.eps)
+  all(abs(as.numeric(pm) - as.numeric(pmT)) < tol)
 }
 
 #' @rdname model_properties
@@ -74,8 +75,8 @@ isLumpable = function(mutmat, lump) {  # TODO: Make S3 methods
 
   y = mutmat[lump, .mysetdiff(alleles, lump), drop = FALSE]
 
-  test = abs(as.numeric(y) - rep(y[1, ], each = length(lump))) < sqrt(.Machine$double.eps)
-  all(test)
+  tol = sqrt(.Machine$double.eps)
+  all(abs(as.numeric(y) - rep(y[1, ], each = length(lump))) < tol)
 }
 
 #' @rdname model_properties
