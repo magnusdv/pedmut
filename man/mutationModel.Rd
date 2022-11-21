@@ -3,6 +3,7 @@
 \name{mutationModel}
 \alias{mutationModel}
 \alias{validateMutationModel}
+\alias{sexEqual}
 \title{Mutation models}
 \usage{
 mutationModel(
@@ -18,6 +19,8 @@ mutationModel(
 )
 
 validateMutationModel(mutmod, alleles = NULL)
+
+sexEqual(mutmod)
 }
 \arguments{
 \item{model}{Either:

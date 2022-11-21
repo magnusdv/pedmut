@@ -256,3 +256,8 @@ enforceAlleleOrder = function(m, alleles) {
 }
 
 
+#' @rdname mutationModel
+#' @export
+sexEqual = function(mutmod) {
+  isTRUE(attr(mutmod, "sexEqual"))
+}
