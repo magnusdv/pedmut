@@ -1,20 +1,23 @@
 Package: pedmut
 Title: Mutation Models for Pedigree Likelihood Computations
 Version: 0.5.0
-Authors@R: person("Magnus Dehli", "Vigeland", email = "m.d.vigeland@medisin.uio.no", 
-    role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9134-4962"))
-Description: A collection of functions for modelling mutations in pedigrees with 
-    marker data, as used e.g. in likelihood computations with microsatellite data.
-    Implemented models include proportional and stepwise models, as well as random 
-    models for experimental work, and custom models allowing the user to apply any 
-    valid mutation matrix. Allele lumping is done following the lumpability criteria 
-    of Kemeny and Snell (1976), ISBN:0387901922.
-Depends: R (>= 3.5.0)
+Authors@R: 
+    person("Magnus Dehli", "Vigeland", , "m.d.vigeland@medisin.uio.no", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-9134-4962"))
+Description: A collection of functions for modelling mutations in
+    pedigrees with marker data, as used e.g. in likelihood computations
+    with microsatellite data.  Implemented models include proportional and
+    stepwise models, as well as random models for experimental work, and
+    custom models allowing the user to apply any valid mutation matrix.
+    Allele lumping is done following the lumpability criteria of Kemeny
+    and Snell (1976), ISBN:0387901922.
 License: GPL-3
 URL: https://github.com/magnusdv/pedmut
+Depends: 
+    R (>= 3.5.0)
+Suggests: 
+    testthat
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
-Suggests: 
-    testthat
+RoxygenNote: 7.2.3

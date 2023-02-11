@@ -1,3 +1,15 @@
+# pedmut 0.5.0
+
+## New features
+
+*  Various speedups, mainly concerning lumped models. These improvements should give better performance in other parts of the `ped suite`, especially in likelihood calculations with many markers.
+
+* New function `lumpedModel()` which is a convenient wrapper of `lumpedMatrix()`.
+
+* New function `sexEqual()` for reading the `sexEqual` attribute of a mutation model.
+
+
+
 # pedmut 0.4.0
 
 ## New features
