@@ -63,7 +63,7 @@ lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'), check = TRU
 
   if(!is.null(afreq)) {
     if(!is.numeric(afreq) || length(afreq) != length(als))
-      stop2(sprintf("Expected frequency vector to be numeric of length %d: ", length(als)))
+      stop2(sprintf("Expected frequency vector to be numeric of length %d: ", length(als)), afreq)
     if( round(sum(afreq), 3) != 1)
       stop2("Allele frequencies do not sum to 1: ", afreq)
 
