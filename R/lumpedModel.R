@@ -20,17 +20,22 @@
 #'   = n - length(lump) + 1}.
 #'
 #' @examples
-#' m = mutationMatrix("eq", alleles = 1:10, rate = 0.1)
-#' afreq = rep(1/100, 100)
+#' ### Example 1: Lumping a mutation matrix
+#' mat = mutationMatrix("eq", alleles = 1:5, afreq = rep(0.2, 5), rate = 0.1)
+#' mat
 #'
-#' # Suppose only alleles 1 and 2 are observed.
-#' # The following lumped matrix is then equivalent to `m`:
-#' mLump = lumpedMatrix(m, afreq = afreq, lump = 3:10)
-#' mLump
+#' # Suppose only alleles 1 and 2 are observed; lump the others:
+#' mat2 = lumpedMatrix(mat, lump = 3:5)
+#' mat2
 #'
-#' # Full model
-#' mod = mutationModel("prop", alleles = 1:4, rate = 0.1, afreq = c(.1,.2,.3,.4))
+#' # Example 2: Full model, proportional
+#' mutrate = list(male = 0.1, female = 0.2)
+#' mod = mutationModel("prop", alleles = 1:4, rate = mutrate, afreq = c(.1,.2,.3,.4))
+#' mod
+#'
+#' # Lump alleles 3 and 4
 #' mod2 = lumpedModel(mod, lump = 3:4)
+#' mod2
 #'
 #' @export
 lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'), check = TRUE) {
@@ -57,6 +62,11 @@ lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'), check = TRU
   colnames(newM)[N] = rownames(newM)[N] = "lump"
 
   if(!is.null(afreq)) {
+    if(!is.numeric(afreq) || length(afreq) != length(als))
+      stop2(sprintf("Expected frequency vector to be numeric of length %d: ", length(als)))
+    if( round(sum(afreq), 3) != 1)
+      stop2("Allele frequencies do not sum to 1: ", afreq)
+
     lumpedFreq = c(afreq[keep_idx], sum(afreq[lump_idx]))
     names(lumpedFreq) = colnames(newM)
   }

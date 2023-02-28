@@ -6,3 +6,11 @@ test_that("lumping works for custum matrix", {
   expect_equal(colnames(lumped1), c("1", "lump"))
   expect_equal(attr(lumped1, 'lumpedAlleles'), 2:3)
 })
+
+test_that("wrong input is caught when lumping", {
+  m = mutationMatrix("eq", alleles = 1:4, rate = 0.1)
+  expect_error(lumpedMatrix(m, lump = 2:3, afreq = 1),
+               "Expected frequency vector to be numeric of length 4")
+  expect_error(lumpedMatrix(m, lump = 2:3, afreq = 1:4),
+               "Allele frequencies do not sum to 1")
+})
