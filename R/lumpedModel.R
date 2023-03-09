@@ -6,12 +6,14 @@
 #' likelihood computations with multi-allelic markers, in cases where only some
 #' of the alleles are observed in the pedigree.
 #'
-#' @param mutmod A `mutationModel` object.
-#' @param mutmat A `mutationMatrix` object.
+#' @param mutmod A `mutationModel` object, typically made with
+#'   [mutationModel()].
+#' @param mutmat A `mutationMatrix` object, typically made with
+#'   [mutationMatrix()].
 #' @param afreq A vector with frequency vector, of the same length as the size
 #'   of `mutmat`. If not given, the `afreq` attribute of the matrix is used.
-#' @param lump A nonempty subset of the column names of `mutmat` (i.e., the allele
-#'   labels).
+#' @param lump A nonempty subset of the column names of `mutmat` (i.e., the
+#'   allele labels).
 #' @param check A logical indicating if lumpability should be checked before
 #'   lumping. Default: TRUE.
 #'
@@ -19,18 +21,24 @@
 #'   \eqn{n\times n}{n*n}, the result will be \eqn{k\times k}{k*k}, where \eqn{k
 #'   = n - length(lump) + 1}.
 #'
+#' @seealso [mutationModel()], [mutationMatrix()]
+#'
 #' @examples
+#'
+#'
 #' ### Example 1: Lumping a mutation matrix
-#' mat = mutationMatrix("eq", alleles = 1:5, afreq = rep(0.2, 5), rate = 0.1)
+#' mat = mutationMatrix("eq", alleles = 1:5,
+#'                      afreq = rep(0.2, 5), rate = 0.1)
 #' mat
 #'
-#' # Suppose only alleles 1 and 2 are observed; lump the others:
+#' # Lump alleles 3, 4 and 5
 #' mat2 = lumpedMatrix(mat, lump = 3:5)
 #' mat2
 #'
 #' # Example 2: Full model, proportional
 #' mutrate = list(male = 0.1, female = 0.2)
-#' mod = mutationModel("prop", alleles = 1:4, rate = mutrate, afreq = c(.1,.2,.3,.4))
+#' mod = mutationModel("prop", alleles = 1:4,
+#'                     rate = mutrate, afreq = c(.1,.2,.3,.4))
 #' mod
 #'
 #' # Lump alleles 3 and 4
@@ -39,6 +47,10 @@
 #'
 #' @export
 lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'), check = TRUE) {
+
+  if(!inherits(mutmat, "mutationMatrix"))
+    stop2(sprintf("Expected the input to be a `mutationMatrix`, but got a: `%s`", class(mutmat)[1]))
+
   als = colnames(mutmat)
 
   # If all alleles are lumped, return trivial mutationModel
@@ -83,6 +95,9 @@ lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'), check = TRU
 #' @rdname lumpedMatrix
 #' @export
 lumpedModel = function(mutmod, lump, afreq = NULL, check = TRUE) {
+
+  if(!inherits(mutmod, "mutationModel"))
+    stop2(sprintf("Expected the input to be a `mutationModel`, but got a: `%s`", class(mutmod)[1]))
 
   if(is.null(afreq))
     afreq = attr(mutmod$female, "afreq")

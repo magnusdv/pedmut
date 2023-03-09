@@ -10,10 +10,11 @@ lumpedMatrix(mutmat, lump, afreq = attr(mutmat, "afreq"), check = TRUE)
 lumpedModel(mutmod, lump, afreq = NULL, check = TRUE)
 }
 \arguments{
-\item{mutmat}{A \code{mutationMatrix} object.}
+\item{mutmat}{A \code{mutationMatrix} object, typically made with
+\code{\link[=mutationMatrix]{mutationMatrix()}}.}
 
-\item{lump}{A nonempty subset of the column names of \code{mutmat} (i.e., the allele
-labels).}
+\item{lump}{A nonempty subset of the column names of \code{mutmat} (i.e., the
+allele labels).}
 
 \item{afreq}{A vector with frequency vector, of the same length as the size
 of \code{mutmat}. If not given, the \code{afreq} attribute of the matrix is used.}
@@ -21,7 +22,8 @@ of \code{mutmat}. If not given, the \code{afreq} attribute of the matrix is used
 \item{check}{A logical indicating if lumpability should be checked before
 lumping. Default: TRUE.}
 
-\item{mutmod}{A \code{mutationModel} object.}
+\item{mutmod}{A \code{mutationModel} object, typically made with
+\code{\link[=mutationModel]{mutationModel()}}.}
 }
 \value{
 A reduced mutation model. If the original matrix has dimensions
@@ -36,21 +38,28 @@ likelihood computations with multi-allelic markers, in cases where only some
 of the alleles are observed in the pedigree.
 }
 \examples{
+
+
 ### Example 1: Lumping a mutation matrix
-mat = mutationMatrix("eq", alleles = 1:5, afreq = rep(0.2, 5), rate = 0.1)
+mat = mutationMatrix("eq", alleles = 1:5,
+                     afreq = rep(0.2, 5), rate = 0.1)
 mat
 
-# Suppose only alleles 1 and 2 are observed; lump the others:
+# Lump alleles 3, 4 and 5
 mat2 = lumpedMatrix(mat, lump = 3:5)
 mat2
 
 # Example 2: Full model, proportional
 mutrate = list(male = 0.1, female = 0.2)
-mod = mutationModel("prop", alleles = 1:4, rate = mutrate, afreq = c(.1,.2,.3,.4))
+mod = mutationModel("prop", alleles = 1:4,
+                    rate = mutrate, afreq = c(.1,.2,.3,.4))
 mod
 
 # Lump alleles 3 and 4
 mod2 = lumpedModel(mod, lump = 3:4)
 mod2
 
+}
+\seealso{
+\code{\link[=mutationModel]{mutationModel()}}, \code{\link[=mutationMatrix]{mutationMatrix()}}
 }
