@@ -171,8 +171,13 @@ prepLump = function(lump, alleles = NULL, labelSep = NULL) {
   # Name lumps
   if(!is.null(labelSep))
     names(lump) = vapply(lump, function(v) paste(v, collapse = labelSep), character(1))
-  else if(is.null(names(lump)))
-    names(lump) = if(n == 1) "lump" else paste0("lump", seq_len(n))
+
+  if(is.null(names(lump))) {
+    nms = if(n == 1) "lump" else paste0("lump", seq_len(n))
+    if(any(nms %in% alleles))
+      nms = make.unique(c(alleles, nms), sep = "")[-seq_along(alleles)]
+    names(lump) = nms
+  }
 
   lump
 }
