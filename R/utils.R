@@ -41,3 +41,7 @@ smartOrder = function(x) {
 
 # Fast intersection. NB: assumes no duplicates!
 .myintersect = function(x, y) y[match(x, y, 0L)]
+
+.equalNums = function(v, tol = sqrt(.Machine$double.eps)) {
+  all(v == v[1]) || abs(max(v) - min(v)) < tol
+}

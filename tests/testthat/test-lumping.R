@@ -4,7 +4,7 @@ test_that("lumping works for custum matrix", {
   lumped1 = lumpedMatrix(m1, lump = 2:3)
   expect_equal(dim(lumped1), c(2,2))
   expect_equal(colnames(lumped1), c("1", "lump"))
-  expect_equal(attr(lumped1, 'lumpedAlleles'), 2:3)
+  expect_equal(attr(lumped1, 'lumpedAlleles'), c("2", "3"))
 })
 
 test_that("wrong input is caught when lumping matrix", {

@@ -63,20 +63,52 @@ isLumpable = function(mutmat, lump) {  # TODO: Make S3 methods
     return(test)
   }
 
-  alleles = colnames(mutmat)
-  if(!all(lump %in% alleles))
-    stop2("Alleles not found in mutation matrix: ", setdiff(lump, alleles))
+  als = colnames(mutmat)
+  lump = prepLump(lump, als)
+  N = length(lump)
+  tol = sqrt(.Machine$double.eps)
 
-  if(dup <- anyDuplicated(lump))
-    stop2("Duplicated entry in `lump`: ", lump[dup])
-
-  if(length(lump) == length(alleles))
+  if(N == 0)
     return(TRUE)
 
-  y = mutmat[lump, .mysetdiff(alleles, lump), drop = FALSE]
+  if(N == 1) {
+    lump = lump[[1]]
 
-  tol = sqrt(.Machine$double.eps)
-  all(abs(as.numeric(y) - rep(y[1, ], each = length(lump))) < tol)
+    # Exhaustive lump (trivial)
+    if(length(lump) == length(als))
+      return(TRUE)
+
+    # Row sum criterion (reduced to equalities of entries)
+    y = mutmat[lump, .mysetdiff(als, lump), drop = FALSE]
+    checks = abs(as.numeric(y) - rep(y[1, ], each = length(lump))) < tol
+    return(all(checks))
+  }
+
+  ### Multiple lumps (of size > 1) ###
+
+  # Alleles not involved in lumps
+  singles = .mysetdiff(als, unlist(lump, use.names = FALSE))
+
+  # Loop through all lumps
+  for(i in seq_len(N)) {
+    a = lump[[i]]
+
+    # Check against singles
+    y = mutmat[a, singles, drop = FALSE]
+    checks = abs(as.numeric(y) - rep(y[1, ], each = length(a))) < tol
+    if(!all(checks))
+      return(FALSE)
+
+    # Check row sums against other lumps
+    for(b in lump[-i]) {
+      z = mutmat[a, b, drop = FALSE]
+      rs = .rowSums(z, length(a), length(b))
+      if(!.equalNums(rs, tol))
+        return(FALSE)
+    }
+  }
+
+  return(TRUE)
 }
 
 #' @rdname model_properties
@@ -90,7 +122,7 @@ alwaysLumpable = function(mutmat) {
   dim(offdiag) = c(N - 1, N)
 
   # Kemeny & Snell criterion
-
-  all(abs(as.numeric(offdiag) - rep(offdiag[1,], each = N-1)) < sqrt(.Machine$double.eps))
+  tol = sqrt(.Machine$double.eps)
+  all(abs(as.numeric(offdiag) - rep(offdiag[1,], each = N-1)) < tol)
 }
 

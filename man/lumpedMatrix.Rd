@@ -5,7 +5,13 @@
 \alias{lumpedModel}
 \title{Combine alleles in a mutation matrix}
 \usage{
-lumpedMatrix(mutmat, lump, afreq = attr(mutmat, "afreq"), check = TRUE)
+lumpedMatrix(
+  mutmat,
+  lump,
+  afreq = attr(mutmat, "afreq"),
+  check = TRUE,
+  labelSep = NULL
+)
 
 lumpedModel(mutmod, lump, afreq = NULL, check = TRUE)
 }
@@ -13,14 +19,17 @@ lumpedModel(mutmod, lump, afreq = NULL, check = TRUE)
 \item{mutmat}{A \code{mutationMatrix} object, typically made with
 \code{\link[=mutationMatrix]{mutationMatrix()}}.}
 
-\item{lump}{A nonempty subset of the column names of \code{mutmat} (i.e., the
-allele labels).}
+\item{lump}{A nonempty subset of the alleles (i.e., the column names of
+\code{mutmat}), or a list of several such subsets.}
 
 \item{afreq}{A vector with frequency vector, of the same length as the size
 of \code{mutmat}. If not given, the \code{afreq} attribute of the matrix is used.}
 
 \item{check}{A logical indicating if lumpability should be checked before
 lumping. Default: TRUE.}
+
+\item{labelSep}{((For debugging) A character used to name lumps by pasting
+allele labels.}
 
 \item{mutmod}{A \code{mutationModel} object, typically made with
 \code{\link[=mutationModel]{mutationModel()}}.}
