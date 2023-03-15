@@ -127,3 +127,38 @@ alwaysLumpable = function(mutmat) {
   all(abs(as.numeric(offdiag) - rep(offdiag[1,], each = N-1)) < tol)
 }
 
+
+#' Find the stationary frequency distribution
+#'
+#' Finds the stationary distribution of allele frequencies, if it exists, w.r.t. a given mutation matrix.
+#' @param mutmat A mutation matrix.
+#'
+#' @return A vector of length `ncol(mutmat)`, or NULL.
+#'
+#' @examples
+#'
+#' m1 = mutationMatrix("equal", alleles = 1:4, rate = 0.1)
+#' findStationary(m1)
+#'
+#' m2 = mutationMatrix("random", alleles = 1:3, seed = 123)
+#' a = findStationary(m2)
+#'
+#' a %*% m2 - a  # check
+#'
+#' @export
+findStationary = function(mutmat) {
+  n = dim(mutmat)[1L]
+  P = diag(n) - mutmat
+  A = rbind(t.default(P), rep(1, n))
+  b = c(rep(0, n), 1)
+
+  # The following is effectively `qr.solve(A, b)`, but catches singular A gracefully
+  QR = qr.default(A)
+
+  if(QR$rank != n) {
+    message("No stationary distribution")
+    return()
+  }
+
+  qr.coef(QR, b)
+}
