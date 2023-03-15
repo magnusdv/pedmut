@@ -45,3 +45,35 @@ smartOrder = function(x) {
 .equalNums = function(v, tol = sqrt(.Machine$double.eps)) {
   all(v == v[1]) || abs(max(v) - min(v)) < tol
 }
+
+checkAfreq = function(afreq, alleles = NULL, len = NULL) {
+  if(is.null(afreq))
+    return(afreq)
+
+  if(!is.numeric(afreq))
+    stop2("Expected frequency vector to be a numeric, not ", class(afreq))
+
+  if(!is.null(len) && length(afreq) != len)
+    stop2(sprintf("Expected frequency vector to have length %d, not %d", len, length(afreq)))
+
+  if(round(sum(afreq), 3) != 1)
+    stop2("Allele frequencies do not sum to 1: ", round(sum(afreq),3))
+
+  if(!is.null(alleles)) {
+
+    if(length(afreq) != length(alleles))
+      stop2(sprintf("Frequency vector does not match the number of alleles (%d)", length(alleles)))
+
+    if(!is.null(nms <- names(afreq))) {
+      if(!setequal(nms, alleles))
+        stop2("Names of frequency vectors do not match alleles: ", setdiff(nms, alleles))
+
+      # Sort
+      afreq = afreq[alleles]
+    }
+    else
+      names(afreq) = alleles
+  }
+
+  afreq
+}

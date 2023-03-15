@@ -48,8 +48,7 @@
 #' mod2
 #'
 #' @export
-lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'),
-                        check = TRUE, labelSep = NULL) {
+lumpedMatrix = function(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NULL) {
 
   if(!inherits(mutmat, "mutationMatrix"))
     stop2(sprintf("Expected the input to be a `mutationMatrix`, but got a: `%s`", class(mutmat)[1]))
@@ -69,12 +68,7 @@ lumpedMatrix = function(mutmat, lump, afreq = attr(mutmat, 'afreq'),
     stop2("The model is not lumpable for this set of alleles")
 
   lumpedFreq = NULL
-  if(!is.null(afreq)) {
-    if(!is.numeric(afreq) || length(afreq) != length(als))
-      stop2(sprintf("Expected frequency vector to be numeric of length %d: ", length(als)), afreq)
-    if(round(sum(afreq), 3) != 1)
-      stop2("Allele frequencies do not sum to 1: ", afreq)
-  }
+  afreq = if(is.null(afreq)) attr(mutmat, 'afreq') else checkAfreq(afreq, alleles = als)
 
   if(length(lump) == 1) {
     lump = lump[[1]]
@@ -130,21 +124,20 @@ lumpedModel = function(mutmod, lump, afreq = NULL, check = TRUE) {
   if(is.null(afreq))
     afreq = attr(mutmod$female, "afreq")
 
-  sexeq = sexEqual(mutmod)
-
   lumpedF = lumpedMatrix(mutmod$female, lump = lump, afreq = afreq, check = check)
 
+  sexeq = sexEqual(mutmod)
   if(sexeq)
     lumpedM = lumpedF
   else
     lumpedM = lumpedMatrix(mutmod$male, lump = lump, afreq = afreq, check = check)
 
   # Still lumpable?
-  lmp = alwaysLumpable(lumpedF) && (sexeq || alwaysLumpable(lumpedM))
+  alwaysLmp = alwaysLumpable(lumpedF) && (sexeq || alwaysLumpable(lumpedM))
 
   # Create model object
   structure(list(female = lumpedF, male = lumpedM), sexEqual = sexeq,
-            alwaysLumpable = lmp, class = "mutationModel")
+            alwaysLumpable = alwaysLmp, class = "mutationModel")
 }
 
 

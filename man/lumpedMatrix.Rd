@@ -5,13 +5,7 @@
 \alias{lumpedModel}
 \title{Combine alleles in a mutation matrix}
 \usage{
-lumpedMatrix(
-  mutmat,
-  lump,
-  afreq = attr(mutmat, "afreq"),
-  check = TRUE,
-  labelSep = NULL
-)
+lumpedMatrix(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NULL)
 
 lumpedModel(mutmod, lump, afreq = NULL, check = TRUE)
 }

@@ -19,14 +19,14 @@ alwaysLumpable(mutmat)
 \arguments{
 \item{mutmat}{A mutation matrix}
 
-\item{afreq}{A vector with frequency vector, of the same length as the size
+\item{afreq}{A vector with allele frequencies, of the same length as the size
 of \code{mutmat}}
 
 \item{lump}{A nonempty subset of the colnames of \code{mutmat} (i.e. the allele
 labels)}
 }
 \value{
-Each of these functions returns TRUE of FALSE
+Each of these functions returns TRUE of FALSE.
 }
 \description{
 Functions for checking various properties of a mutation model, including

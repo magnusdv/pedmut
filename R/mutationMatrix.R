@@ -5,16 +5,16 @@
 #' Descriptions of the models:
 #'
 #' * `custom` : Allows any mutation matrix to be provided by the user, in the
-#' `matrix` parameter
+#' `matrix` parameter.
 #'
 #' * `equal` :  All mutations equally likely; probability \eqn{1-rate} of no
-#' mutation
+#' mutation.
 #'
 #' * `proportional` : Mutation probabilities are proportional to the target
-#' allele frequencies
+#' allele frequencies.
 #'
 #' * `random` : This produces a matrix of random numbers, where each row is
-#' normalised so that it sums to 1
+#' normalised so that it sums to 1.
 #'
 #' * `onestep`: A mutation model for microsatellite markers, allowing mutations
 #' only to the nearest neighbours in the allelic ladder. For example, '10' may
@@ -30,22 +30,22 @@
 #' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
 #' @param model A string: either "custom", "equal", "proportional", "random",
-#'   "stepwise" or "onestep"
+#'   "stepwise" or "onestep".
 #' @param matrix When `model` is "custom", this must be a square matrix with
-#'   nonnegative real entries and row sums equal to 1
+#'   nonnegative real entries and row sums equal to 1.
 #' @param alleles A character vector (or coercible to character) with allele
-#'   labels. Required in all models, except "custom" if `matrix` has dimnames
+#'   labels. Required in all models, except "custom" if `matrix` has dimnames.
 #' @param afreq A numeric vector of allele frequencies. Required in model
-#'   "proportional"
+#'   "proportional".
 #' @param rate A number between 0 and 1. Required in models "equal",
-#'   "proportional", "stepwise" and "onestep"
+#'   "proportional", "stepwise" and "onestep".
 #' @param seed A single number. Optional parameter in the "random" model, passed
-#'   on to `set.seed()`
+#'   on to `set.seed()`.
 #' @param rate2 A number between 0 and 1. The mutation rate between integer
-#'   alleles and microvariants. Required in the "stepwise" model
+#'   alleles and microvariants. Required in the "stepwise" model.
 #' @param range A positive number. The relative probability of mutating n+1
-#'   steps versus mutating n steps. Required  in the "stepwise" model
-#' @param mutmat An object of class `mutationMatrix`
+#'   steps versus mutating n steps. Required  in the "stepwise" model.
+#' @param mutmat An object of class `mutationMatrix`.
 #'
 #' @return A square matrix with entries in `[0, 1]`, with the allele labels as
 #'   both colnames and rownames.
@@ -92,7 +92,9 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
       dimnames(matrix) = list(alleles, alleles)
     }
 
-    m = newMutationMatrix(matrix, model = model)
+    afreq = checkAfreq(afreq, alleles = colnames(matrix))
+
+    m = newMutationMatrix(matrix, model = model, afreq = afreq)
     return(validateMutationMatrix(m))  # must be done for custom models!
   }
 
@@ -100,14 +102,12 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   if(!is.null(matrix))
     stop2("The `matrix` argument must be NULL when this model is specified")
 
+  alleles = if(!is.null(alleles)) as.character(alleles) else names(afreq)
   if(is.null(alleles))
     stop2("`alleles` cannot be NULL with this model")
-  if(!is.null(afreq)) {
-    if(length(afreq) != length(alleles))
-      stop2("`afreq` must have the same length as `alleles`")
-    if(round(sum(afreq), 3) != 1)
-      stop2("Allele frequencies must sum to 1 after rounding to 3 decimals: ", sum(afreq))
-  }
+
+  afreq = checkAfreq(afreq, alleles = alleles)
+
   if(model %in% c("equal", "proportional", "stepwise", "onestep")) {
     if(is.null(rate))
       stop2("`rate` cannot be NULL with this model")
@@ -197,9 +197,6 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
       mutmat[i, nei] = rate/sum(nei)
     }
   }
-
-  if(!is.null(afreq))
-    names(afreq) = alleles
 
   newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate,
                     rate2 = rate2, range = range, seed=seed)

@@ -4,11 +4,12 @@
 #' stationarity, reversibility and lumpability.
 #'
 #' @param mutmat A mutation matrix
-#' @param afreq A vector with frequency vector, of the same length as the size
+#' @param afreq A vector with allele frequencies, of the same length as the size
 #'   of `mutmat`
 #' @param lump A nonempty subset of the colnames of `mutmat` (i.e. the allele
 #'   labels)
-#' @return Each of these functions returns TRUE of FALSE
+#'
+#' @return Each of these functions returns TRUE of FALSE.
 #'
 #' @examples
 #'
@@ -51,7 +52,7 @@ isReversible = function(mutmat, afreq) {
 
 #' @rdname model_properties
 #' @export
-isLumpable = function(mutmat, lump) {  # TODO: Make S3 methods
+isLumpable = function(mutmat, lump) {
   if(isMutationModel(mutmat)) {
 
     if(isTRUE(attr(mutmat, 'alwaysLumpable')))
