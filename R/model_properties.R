@@ -147,6 +147,7 @@ alwaysLumpable = function(mutmat) {
 #'
 #' @export
 findStationary = function(mutmat) {
+  validateMutationMatrix(mutmat)
   n = dim(mutmat)[1L]
   P = diag(n) - mutmat
   A = rbind(t.default(P), rep(1, n))
