@@ -77,3 +77,18 @@ checkAfreq = function(afreq, alleles = NULL, len = NULL) {
 
   afreq
 }
+
+#' @export
+as.matrix.mutationMatrix = function(x, ...) {
+  attributes(x) = list(dim = dim(x), dimnames = dimnames(x))
+  x
+}
+
+#' @export
+as.matrix.mutationModel = function(x, ...) {
+  if(!sexEqual(x))
+    stop2("Male and female matrices are not equal")
+  m = x$female
+  attributes(m) = list(dim = dim(m), dimnames = dimnames(m))
+  m
+}
