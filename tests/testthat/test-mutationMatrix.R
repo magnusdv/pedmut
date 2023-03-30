@@ -25,9 +25,9 @@ test_that("bad inputs are caught", {
   expect_error(mutationMatrix(model="prop", alleles=1:2, rate=0),
                "`afreq` cannot be NULL with this model")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=1),
-               "`afreq` must have the same length as `alleles`")
+               "Frequency vector does not match the number of alleles")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(0.5, 0.501)),
-               "Allele frequencies must sum to 1 after rounding to 3 decimals")
+               "Allele frequencies do not sum to 1")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(.5,.5), rate=2),
                "Impossible mutation matrix; try reducing `rate`")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=1, rate2=0.5, range=1),

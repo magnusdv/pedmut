@@ -21,30 +21,30 @@ validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
 \item{model}{A string: either "custom", "equal", "proportional", "random",
-"stepwise" or "onestep"}
+"stepwise" or "onestep".}
 
 \item{matrix}{When \code{model} is "custom", this must be a square matrix with
-nonnegative real entries and row sums equal to 1}
+nonnegative real entries and row sums equal to 1.}
 
 \item{alleles}{A character vector (or coercible to character) with allele
-labels. Required in all models, except "custom" if \code{matrix} has dimnames}
+labels. Required in all models, except "custom" if \code{matrix} has dimnames.}
 
 \item{afreq}{A numeric vector of allele frequencies. Required in model
-"proportional"}
+"proportional".}
 
 \item{rate}{A number between 0 and 1. Required in models "equal",
-"proportional", "stepwise" and "onestep"}
+"proportional", "stepwise" and "onestep".}
 
 \item{seed}{A single number. Optional parameter in the "random" model, passed
-on to \code{set.seed()}}
+on to \code{set.seed()}.}
 
 \item{rate2}{A number between 0 and 1. The mutation rate between integer
-alleles and microvariants. Required in the "stepwise" model}
+alleles and microvariants. Required in the "stepwise" model.}
 
 \item{range}{A positive number. The relative probability of mutating n+1
-steps versus mutating n steps. Required  in the "stepwise" model}
+steps versus mutating n steps. Required  in the "stepwise" model.}
 
-\item{mutmat}{An object of class \code{mutationMatrix}}
+\item{mutmat}{An object of class \code{mutationMatrix}.}
 }
 \value{
 A square matrix with entries in \verb{[0, 1]}, with the allele labels as
@@ -57,13 +57,13 @@ Construct mutation matrices for pedigree likelihood computations.
 Descriptions of the models:
 \itemize{
 \item \code{custom} : Allows any mutation matrix to be provided by the user, in the
-\code{matrix} parameter
+\code{matrix} parameter.
 \item \code{equal} :  All mutations equally likely; probability \eqn{1-rate} of no
-mutation
+mutation.
 \item \code{proportional} : Mutation probabilities are proportional to the target
-allele frequencies
+allele frequencies.
 \item \code{random} : This produces a matrix of random numbers, where each row is
-normalised so that it sums to 1
+normalised so that it sums to 1.
 \item \code{onestep}: A mutation model for microsatellite markers, allowing mutations
 only to the nearest neighbours in the allelic ladder. For example, '10' may
 mutate to either '9' or '11', unless '10' is the lowest allele, in which case
