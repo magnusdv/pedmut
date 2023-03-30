@@ -8,22 +8,22 @@
 \alias{alwaysLumpable}
 \title{Mutation model properties}
 \usage{
-isStationary(mutmat, afreq)
+isStationary(mutmat, afreq = NULL)
 
-isReversible(mutmat, afreq)
+isReversible(mutmat, afreq = NULL)
 
 isLumpable(mutmat, lump)
 
 alwaysLumpable(mutmat)
 }
 \arguments{
-\item{mutmat}{A mutation matrix}
+\item{mutmat}{A mutation matrix or a \code{\link[=mutationModel]{mutationModel()}}.}
 
 \item{afreq}{A vector with allele frequencies, of the same length as the size
-of \code{mutmat}}
+of \code{mutmat}.}
 
 \item{lump}{A nonempty subset of the colnames of \code{mutmat} (i.e. the allele
-labels)}
+labels).}
 }
 \value{
 Each of these functions returns TRUE of FALSE.

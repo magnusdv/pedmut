@@ -3,11 +3,11 @@
 #' Functions for checking various properties of a mutation model, including
 #' stationarity, reversibility and lumpability.
 #'
-#' @param mutmat A mutation matrix
+#' @param mutmat A mutation matrix or a [mutationModel()].
 #' @param afreq A vector with allele frequencies, of the same length as the size
-#'   of `mutmat`
+#'   of `mutmat`.
 #' @param lump A nonempty subset of the colnames of `mutmat` (i.e. the allele
-#'   labels)
+#'   labels).
 #'
 #' @return Each of these functions returns TRUE of FALSE.
 #'
@@ -35,7 +35,16 @@ NULL
 
 #' @rdname model_properties
 #' @export
-isStationary = function(mutmat, afreq) {
+isStationary = function(mutmat, afreq = NULL) {
+  if(isMutationModel(mutmat)) {
+    isStatF = isStationary(mutmat$female, afreq = afreq)
+    isStatM = sexEqual(mutmat) || isStationary(mutmat$male, afreq = afreq)
+    return(isStatF && isStatM)
+  }
+
+  if(is.null(afreq))
+    afreq = attr(mutmat, "afreq") %||% stop2("Argument `afreq` is missing")
+
   prod = as.numeric(afreq %*% mutmat)
   tol = sqrt(.Machine$double.eps)
   all(abs(as.numeric(afreq) - prod) < tol)
@@ -43,7 +52,16 @@ isStationary = function(mutmat, afreq) {
 
 #' @rdname model_properties
 #' @export
-isReversible = function(mutmat, afreq) {
+isReversible = function(mutmat, afreq = NULL) {
+  if(isMutationModel(mutmat)) {
+    isRevF = isReversible(mutmat$female, afreq = afreq)
+    isRevM = sexEqual(mutmat) || isReversible(mutmat$male, afreq = afreq)
+    return(isRevF && isRevM)
+  }
+
+  if(is.null(afreq))
+    afreq = attr(mutmat, "afreq") %||% stop2("Argument `afreq` is missing")
+
   pm = afreq * mutmat
   pmT = t.default(pm)
   tol = sqrt(.Machine$double.eps)

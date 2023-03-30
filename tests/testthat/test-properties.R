@@ -35,3 +35,19 @@ test_that("proportional model is always lumpable", {
   expect_true(isLumpable(mutmat, lump = 1:2))
   expect_true(isLumpable(mutmat, lump = c(1,3)))
 })
+
+test_that("isStationary and isReversible works with full models", {
+  afreq = c(0.5, 0.5)
+  m1 = mutationMatrix("eq", alleles = 1:2, rate = 0.1, afreq = afreq)
+  m2 = mutationMatrix("random", alleles = 1:2, afreq = afreq)
+  expect_true(isStationary(mutationModel(list(female = m1, male = m1))))
+  expect_false(isStationary(mutationModel(list(female = m1, male = m2))))
+  expect_false(isStationary(mutationModel(list(female = m2, male = m2))))
+
+  expect_true(isReversible(mutationModel(list(female = m1, male = m1))))
+  expect_false(isReversible(mutationModel(list(female = m1, male = m2))))
+  expect_false(isReversible(mutationModel(list(female = m2, male = m2))))
+
+  stb = stabilize(mutationModel(list(female = m1, male = m2)))
+  expect_true(isStationary(stb))
+})
