@@ -17,7 +17,7 @@ isLumpable(mutmat, lump)
 alwaysLumpable(mutmat)
 }
 \arguments{
-\item{mutmat}{A mutation matrix or a \code{\link[=mutationModel]{mutationModel()}}.}
+\item{mutmat}{A \code{\link[=mutationMatrix]{mutationMatrix()}} or a \code{\link[=mutationModel]{mutationModel()}}.}
 
 \item{afreq}{A vector with allele frequencies, of the same length as the size
 of \code{mutmat}.}

@@ -3,7 +3,7 @@
 #' Functions for checking various properties of a mutation model, including
 #' stationarity, reversibility and lumpability.
 #'
-#' @param mutmat A mutation matrix or a [mutationModel()].
+#' @param mutmat A [mutationMatrix()] or a [mutationModel()].
 #' @param afreq A vector with allele frequencies, of the same length as the size
 #'   of `mutmat`.
 #' @param lump A nonempty subset of the colnames of `mutmat` (i.e. the allele
@@ -133,9 +133,16 @@ isLumpable = function(mutmat, lump) {
 #' @rdname model_properties
 #' @export
 alwaysLumpable = function(mutmat) {
+  if(isMutationModel(mutmat)) {
+    alwaysF = alwaysLumpable(mutmat$female)
+    return(alwaysF && (sexEqual(mutmat) || alwaysLumpable(mutmat$male)))
+  }
+
   N = dim(mutmat)[1L]
-  if(N == 1)
-    return(FALSE)
+
+  # 2*2 trivially lumpable
+  if(N <= 2)
+    return(TRUE)
 
   offdiag = mutmat[col(mutmat) != row(mutmat)]
   dim(offdiag) = c(N - 1, N)
