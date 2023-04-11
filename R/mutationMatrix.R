@@ -331,6 +331,3 @@ toString.mutationMatrix = function(x, ...) {
   mod
 }
 
-isMutationMatrix = function(x) {
-  inherits(x, "mutationMatrix")
-}

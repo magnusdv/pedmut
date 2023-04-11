@@ -92,3 +92,28 @@ as.matrix.mutationModel = function(x, ...) {
   attributes(m) = list(dim = dim(m), dimnames = dimnames(m))
   m
 }
+
+#' Test for mutation matrix/model
+#'
+#' @param x Any object.
+#' @returns TRUE or FALSE
+#' @examples
+#'
+#' mat = mutationMatrix("equal", alleles = 1:2, rate = 0.1)
+#' isMutationMatrix(mat)
+#'
+#' isMutationModel(mat) # FALSE (not a complete model)
+#'
+#' mod = mutationModel(mat)
+#' isMutationModel(mod)
+#'
+#' @export
+isMutationModel = function(x) {
+  inherits(x, "mutationModel")
+}
+
+#' @rdname isMutationModel
+#' @export
+isMutationMatrix = function(x) {
+  inherits(x, "mutationMatrix")
+}

@@ -210,9 +210,7 @@ toString.mutationModel = function(x, ...) {
     sprintf("%s (male); %s (female)", toString(x$male), toString(x$female))
 }
 
-isMutationModel = function(x) {
-  inherits(x, "mutationModel")
-}
+
 
 # Permute the allele order of a model or matrix
 enforceAlleleOrder = function(m, alleles) {
