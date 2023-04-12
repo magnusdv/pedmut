@@ -1,3 +1,22 @@
+# pedmut 0.6.0
+
+## New features
+
+* Implement the PM stabilisation method of Simonsson & Mostad; liftover from `Familias:::stabilize`.
+
+* Implement more general lumping (multiple lumps!) under strong lumpability. 
+
+* New utility `getParams()` for extracting model parameters.
+
+* Extend `isStationary()`, `isReversible()` and `alwaysLumpable()` to full models.
+
+* New functions `isMutationMatrix()` and `isMutationModel()`.
+
+* New S3 method `as.matrix()` for classes `mutationMatrix` and `mutationModel`.
+
+* New function `findStationary()` for obtaining the stationary distribution of a mutation matrix.
+
+
 # pedmut 0.5.0
 
 ## New features
