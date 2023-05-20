@@ -3,6 +3,14 @@
 #' Functions for checking various properties of a mutation model, including
 #' stationarity, reversibility and lumpability.
 #'
+#' The function `isBounded()` checks that a mutation model is *bounded* by the
+#' allele frequencies, i.e., that `mutmat[i,j] <= afreq[j]` whenever `i` is not
+#' equal to `j`.
+#'
+#' For each of these functions, if `mutmat` is a `mutationModel` object, i.e.,
+#' with male and female components, the output is TRUE if and only if both
+#' components satisfy the property in question.
+#'
 #' @param mutmat A [mutationMatrix()] or a [mutationModel()].
 #' @param afreq A vector with allele frequencies, of the same length as the size
 #'   of `mutmat`.
@@ -67,6 +75,28 @@ isReversible = function(mutmat, afreq = NULL) {
   tol = sqrt(.Machine$double.eps)
   all(abs(as.numeric(pm) - as.numeric(pmT)) < tol)
 }
+
+
+#' @rdname model_properties
+#' @export
+isBounded = function(mutmat, afreq = NULL) {
+  if(isMutationModel(mutmat)) {
+    isboundF = isBounded(mutmat$female, afreq = afreq)
+    isboundM = sexEqual(mutmat) || isBounded(mutmat$male, afreq = afreq)
+    return(isboundF & isboundM)
+  }
+
+  if(is.null(afreq))
+    afreq = attr(mutmat, "afreq") %||% stop2("Argument `afreq` is missing")
+
+  n = length(afreq)
+  M = as.matrix(mutmat)
+  lines = rep(FALSE, n)
+  for (i in 1:n)
+    lines[i] = all(M[-i, i] <= afreq[i])
+  all(lines)
+}
+
 
 #' @rdname model_properties
 #' @export
