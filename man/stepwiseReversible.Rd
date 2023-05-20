@@ -16,22 +16,24 @@ stepwiseReversible(alleles, afreq, rate, range)
 \item{range}{A positive number.}
 }
 \value{
-A reversible stepwise mutation model with expected mutation rate equal input rate.
+A reversible stepwise mutation model with expected mutation rate
+equal input rate.
 }
 \description{
-A reversible stepwise muation model
-is created following the approach of Dawid et al.(2002).
+A reversible stepwise mutation model is created following the approach of
+Dawid et al. (2002).
 }
 \details{
-The function \code{\link[=boundsGamma]{boundsGamma()}} checks
-if it is possible to construct the mutation matrix.
+The function \code{\link[=maxRate]{maxRate()}} checks if it is possible to construct
+the mutation matrix.
 }
 \examples{
 stepwiseReversible(alleles = 1:3, afreq = c(0.2, 0.3,  0.5), rate = 0.001, range = 0.1)
 
 # Model not well defined:
+\dontrun{
 stepwiseReversible(alleles = 1:3, afreq = c(0.2, 0.3,  0.5), rate = 0.7, range = 0.1)
-
+}
 }
 \author{
 Thore Egeland.

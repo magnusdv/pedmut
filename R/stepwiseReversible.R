@@ -11,7 +11,7 @@
 #' @return A reversible stepwise mutation model with expected mutation rate
 #'   equal input rate.
 #'
-#' @details The function [boundsGamma()] checks if it is possible to construct
+#' @details The function [maxRate()] checks if it is possible to construct
 #'   the mutation matrix.
 #'
 #' @author Thore Egeland.
@@ -34,7 +34,7 @@ stepwiseReversible = function(alleles, afreq, rate, range){
   # remaining checking will be taken care of by `mutationModel` below
   n = length(afreq)
 
-  if(boundsGamma(alleles, afreq,  range)[[1]] < rate)
+  if(maxRate(alleles, afreq,  range)[[1]] < rate)
     stop2("Model not well defined")
 
   R = matrix(ncol = n, nrow = n, 0)

@@ -4,6 +4,7 @@
 \alias{model_properties}
 \alias{isStationary}
 \alias{isReversible}
+\alias{isBounded}
 \alias{isLumpable}
 \alias{alwaysLumpable}
 \title{Mutation model properties}
@@ -11,6 +12,8 @@
 isStationary(mutmat, afreq = NULL)
 
 isReversible(mutmat, afreq = NULL)
+
+isBounded(mutmat, afreq = NULL)
 
 isLumpable(mutmat, lump)
 
@@ -31,6 +34,15 @@ Each of these functions returns TRUE of FALSE.
 \description{
 Functions for checking various properties of a mutation model, including
 stationarity, reversibility and lumpability.
+}
+\details{
+The function \code{isBounded()} checks that a mutation model is \emph{bounded} by the
+allele frequencies, i.e., that \code{mutmat[i,j] <= afreq[j]} whenever \code{i} is not
+equal to \code{j}.
+
+For each of these functions, if \code{mutmat} is a \code{mutationModel} object, i.e.,
+with male and female components, the output is TRUE if and only if both
+components satisfy the property in question.
 }
 \examples{
 
