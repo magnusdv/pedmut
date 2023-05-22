@@ -1,10 +1,16 @@
-#' Upper limits for overall mutation rate
+#' Upper limits for overall mutation rate for the stepwise reversible model.
 #'
 #' @param alleles A character vector with allele labels.
 #' @param afreq A numeric vector of allele frequencies.
 #' @param range A positive number.
 #'
-#' @return Bounds gamma for mutation matrix to be (i) well defined and (ii) regular.
+#' @return Bounds on overall mutation rate for mutation matrix to be (i) well defined and (ii) regular.
+#'
+#' @details For the stepwise reversible model, the mutation rate \eqn{r_{i,j},\,  i\neq j}
+#' is proportional to the overall mutation rate \eqn{\lambda} for given values of the range, the allele
+#' frequency \eqn{p_i} and n, the number of alleles. Hence, we can determine bounds UW
+#' and UB so that the model is well defined if \eqn{\lambda \leq UW} and bounded,
+#' i.e., \eqn{r_{i,j} \leq p_j,\, i\neq j}, if \eqn{\lambda \leq UB}, The bounds UW and UB are computed.
 #'
 #' @author Thore Egeland.
 #'
@@ -12,13 +18,13 @@
 #'
 #' @examples
 #' alleles = 1:3; afreq = c(0.2, 0.3,  0.5);  range = 0.1
-#' bounds = boundsGamma(alleles, afreq ,range)
+#' bounds = maxRate(alleles, afreq ,range)
 #' R1 = stepwiseReversible(alleles, afreq, rate = bounds[1], range)
 #' isBounded(R1, afreq)
 #' R2 = stepwiseReversible(alleles, afreq, rate = bounds[2], range)
 #' isBounded(R2, afreq)
 #'
-boundsGamma = function(alleles, afreq,  range){
+maxRate = function(alleles, afreq,  range){
   n = length(afreq)
 
   R1 = matrix(ncol = n, nrow = n, 0)
@@ -34,6 +40,6 @@ boundsGamma = function(alleles, afreq,  range){
   linesums = apply(R1, 1, sum)
   boundDefined = 1/max(linesums)
   maks = apply(R1, 2, max)
-  c(maxGammaDefined = boundDefined,
-    gammaRegular = min(afreq/maks))
+  c(UW = boundDefined,
+    UB = min(afreq/maks))
 }
