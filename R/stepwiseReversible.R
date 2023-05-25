@@ -95,14 +95,6 @@ stepwiseReversible = function(alleles, afreq, rate, range, maxRateOnly = FALSE) 
 #'
 #' @author Thore Egeland.
 #'
-#' @examples
-#' alleles = 1:3; afreq = c(0.2, 0.3,  0.5);  range = 0.1
-#' bounds = maxRate(alleles, afreq ,range)
-#' R1 = stepwiseReversible(alleles, afreq, rate = bounds[1], range)
-#' isBounded(R1, afreq)
-#' R2 = stepwiseReversible(alleles, afreq, rate = bounds[2], range)
-#' isBounded(R2, afreq)
-#'
 maxRate = function(alleles, afreq,  range){
   n = length(afreq)
 
