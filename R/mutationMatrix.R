@@ -276,7 +276,6 @@ validateMutationMatrix = function(mutmat, alleles = NULL) {
 #' @export
 print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
                                 includeProperties = TRUE, ...) {
-
   if(includeMatrix) {
     print(format(x), quote=FALSE, right=TRUE)
   }
@@ -289,6 +288,8 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
 
     model = attrs$model
     rate = attrs$rate
+    if(is.null(rate) && !is.null(afreq))
+      rate = mutRate(x, afreq)
     rate2 = attrs$rate2
     range = attrs$range
     seed = attrs$seed
