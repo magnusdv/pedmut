@@ -14,7 +14,7 @@ Description: A collection of functions for modelling mutations in
 License: GPL-3
 URL: https://github.com/magnusdv/pedmut
 Depends: 
-    R (>= 3.5.0)
+    R (>= 4.1.0)
 Suggests: 
     testthat
 Encoding: UTF-8
