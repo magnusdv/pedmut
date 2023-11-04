@@ -22,12 +22,13 @@ Although **pedmut** is self-contained, its main purpose is to be
 imported by other **ped suite** packages, like
 [pedprobr](https://github.com/magnusdv/pedprobr) (marker probabilities
 and pedigree likelihoods), [forrel](https://github.com/magnusdv/forrel)
-(forensic pedigree analysis) and [dvir](https://github.com/thoree/dvir).
+(forensic pedigree analysis) and
+[dvir](https://github.com/magnusdv/dvir).
 
 For the theoretical background of mutation models and their properties
 (stationarity, reversibility, lumpability), I recommend Chapter 5 of
 [Pedigree analysis in
-R](https://www.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2),
+R](https://shop.elsevier.com/books/pedigree-analysis-in-r/vigeland/978-0-12-824430-2),
 and the references therein.
 
 ## Installation
