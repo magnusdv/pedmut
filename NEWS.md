@@ -14,6 +14,8 @@
 
 * Fixed a floating point bug in the creation of stepwise models.
 
+* Fix broken URLs.
+
 
 # pedmut 0.6.0
 
