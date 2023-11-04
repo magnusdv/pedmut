@@ -1,3 +1,20 @@
+# pedmut 0.7.0
+
+## New features
+
+* New function `mutRate()` computing the overall mutation rate of a mutation model.
+
+* New function `isBounded()` checking if a mutation matrix M is bounded by the allele frequencies, i.e., that `M[i,j] <= afreq[j]` for all `i != j`.
+
+* New function `stepwiseReversible()`.
+
+* Added Thore Egeland as package contributor.
+
+## Bug fixes
+
+* Fixed a floating point bug in the creation of stepwise models.
+
+
 # pedmut 0.6.0
 
 ## New features
