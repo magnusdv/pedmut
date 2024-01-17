@@ -131,12 +131,13 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
   nall = length(alleles)
   if(nall == 0)
     return(NULL)
-  if(nall == 1)
-    model = "trivial"
 
   mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
 
-  if(model == "equal") {
+  if(model == "trivial" || nall == 1) {
+    mutmat[] = diag(nall)
+  }
+  else if(model == "equal") {
     mutmat[] = rate/(nall - 1)
     diag(mutmat) = 1 - rate
   }
@@ -153,9 +154,6 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
       set.seed(seed)
     mutmat[] = runif(nall^2, min = 0, max = 1)
     mutmat = mutmat / rowSums(mutmat)
-  }
-  else if(model == "trivial") {
-    mutmat[] = diag(nall)
   }
   else if (model == "stepwise") {
     alsNum = suppressWarnings(round(as.numeric(alleles), 2))
@@ -201,8 +199,8 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
     }
   }
 
-  newMutationMatrix(mutmat, model=model, afreq=afreq, rate=rate,
-                    rate2 = rate2, range = range, seed=seed)
+  newMutationMatrix(mutmat, model = model, afreq = afreq, rate = rate,
+                    rate2 = rate2, range = range, seed = seed)
 }
 
 newMutationMatrix = function(mutmat, model = "custom", afreq = NULL,
