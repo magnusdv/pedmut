@@ -227,9 +227,7 @@ toString.mutationMatrix = function(x, ...) {
 
 .equal = function(alleles, rate) {
   checkNullArg(alleles, "equal")
-  checkNullArg(rate, "equal")
-  if(!isNumber(rate, minimum = 0))
-    stop2("`rate` must be a nonnegative number: ", rate)
+  checkRate(rate, "equal")
 
   nall = length(alleles)
   m = rate/(nall - 1)
@@ -240,14 +238,17 @@ toString.mutationMatrix = function(x, ...) {
 
 .proportional = function(alleles, afreq, rate) {
   checkNullArg(alleles, "proportional")
-  checkNullArg(afreq, "proportional")
-  checkNullArg(rate, "proportional")
+  checkRate(rate, "proportional")
+  afreq = checkAfreq(afreq, alleles, checkNULL = TRUE, model = "proportional")
+
+  # Check if mutation rate is too large
+  mxr = (1 - sum(afreq^2)) / (1 - min(afreq))
+  if(rate > mxr)
+    stop2("Model undefined: max `rate` for the given input is: ", mxr)
 
   nall = length(alleles)
   a = rate / sum(afreq * (1 - afreq))
   mutmat = (1 - a) * diag(nall) + a * rep(afreq, each = nall)
-  if(any(mutmat > 1))
-    stop2("Impossible mutation matrix; try reducing `rate`")
 
   dimnames(mutmat) = list(alleles, alleles)
   mutmat
@@ -266,27 +267,17 @@ toString.mutationMatrix = function(x, ...) {
 
 .stepwise = function(alleles, rate, rate2, range) {
   checkNullArg(alleles, "stepwise")
-  checkNullArg(rate, "stepwise")
-  checkNullArg(rate2, "stepwise")
-  checkNullArg(range, "stepwise")
-  if(!isNumber(rate, minimum = 0))
-    stop2("`rate` must be a nonnegative number: ", rate)
-  if(!isNumber(rate2, minimum = 0))
-    stop2("`rate2` must be a nonnegative number: ", rate2)
+  checkRate(rate, "stepwise")
+  checkRate2(rate2, "stepwise")
+  checkRange(range, "stepwise")
   if(rate + rate2 > 1)
     stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
-  if(!(isNumber(range, minimum = 0) && range > 0))
-    stop2("`range` must be a positive number: ", range)
 
   nall = length(alleles)
   if(nall == 0)
     return(NULL)
 
-  alsNum = suppressWarnings(round(as.numeric(alleles), 2))
-  if (any(is.na(alsNum)))
-    stop2("The `stepwise` mutation model requires all alleles to have numerical names")
-  if (any(round(alsNum, 1) != alsNum))
-    stop2("Microvariants must be named as a decimal number with one decimal")
+  alsNum = checkNumericAlleles(alleles, "stepwise")
 
   # Bug fix: round these!
   microgroup = round((alsNum - round(alsNum))*10)
@@ -315,12 +306,8 @@ toString.mutationMatrix = function(x, ...) {
 }
 
 .onestep = function(alleles, rate) {
-  checkNullArg(alleles, "onestep")
-  checkNullArg(rate, "onestep")
-
-  alsNum = suppressWarnings(as.numeric(alleles))
-  if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
-    stop2("The `onestep` mutation model requires all alleles to be integers")
+  alsNum = checkIntegerAlleles(alleles, "onestep")
+  checkRate(rate, "onestep")
 
   # Initialise matrix
   nall = length(alleles)
@@ -328,13 +315,9 @@ toString.mutationMatrix = function(x, ...) {
 
   # Loop over rows
   for(i in seq_along(alsNum)) {
-    # Columns with neighbour alleles
-    nei = abs(alsNum - alsNum[i]) == 1
-
-    mutmat[i, i] = if(sum(nei) > 0) 1 - rate else 1
-
-    # Insert either rate or rate/2
-    mutmat[i, nei] = rate/sum(nei)
+    neigh = abs(alsNum - alsNum[i]) == 1 # onestep neighbours
+    mutmat[i, i] = if(sum(neigh) > 0) 1 - rate else 1
+    mutmat[i, neigh] = rate/sum(neigh) # either rate or rate/2
   }
 
   mutmat
@@ -371,4 +354,93 @@ toString.mutationMatrix = function(x, ...) {
     stop2("When custom matrix lacks names, the argument `alleles` cannot be NULL")
 
   matrix
+}
+
+
+
+# Utilities for checking parameters-------------------------------------------
+
+checkNullArg = function(arg, model = NULL) {
+  if(is.null(arg)) {
+    argname = deparse(substitute(arg))
+    if(is.null(model))
+      msg = sprintf("`%s` cannot be NULL with this model", argname)
+    else
+      msg = sprintf("`%s` cannot be NULL with the `%s` model", argname, model)
+
+    stop2(msg)
+  }
+}
+
+checkIntegerAlleles = function(alleles, model) {
+  checkNullArg(alleles, model)
+  alsNum = suppressWarnings(as.numeric(alleles))
+  if(any(is.na(alsNum)) || any(round(alsNum) != alsNum)) {
+    msg = sprintf("The `%s` model requires all alleles to be integers", model)
+    stop2(msg)
+  }
+  alsNum
+}
+
+checkNumericAlleles = function(alleles, model) {
+  alsNum = suppressWarnings(round(as.numeric(alleles), 2))
+  if(any(is.na(alsNum)))
+    stop2(sprintf("The `%s` model requires all alleles to be numeric", model))
+  oneDec = round(alsNum, 1) == alsNum
+  if(!all(oneDec))
+    stop2("Microvariants must be named as a decimal number with one decimal: ", alleles[!oneDec])
+  alsNum
+}
+
+checkAfreq = function(afreq, alleles = NULL, len = NULL, checkNULL = FALSE, model = NULL) {
+  if(checkNULL)
+    checkNullArg(afreq, model)
+
+  if(is.null(afreq))
+    return(afreq)
+
+  if(!is.numeric(afreq))
+    stop2("Expected frequency vector to be a numeric, not ", class(afreq))
+
+  if(!is.null(len) && length(afreq) != len)
+    stop2(sprintf("Expected frequency vector to have length %d, not %d", len, length(afreq)))
+
+  if(round(sum(afreq), 3) != 1)
+    stop2("Allele frequencies do not sum to 1: ", round(sum(afreq),3))
+
+  if(!is.null(alleles)) {
+
+    if(length(afreq) != length(alleles))
+      stop2(sprintf("Frequency vector does not match the number of alleles (%d)", length(alleles)))
+
+    if(!is.null(nms <- names(afreq))) {
+      if(!setequal(nms, alleles))
+        stop2("Names of frequency vectors do not match alleles: ", setdiff(nms, alleles))
+
+      # Sort
+      afreq = afreq[alleles]
+    }
+    else
+      names(afreq) = alleles
+  }
+
+  afreq
+}
+
+checkRate = function(rate, model) {
+  checkNullArg(rate, model)
+  if(!isNumber(rate, minimum = 0, maximum = 1))
+    stop2("`rate` must be a number in the interval `[0,1]`: ", rate)
+}
+
+checkRate2 = function(rate2, model) {
+  checkNullArg(rate2, model)
+  if(!isNumber(rate2, minimum = 0, maximum = 1))
+    stop2("`rate2` must be a number in the interval `[0,1]`: ", rate2)
+}
+
+checkRange = function(range, model) {
+  checkNullArg(range, model)
+  if(!isNumber(range, minimum = 0) || range == 0)
+    stop2("`range` must be a positive number: ", range)
 }
