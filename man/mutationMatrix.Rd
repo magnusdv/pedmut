@@ -47,8 +47,8 @@ steps versus mutating n steps. Required  in the "stepwise" model.}
 \item{mutmat}{An object of class \code{mutationMatrix}.}
 }
 \value{
-A square matrix with entries in \verb{[0, 1]}, with the allele labels as
-both colnames and rownames.
+An object of class \code{mutationMatrix}, essentially a square matrix with
+entries in \verb{[0, 1]}, and whose colnames and rownames are the allele labels.
 }
 \description{
 Construct mutation matrices for pedigree likelihood computations.

@@ -46,6 +46,18 @@ smartOrder = function(x) {
   all(v == v[1]) || abs(max(v) - min(v)) < tol
 }
 
+checkNullArg = function(arg, model = NULL) {
+  if(is.null(arg)) {
+    argname = deparse(substitute(arg))
+    if(is.null(model))
+      msg = sprintf("`%s` cannot be NULL with this model", argname)
+    else
+      msg = sprintf("`%s` cannot be NULL with the `%s` model", argname, model)
+
+    stop2(msg)
+  }
+}
+
 checkAfreq = function(afreq, alleles = NULL, len = NULL) {
   if(is.null(afreq))
     return(afreq)

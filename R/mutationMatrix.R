@@ -47,8 +47,8 @@
 #'   steps versus mutating n steps. Required  in the "stepwise" model.
 #' @param mutmat An object of class `mutationMatrix`.
 #'
-#' @return A square matrix with entries in `[0, 1]`, with the allele labels as
-#'   both colnames and rownames.
+#' @return An object of class `mutationMatrix`, essentially a square matrix with
+#'   entries in `[0, 1]`, and whose colnames and rownames are the allele labels.
 #'
 #' @examples
 #' mutationMatrix(alleles = 1:3, model = "equal", rate = 0.05)
@@ -59,145 +59,26 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
                                     "random", "onestep", "stepwise", "trivial"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
                           rate = NULL, seed = NULL, rate2 = NULL, range = NULL) {
+
   model = match.arg(model)
-
-  if(model == "custom") {
-    if(is.null(matrix))
-      stop2('The "custom" model requires the argument `matrix` to be non-NULL')
-    if(!is.matrix(matrix))
-      stop2("Custom matrix must be a matrix, not a ", class(matrix))
-    if(typeof(matrix) != "double")
-      stop2("Custom matrix must be numeric, not ", typeof(matrix))
-    if(nrow(matrix) != ncol(matrix))
-      stop2("Custom matrix must be square, not ", nrow(matrix), "*", ncol(matrix))
-
-    if(!is.null(mnames <- colnames(matrix))) {
-      if(!identical(mnames, rownames(matrix)))
-        stop2("Custom matrix must have identical colnames and rownames")
-
-      # If alleles are given, make sure they match - and use to permute matrix
-      if(!is.null(alleles)) {
-        if(!setequal(alleles, mnames))
-          stop2("Custom matrix names don't match the `alleles` argument")
-
-        alleles = as.character(alleles)
-        matrix = matrix[alleles, alleles]
-      }
-    }
-    else {
-      if(is.null(alleles))
-        stop2("When custom matrix lacks names, the argument `alleles` cannot be NULL")
-      if(length(alleles) != dim(matrix)[1L])
-        stop2("Length of `alleles` must equal the dimension of `matrix`")
-      dimnames(matrix) = list(alleles, alleles)
-    }
-
-    afreq = checkAfreq(afreq, alleles = colnames(matrix))
-
-    m = newMutationMatrix(matrix, model = model, afreq = afreq)
-    return(validateMutationMatrix(m))  # must be done for custom models!
-  }
-
-  ## Check input for non-custom models
-  if(!is.null(matrix))
-    stop2("The `matrix` argument must be NULL when this model is specified")
-
   alleles = if(!is.null(alleles)) as.character(alleles) else names(afreq)
-  if(is.null(alleles))
-    stop2("`alleles` cannot be NULL with this model")
+  afreq = checkAfreq(afreq, alleles)
 
-  afreq = checkAfreq(afreq, alleles = alleles)
+  # A few ad hocs for custom models
+  if(model == "custom")
+    alleles = alleles %||% colnames(matrix)
+  else if(!is.null(matrix))
+    stop2(sprintf("`matrix` cannot be used with the `%s` model", model))
 
-  if(model %in% c("equal", "proportional", "stepwise", "onestep")) {
-    if(is.null(rate))
-      stop2("`rate` cannot be NULL with this model")
-    if(!isNumber(rate, minimum = 0))
-      stop2("`rate` must be a nonnegative number: ", rate)
-  }
-  if(model %in% c("stepwise")) {
-    if(is.null(rate2))
-      stop2("`rate2` cannot be NULL with the `stepwise` model")
-    if(!isNumber(rate2, minimum = 0))
-      stop2("`rate2` must be a nonnegative number: ", rate2)
-    if(rate + rate2 > 1)
-      stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
-    if(is.null(range))
-      stop2("`range` cannot be NULL with the `stepwise` model")
-    if(!(isNumber(range, minimum = 0) && range > 0))
-      stop2("`range` must be a positive number: ", range)
-  }
-
-  ## Compute matrix according to model
-  nall = length(alleles)
-  if(nall == 0)
-    return(NULL)
-
-  mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
-
-  if(model == "trivial" || nall == 1) {
-    mutmat[] = diag(nall)
-  }
-  else if(model == "equal") {
-    mutmat[] = rate/(nall - 1)
-    diag(mutmat) = 1 - rate
-  }
-  else if(model == "proportional") {
-    if(is.null(afreq))
-      stop2("`afreq` cannot be NULL with this model")
-    alpha = rate / sum(afreq * (1 - afreq))
-    mutmat[] = (1 - alpha) * diag(nall) + alpha * rep(afreq, each = nall)
-    if(any(mutmat > 1))
-      stop2("Impossible mutation matrix; try reducing `rate`")
-  }
-  else if(model == "random") {
-    if(!is.null(seed))
-      set.seed(seed)
-    mutmat[] = runif(nall^2, min = 0, max = 1)
-    mutmat = mutmat / rowSums(mutmat)
-  }
-  else if (model == "stepwise") {
-    alsNum = suppressWarnings(round(as.numeric(alleles), 2))
-    if (any(is.na(alsNum)))
-      stop2("The `stepwise` mutation model requires all alleles to have numerical names")
-    if (any(round(alsNum, 1) != alsNum))
-      stop2("Microvariants must be named as a decimal number with one decimal")
-
-    # Bug fix: round these!
-    microgroup = round((alsNum - round(alsNum))*10)
-
-    for (i in 1:nall) {
-      microcompats = (microgroup == microgroup[i])
-      for (j in 1:nall) {
-        if (i == j) {
-          if (all(microcompats)) mutmat[i,j] = 1 - rate
-          else if (sum(microcompats) == 1) mutmat[i,j] = 1 - rate2
-          else mutmat[i,j] = 1 - rate - rate2
-        } else if (microcompats[j])
-          mutmat[i,j] = range^abs(alsNum[i] - alsNum[j])
-        else
-          mutmat[i,j] = rate2/(nall - sum(microcompats))
-      }
-      microcompats[i] = FALSE
-      if (any(microcompats))
-        mutmat[i, microcompats] = mutmat[i, microcompats]/sum(mutmat[i, microcompats]) * rate
-    }
-  }
-  else if (model == "onestep") {
-    alsNum = suppressWarnings(as.numeric(alleles))
-    if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
-      stop2("The `onestep` mutation model requires all alleles to be integers")
-
-    # Loop over rows
-    for(i in seq_along(alsNum)) {
-      # Columns with neighbour alleles
-      nei = abs(alsNum - alsNum[i]) == 1
-
-      mutmat[i, i] = if(sum(nei) > 0) 1 - rate else 1
-
-      # Insert either rate or rate/2
-      mutmat[i, nei] = rate/sum(nei)
-    }
-  }
+  mutmat = switch(model,
+    custom = .custom(matrix, alleles) |> validateMutationMatrix(),
+    equal = .equal(alleles, rate),
+    proportional = .proportional(alleles, afreq, rate),
+    random = .random(alleles, seed),
+    stepwise = .stepwise(alleles, rate, rate2, range),
+    onestep = .onestep(alleles, rate),
+    trivial = .trivial(alleles)
+  )
 
   newMutationMatrix(mutmat, model = model, afreq = afreq, rate = rate,
                     rate2 = rate2, range = range, seed = seed)
@@ -333,3 +214,160 @@ toString.mutationMatrix = function(x, ...) {
   mod
 }
 
+
+
+# Specific model definitions ----------------------------------------------
+
+.trivial = function(alleles) {
+  mutmat = diag(length(alleles))
+  dimnames(mutmat) = list(alleles, alleles)
+  mutmat
+}
+
+.equal = function(alleles, rate) {
+  checkNullArg(alleles, "equal")
+  checkNullArg(rate, "equal")
+  if(!isNumber(rate, minimum = 0))
+    stop2("`rate` must be a nonnegative number: ", rate)
+
+  nall = length(alleles)
+  m = rate/(nall - 1)
+  mutmat = matrix(m, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+  diag(mutmat) = 1 - rate
+  mutmat
+}
+
+.proportional = function(alleles, afreq, rate) {
+  checkNullArg(alleles, "proportional")
+  checkNullArg(afreq, "proportional")
+  checkNullArg(rate, "proportional")
+
+  nall = length(alleles)
+  a = rate / sum(afreq * (1 - afreq))
+  mutmat = (1 - a) * diag(nall) + a * rep(afreq, each = nall)
+  if(any(mutmat > 1))
+    stop2("Impossible mutation matrix; try reducing `rate`")
+
+  dimnames(mutmat) = list(alleles, alleles)
+  mutmat
+}
+
+.random = function(alleles, seed = NULL) {
+  checkNullArg(alleles, "random")
+  if(!is.null(seed))
+    set.seed(seed)
+
+  nall = length(alleles)
+  m = runif(nall^2, min = 0, max = 1)
+  mutmat = matrix(m, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+  mutmat / rowSums(mutmat)
+}
+
+.stepwise = function(alleles, rate, rate2, range) {
+  checkNullArg(alleles, "stepwise")
+  checkNullArg(rate, "stepwise")
+  checkNullArg(rate2, "stepwise")
+  checkNullArg(range, "stepwise")
+  if(!isNumber(rate, minimum = 0))
+    stop2("`rate` must be a nonnegative number: ", rate)
+  if(!isNumber(rate2, minimum = 0))
+    stop2("`rate2` must be a nonnegative number: ", rate2)
+  if(rate + rate2 > 1)
+    stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
+  if(!(isNumber(range, minimum = 0) && range > 0))
+    stop2("`range` must be a positive number: ", range)
+
+  nall = length(alleles)
+  if(nall == 0)
+    return(NULL)
+
+  alsNum = suppressWarnings(round(as.numeric(alleles), 2))
+  if (any(is.na(alsNum)))
+    stop2("The `stepwise` mutation model requires all alleles to have numerical names")
+  if (any(round(alsNum, 1) != alsNum))
+    stop2("Microvariants must be named as a decimal number with one decimal")
+
+  # Bug fix: round these!
+  microgroup = round((alsNum - round(alsNum))*10)
+
+  # Initialise matrix
+  mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+
+  for (i in 1:nall) {
+    microcompats = (microgroup == microgroup[i])
+    for (j in 1:nall) {
+      if (i == j) {
+        if (all(microcompats)) mutmat[i,j] = 1 - rate
+        else if (sum(microcompats) == 1) mutmat[i,j] = 1 - rate2
+        else mutmat[i,j] = 1 - rate - rate2
+      } else if (microcompats[j])
+        mutmat[i,j] = range^abs(alsNum[i] - alsNum[j])
+      else
+        mutmat[i,j] = rate2/(nall - sum(microcompats))
+    }
+    microcompats[i] = FALSE
+    if (any(microcompats))
+      mutmat[i, microcompats] = mutmat[i, microcompats]/sum(mutmat[i, microcompats]) * rate
+  }
+
+  mutmat
+}
+
+.onestep = function(alleles, rate) {
+  checkNullArg(alleles, "onestep")
+  checkNullArg(rate, "onestep")
+
+  alsNum = suppressWarnings(as.numeric(alleles))
+  if (any(is.na(alsNum)) || any(round(alsNum) != alsNum))
+    stop2("The `onestep` mutation model requires all alleles to be integers")
+
+  # Initialise matrix
+  nall = length(alleles)
+  mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+
+  # Loop over rows
+  for(i in seq_along(alsNum)) {
+    # Columns with neighbour alleles
+    nei = abs(alsNum - alsNum[i]) == 1
+
+    mutmat[i, i] = if(sum(nei) > 0) 1 - rate else 1
+
+    # Insert either rate or rate/2
+    mutmat[i, nei] = rate/sum(nei)
+  }
+
+  mutmat
+}
+
+.custom = function(matrix, alleles) {
+  checkNullArg(matrix, "custom")
+
+  if(!is.matrix(matrix))
+    stop2("Custom matrix must be a matrix, not a ", class(matrix))
+  if(typeof(matrix) != "double")
+    stop2("Custom matrix must be numeric, not ", typeof(matrix))
+  if(nrow(matrix) != ncol(matrix))
+    stop2("Custom matrix must be square, not ", nrow(matrix), "*", ncol(matrix))
+
+  nullAls = is.null(alleles)
+  if(!nullAls) alleles = as.character(alleles)
+
+  # If both dimnames and `alleles` are given: Check match and use to permute matrix
+  if(!is.null(dmn <- dimnames(matrix)) && !nullAls) {
+    chck = setequal(alleles, dmn[[1L]]) && setequal(alleles, dmn[[2L]])
+    if(!chck)
+      stop2("Custom matrix names don't match the `alleles` argument")
+
+    matrix = matrix[alleles, alleles]
+  }
+  else if(!nullAls) {
+    if(length(alleles) != dim(matrix)[1L])
+      stop2("Length of `alleles` must equal the dimension of `matrix`")
+
+    dimnames(matrix) = list(alleles, alleles)
+  }
+  else if(is.null(dmn) && nullAls)
+    stop2("When custom matrix lacks names, the argument `alleles` cannot be NULL")
+
+  matrix
+}

@@ -1,7 +1,7 @@
 
-test_that("bad inputs are caught", {
+test_that("bad custom matrices are caught", {
   expect_error(mutationMatrix(),
-               'The "custom" model requires the argument `matrix` to be non-NULL')
+               "`matrix` cannot be NULL with the `custom` model")
   expect_error(mutationMatrix(matrix=data.frame(a=1)),
                "Custom matrix must be a matrix, not a data.frame")
   expect_error(mutationMatrix(matrix=list(a=1)),
@@ -16,14 +16,20 @@ test_that("bad inputs are caught", {
                "Length of `alleles` must equal the dimension of `matrix`")
   expect_error(mutationMatrix(matrix=matrix(1, ncol=1)),
                "When custom matrix lacks names, the argument `alleles` cannot be NULL")
+  m = matrix(1/2, 2, 2, dimnames = list(c("a", "b"), NULL))
+  expect_error(mutationMatrix(matrix = m),
+               "Mutation matrix has unequal row and column names")
+})
+
+test_that("bad inputs are caught", {
   expect_error(mutationMatrix(model="eq", matrix=matrix(1, ncol=1)),
-               "The `matrix` argument must be NULL when this model is specified")
+               "`matrix` cannot be used with the `equal` model")
   expect_error(mutationMatrix(model="eq"),
-               "`alleles` cannot be NULL with this model")
+               "`alleles` cannot be NULL with the `equal` model")
   expect_error(mutationMatrix(model="eq", alleles=1:2),
-               "`rate` cannot be NULL with this model")
+               "`rate` cannot be NULL with the `equal` model")
   expect_error(mutationMatrix(model="prop", alleles=1:2, rate=0),
-               "`afreq` cannot be NULL with this model")
+               "`afreq` cannot be NULL with the `proportional` model")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=1),
                "Frequency vector does not match the number of alleles")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(0.5, 0.501)),
