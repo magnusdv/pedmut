@@ -473,6 +473,7 @@ checkRate2 = function(rate2, model) {
 
 checkRange = function(range, model) {
   checkNullArg(range, model)
-  if(!isNumber(range, minimum = 0) || range == 0)
-    stop2("`range` must be a positive number: ", range)
+  ch = isNumber(range) && range > 0 && range < 1
+  if(!ch)
+    stop2("`range` must be a number in the interval `(0,1)`: ", range)
 }

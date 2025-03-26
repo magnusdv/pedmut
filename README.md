@@ -13,13 +13,13 @@ status](https://www.r-pkg.org/badges/version/pedmut)](https://CRAN.R-project.org
 
 ## Introduction
 
-The **pedmut** package is part of the [**ped
-suite**](https://magnusdv.github.io/pedsuite/) ecosystem for pedigree
-analysis in R. Its aim is to provide a framework for modelling mutations
-in pedigree computations.
+The **pedmut** package is part of the
+[**pedsuite**](https://magnusdv.github.io/pedsuite/) ecosystem for
+pedigree analysis in R. Its aim is to provide a framework for modelling
+mutations in pedigree computations.
 
 Although **pedmut** is self-contained, its main purpose is to be
-imported by other **ped suite** packages, like
+imported by other **pedsuite** packages, like
 [pedprobr](https://github.com/magnusdv/pedprobr) (marker probabilities
 and pedigree likelihoods), [forrel](https://github.com/magnusdv/forrel)
 (forensic pedigree analysis) and
@@ -34,7 +34,7 @@ and the references therein.
 ## Installation
 
 ``` r
-# The easiest way to get `pedmut` is to install the entire `ped suite`:
+# The easiest way to get `pedmut` is to install the entire `pedsuite`:
 install.packages("pedsuite")
 
 # Alternatively, you can install just `pedmut`:
@@ -48,7 +48,7 @@ devtools::install_github("magnusdv/pedmut")
 ## A simple likelihood example
 
 The examples below require the packages **pedtools** and **pedprobr** in
-addition to **pedmut**. The first two are core members of the ped suite
+addition to **pedmut**. The first two are core members of the pedsuite
 and can be loaded collectively with `library(pedsuite)`.
 
 ``` r
@@ -77,7 +77,7 @@ The data clearly constitutes a *Mendelian error*, and gives a likelihood
 of 0 without mutation modelling:
 
 ``` r
-likelihood(x, marker = 1)
+likelihood(x)
 #> [1] 0
 ```
 
@@ -85,9 +85,9 @@ The following code sets a simple mutation model and recomputes the
 pedigree likelihood.
 
 ``` r
-x2 = setMutationModel(x, marker = 1, model = "equal", rate = 0.1)
+x2 = setMutmod(x, model = "equal", rate = 0.1)
 
-likelihood(x2, marker = 1)
+likelihood(x2)
 #> [1] 0.0125
 ```
 

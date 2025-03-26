@@ -40,7 +40,7 @@
 
 ## New features
 
-*  Various speedups, mainly concerning lumped models. These improvements should give better performance in other parts of the `ped suite`, especially in likelihood calculations with many markers.
+*  Various speedups, mainly concerning lumped models. These improvements should give better performance in other parts of the `pedsuite`, especially in likelihood calculations with many markers.
 
 * New function `lumpedModel()` which is a convenient wrapper of `lumpedMatrix()`.
 

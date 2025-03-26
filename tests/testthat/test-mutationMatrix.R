@@ -35,7 +35,9 @@ test_that("bad inputs are caught", {
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(0.5, 0.501)),
                "Allele frequencies do not sum to 1")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(.5,.5), rate=2),
-               "Impossible mutation matrix; try reducing `rate`")
+               "`rate` must be a number in the interval")
+  expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(.3,.7), rate=1),
+               "Model undefined: max `rate` for the given input is: 0.6")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=1, rate2=0.5, range=1),
                "The total mutation rate")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0),
