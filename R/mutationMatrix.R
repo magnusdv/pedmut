@@ -192,6 +192,7 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
     if(includeAttrs) cat("\n")
 
     if(!is.null(afreq)) {
+      cat("Bounded:", if(isBounded(x, afreq)) "Yes" else "No", "\n")
       cat("Stationary:", if(isStationary(x, afreq)) "Yes" else "No", "\n")
       cat("Reversible:", if(isReversible(x, afreq)) "Yes" else "No", "\n")
     }
