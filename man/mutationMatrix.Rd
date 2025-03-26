@@ -6,7 +6,7 @@
 \title{Mutation matrix}
 \usage{
 mutationMatrix(
-  model = c("custom", "equal", "proportional", "random", "onestep", "stepwise",
+  model = c("custom", "dawid", "equal", "proportional", "random", "onestep", "stepwise",
     "trivial"),
   matrix = NULL,
   alleles = NULL,
@@ -20,8 +20,8 @@ mutationMatrix(
 validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
-\item{model}{A string: either "custom", "equal", "proportional", "random",
-"stepwise" or "onestep".}
+\item{model}{A string: either "custom", "dawid", "equal", "proportional",
+"random", "stepwise" or "onestep".}
 
 \item{matrix}{When \code{model} is "custom", this must be a square matrix with
 nonnegative real entries and row sums equal to 1.}
@@ -58,6 +58,8 @@ Descriptions of the models:
 \itemize{
 \item \code{custom} : Allows any mutation matrix to be provided by the user, in the
 \code{matrix} parameter.
+\item \code{dawid} : A reversible model for integer-valued markers, proposed by Dawid
+et al. (2002).
 \item \code{equal} :  All mutations equally likely; probability \eqn{1-rate} of no
 mutation.
 \item \code{proportional} : Mutation probabilities are proportional to the target

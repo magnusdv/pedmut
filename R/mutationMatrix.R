@@ -7,6 +7,9 @@
 #' * `custom` : Allows any mutation matrix to be provided by the user, in the
 #' `matrix` parameter.
 #'
+#' * `dawid` : A reversible model for integer-valued markers, proposed by Dawid
+#' et al. (2002).
+#'
 #' * `equal` :  All mutations equally likely; probability \eqn{1-rate} of no
 #' mutation.
 #'
@@ -29,8 +32,8 @@
 #'
 #' * `trivial` : The identity matrix; i.e. no mutations are possible.
 #'
-#' @param model A string: either "custom", "equal", "proportional", "random",
-#'   "stepwise" or "onestep".
+#' @param model A string: either "custom", "dawid", "equal", "proportional",
+#'   "random", "stepwise" or "onestep".
 #' @param matrix When `model` is "custom", this must be a square matrix with
 #'   nonnegative real entries and row sums equal to 1.
 #' @param alleles A character vector (or coercible to character) with allele
@@ -55,7 +58,7 @@
 #'
 #' @importFrom stats runif
 #' @export
-mutationMatrix = function(model = c("custom", "equal", "proportional",
+mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
                                     "random", "onestep", "stepwise", "trivial"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
                           rate = NULL, seed = NULL, rate2 = NULL, range = NULL) {
@@ -72,6 +75,7 @@ mutationMatrix = function(model = c("custom", "equal", "proportional",
 
   mutmat = switch(model,
     custom = .custom(matrix, alleles) |> validateMutationMatrix(),
+    dawid = .dawid(alleles, afreq, rate, range),
     equal = .equal(alleles, rate),
     proportional = .proportional(alleles, afreq, rate),
     random = .random(alleles, seed),
@@ -321,6 +325,34 @@ toString.mutationMatrix = function(x, ...) {
   }
 
   mutmat
+}
+
+.dawid = function(alleles, afreq, rate, range) {
+  alsNum = checkIntegerAlleles(alleles, "dawid")
+  afreq = checkAfreq(afreq, alleles, checkNULL = TRUE, model = "dawid")
+
+  checkRate(rate, "dawid")
+  checkRange(range, "dawid")
+
+  n = length(alleles)
+  a = (1 - range^n)/(1 - range)
+
+  stepsize = outer(1:n, 1:n, function(i,j) abs(i-j))
+  R = rate/afreq * (1 - range) / (2*range*(n - a)) * range^stepsize
+  diag(R) = 0
+
+  # Diagonal values
+  dg = 1 - rowSums(R)
+
+  # If undefined (negative diagonal values), return info on max rate
+  if(any(dg < 0)) {
+    mxr = 1/max(rowSums(R/rate)) # See formulas in Egeland & Vigeland (2025)
+    stop2("Model undefined; max `rate` for the given input is: ", mxr)
+  }
+
+  diag(R) = dg
+  dimnames(R) = list(alleles, alleles)
+  R
 }
 
 .custom = function(matrix, alleles) {
