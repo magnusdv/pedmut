@@ -38,12 +38,12 @@ test_that("bad inputs are caught", {
                "`rate` must be a number in the interval")
   expect_error(mutationMatrix(model="prop", alleles=1:2, afreq=c(.3,.7), rate=1),
                "Model undefined: max `rate` for the given input is: 0.6")
-  expect_error(mutationMatrix(model="step", alleles=1:2, rate=1, rate2=0.5, range=1),
+  expect_error(mutationMatrix(model="step", alleles=1:2, rate=1, rate2=0.5, range=0.1),
                "The total mutation rate")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0),
                "`range` cannot be NULL with the `stepwise` model")
-  expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0, range=0),
-               "`range` must be a positive number: 0")
+  expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0, range=1),
+               "`range` must be a number in the interval")
 })
 
 
@@ -93,7 +93,7 @@ test_that("trivial model works", {
 
 test_that("trivial stepwise model is diagonal", {
   m = mutationMatrix(alleles = 1:3, model = "step",
-                     rate=0, rate2=0, range=99)
+                     rate=0, rate2=0, range=0.5)
 
   expect_silent(validateMutationMatrix(m, alleles = 1:3))
   expect_equivalent(m, mutationMatrix(matrix = diag(3), alleles = 1:3))

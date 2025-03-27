@@ -24,10 +24,10 @@ test_that("stepwise mutation model splits correctly in male/female", {
   M = mutationModel("step", alleles = alleles,
                     rate = list(male=0, female=0.1),
                     rate2 = list(male=0.2, female=0),
-                    range = list(male=2, female=3))
+                    range = list(male=0.2, female=0.3))
   matM = mutationMatrix("step", alleles = alleles,
-                        rate = 0, rate2 = 0.2, range = 2)
+                        rate = 0, rate2 = 0.2, range = 0.2)
   matF = mutationMatrix("step", alleles = alleles,
-                         rate = 0.1, rate2 = 0, range = 3)
+                         rate = 0.1, rate2 = 0, range = 0.3)
   expect_identical(M, mutationModel(list(male=matM, female=matF)))
 })

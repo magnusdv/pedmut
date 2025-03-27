@@ -24,12 +24,10 @@
 mutRate = function(mut, afreq = NULL) {
   if(isMutationModel(mut)) {
     r = lapply(mut, function(m) mutRate(m, afreq))
-
     return(if(all.equal(r[1], r[2])) r[[1]] else r)
   }
 
-  if(is.null(afreq))
-    afreq = attr(mut, "afreq") %||%
+  afreq = afreq %||% attr(mut, "afreq") %||%
       stop2("Argument `afreq` is missing and not present as model attribute")
 
   1 - sum(diag(mut) * afreq)

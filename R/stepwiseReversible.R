@@ -1,7 +1,8 @@
-#' Reversible stepwise mutation model
+#' Dawid's reversible stepwise model
 #'
 #' A reversible stepwise mutation model is created following the approach of
-#' Dawid et al. (2002).
+#' Dawid et al. (2002). NB: This function is now implemented in the
+#' `mutationMatrix()` function with the argument `model = "dawid"`.
 #'
 #' For the stepwise reversible model, the mutation rate \eqn{r_{i,j},\,  i\neq
 #' j} is proportional to the overall mutation rate \eqn{\lambda} for given
@@ -75,8 +76,9 @@ stepwiseReversible = function(alleles, afreq, rate, range, maxRateOnly = FALSE) 
       R[i,i] = 1 - sum(R[i,-i])
     }
 
+  alleles = as.character(alleles)
   dimnames(R) = list(alleles, alleles)
-  mutationModel(matrix = R, model = "custom", afreq = afreq, alleles = alleles)
+  mutationMatrix(matrix = R, model = "custom", afreq = afreq, alleles = alleles)
 }
 
 
@@ -107,10 +109,25 @@ maxRate = function(alleles, afreq,  range){
         (2*range*(n - a))*(1/afreq[i])
     }
   }
+
   # Essential that diag(R1) = 0
   linesums = apply(R1, 1, sum)
   boundDefined = 1/max(linesums)
   maks = apply(R1, 2, max)
   c(UW = boundDefined,
     UB = min(afreq/maks))
+}
+
+# Faster version of maxRate
+maxRate2 = function(afreq, range){
+  n = length(afreq)
+  stepsize = outer(1:n, 1:n, function(i,j) abs(i-j))
+
+  a = (1 - range^n) / (1 - range)
+  R = (1 - range) / (2*range*(n - a)) * range^stepsize / afreq
+  diag(R) = 0
+
+  maxDefined = 1/max(rowSums(R))
+  maxBounded = min(afreq / apply(R, 2, max))
+  c(UW = maxDefined, UB = maxBounded)
 }

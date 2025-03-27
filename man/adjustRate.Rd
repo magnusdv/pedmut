@@ -33,7 +33,8 @@ adjusted matrix) is \verb{rate/(1 - m))}, where \code{m} is the smallest diagona
 element in the original matrix.
 }
 \examples{
-m = mutationMatrix("equal", alleles = 1:3, afreq = c(.2, .3, .5), rate = 0.1)
-adjustRate(m, 0.2)
+m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
+m
+adjustRate(m, 0.4)
 
 }

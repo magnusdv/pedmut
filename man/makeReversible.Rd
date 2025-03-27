@@ -32,7 +32,7 @@ a reversible model. All methods are based on Metropolis-Hastings (MH)
 proposal functions.
 }
 \examples{
-m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.1)
+m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
 makeReversible(m)
 makeReversible(m, adjust = TRUE)
 }
