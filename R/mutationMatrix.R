@@ -173,6 +173,8 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
     if(includeMatrix) cat("\n")
 
     model = attrs$model
+    substr(model, 1, 1) = toupper(substr(model, 1, 1))
+
     rate = attrs$rate
     if(is.null(rate) && !is.null(afreq))
       rate = mutRate(x, afreq)
