@@ -42,8 +42,8 @@ test_that("bad inputs are caught", {
                "The total mutation rate")
   expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0),
                "`range` cannot be NULL with the `stepwise` model")
-  expect_error(mutationMatrix(model="step", alleles=1:2, rate=0, rate2=0, range=1),
-               "`range` must be a number in the interval")
+  expect_error(mutationMatrix(model="dawid", alleles=1:2, afreq = c(.3,.7), rate=0, rate2=0, range=1),
+               "For the `dawid` model, `range` must be in the interval")
 })
 
 

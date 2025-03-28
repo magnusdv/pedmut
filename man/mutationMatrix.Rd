@@ -42,7 +42,8 @@ on to \code{set.seed()}.}
 alleles and microvariants. Required in the "stepwise" model.}
 
 \item{range}{A positive number. The relative probability of mutating n+1
-steps versus mutating n steps. Required  in the "stepwise" model.}
+steps versus mutating n steps. Required in the "stepwise" and "dawid"
+models. Must be in the interval (0,1) for the "dawid" model.}
 
 \item{mutmat}{An object of class \code{mutationMatrix}.}
 }

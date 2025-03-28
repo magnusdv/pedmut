@@ -47,7 +47,8 @@
 #' @param rate2 A number between 0 and 1. The mutation rate between integer
 #'   alleles and microvariants. Required in the "stepwise" model.
 #' @param range A positive number. The relative probability of mutating n+1
-#'   steps versus mutating n steps. Required  in the "stepwise" model.
+#'   steps versus mutating n steps. Required in the "stepwise" and "dawid"
+#'   models. Must be in the interval (0,1) for the "dawid" model.
 #' @param mutmat An object of class `mutationMatrix`.
 #'
 #' @return An object of class `mutationMatrix`, essentially a square matrix with
@@ -275,7 +276,7 @@ toString.mutationMatrix = function(x, ...) {
   checkNullArg(alleles, "stepwise")
   checkRate(rate, "stepwise")
   checkRate2(rate2, "stepwise")
-  checkRange(range, "stepwise")
+  checkRange(range, max = Inf, "stepwise")
   if(rate + rate2 > 1)
     stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
 
@@ -334,7 +335,7 @@ toString.mutationMatrix = function(x, ...) {
   afreq = checkAfreq(afreq, alleles, checkNULL = TRUE, model = "dawid")
 
   checkRate(rate, "dawid")
-  checkRange(range, "dawid")
+  checkRange(range, max = 1, "dawid")
 
   n = length(alleles)
   a = (1 - range^n)/(1 - range)
@@ -473,9 +474,11 @@ checkRate2 = function(rate2, model) {
     stop2("`rate2` must be a number in the interval `[0,1]`: ", rate2)
 }
 
-checkRange = function(range, model) {
+checkRange = function(range, max = Inf, model) {
   checkNullArg(range, model)
-  ch = isNumber(range) && range > 0 && range < 1
-  if(!ch)
-    stop2("`range` must be a number in the interval `(0,1)`: ", range)
+  ch = isNumber(range) && range > 0 && range < max
+  if(!ch) {
+    msg = sprintf("For the `%s` model, `range` must be in the interval `(0,%g)`: ", model, max)
+    stop2(msg)
+  }
 }
