@@ -10,13 +10,14 @@
 #' adjusted matrix) is `rate/(1 - m))`, where `m` is the smallest diagonal
 #' element in the original matrix.
 #'
-#' @param mutmat A mutation matrix.
+#' @param mutmat A mutation matrix with nonzero mutation overall rate.
 #' @param newrate The new overall mutation rate.
 #' @param afreq The allele frequencies. Extracted from the mutation matrix if
 #'   not provided.
 #' @param rate The current overall mutation rate. Calculated from the input if
 #'   not provided.
 #'
+#' @seealso [mutRate()]
 #'
 #' @returns A new mutation matrix with the adjusted rate.
 #'
@@ -29,6 +30,8 @@
 adjustRate = function(mutmat, newrate, afreq = NULL, rate = NULL) {
   afreq = afreq %||% attr(mutmat, "afreq") %||% stop2("`afreq` not found")
   rate = rate %||% mutRate(mutmat, afreq)
+  if(rate < sqrt(.Machine$double.eps))
+    stop2("Cannot adjust rate for a model with rate 0")
 
   M = as.matrix(mutmat)
   a = newrate / rate

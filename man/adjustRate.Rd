@@ -7,7 +7,7 @@
 adjustRate(mutmat, newrate, afreq = NULL, rate = NULL)
 }
 \arguments{
-\item{mutmat}{A mutation matrix.}
+\item{mutmat}{A mutation matrix with nonzero mutation overall rate.}
 
 \item{newrate}{The new overall mutation rate.}
 
@@ -37,4 +37,7 @@ m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
 m
 adjustRate(m, 0.4)
 
+}
+\seealso{
+\code{\link[=mutRate]{mutRate()}}
 }
