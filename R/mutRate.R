@@ -24,7 +24,7 @@
 mutRate = function(mut, afreq = NULL) {
   if(isMutationModel(mut)) {
     r = lapply(mut, function(m) mutRate(m, afreq))
-    return(if(all.equal(r[1], r[2])) r[[1]] else r)
+    return(if(all.equal(r$male, r$female)) r$male else unlist(r))
   }
 
   afreq = afreq %||% attr(mut, "afreq") %||%
