@@ -1,10 +1,10 @@
 #' Transformations to reversibility
 #'
-#' This function implements three methods for transforming a mutation matrix to
-#' a reversible model. All methods are based on Metropolis-Hastings proposal
+#' This function implements three methods for transforming a mutation matrix
+#' into a reversible one. All methods are based on Metropolis-Hastings proposal
 #' functions.
 #'
-#' @param mutmat A mutation matrix.
+#' @param mutmat A [mutationMatrix()] or [mutationModel()].
 #' @param method A character indicating which transformation to use. Either "BA"
 #'   (Barker), "MH" (Metropolis-Hastings) or "PR" (preserved rate).
 #' @param afreq A vector of allele frequencies. Extracted from `mutmat` if not
@@ -22,9 +22,19 @@
 #' makeReversible(m, "MH", adjust = TRUE)
 #' # makeReversible(m, "PR") # not well-defined!
 #'
+#' # Apply to full model with different female/male rates
+#' mod = mutationModel("equal", afreq = c(a=0.2, b=0.3, c=0.5),
+#'                     rate = list(female = 0.1, male = 0.2))
+#' modR = makeReversible(mod)
+#'
 #' @export
 makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = FALSE,
                           afreq = NULL) {
+
+  if(isMutationModel(mutmat)) {
+    r = .makeRevModel(mutmat, method = method, adjust = adjust, afreq = afreq)
+    return(r)
+  }
 
   method = match.arg(method)
   afreq = afreq %||% attr(mutmat, "afreq") %||% stop2("`afreq` must be provided")
@@ -55,12 +65,35 @@ makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = FALSE,
   diag(R) = 0
   diag(R) = 1 - rowSums(R)
 
-  # Adjust rate if needed
-  if((method != "PR") && adjust) {
-    origRate = mutRate(M, afreq)
-    R = adjustRate(R, newrate = origRate, afreq = afreq)
+  # Original overall rate
+  rate = mutRate(M, afreq)
+
+  # Adjust rate of R if needed
+  if(adjust && method != "PR") {
+    R = adjustRate(R, newrate = rate, afreq = afreq)
+    newrate = rate
+  }
+  else {
+    newrate = mutRate(R, afreq)
   }
 
   # Return as mutation matrix
-  newMutationMatrix(R, "custom", afreq = afreq, rate = mutRate(R, afreq))
+  newMutationMatrix(R, "custom", afreq = afreq, rate = newrate)
+}
+
+
+
+# Extend `makeReversible()` to full models --------------------------------
+
+.makeRevModel = function(mutmod, ...) {
+  revF = makeReversible(mutmod$female, ...)
+
+  sexeq = sexEqual(mutmod)
+  revM = if(sexeq) revF else makeReversible(mutmod$male, ...)
+
+  lumpable = alwaysLumpable(revF) && (sexeq || alwaysLumpable(revM))
+
+  # Return model object
+  structure(list(female = revF, male = revM), sexEqual = sexeq,
+            alwaysLumpable = lumpable, class = "mutationModel")
 }

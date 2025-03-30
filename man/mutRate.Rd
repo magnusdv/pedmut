@@ -7,7 +7,7 @@
 mutRate(mut, afreq = NULL)
 }
 \arguments{
-\item{mut}{A \code{\link[=mutationModel]{mutationModel()}} or \code{\link[=mutationMatrix]{mutationMatrix()}}.}
+\item{mut}{A \code{\link[=mutationMatrix]{mutationMatrix()}} or \code{\link[=mutationModel]{mutationModel()}}.}
 
 \item{afreq}{A vector of allele frequencies.}
 }
@@ -22,8 +22,8 @@ set of allele frequencies.
 \details{
 The mutation rate is found by the formula \code{1 - sum(diag(mut) * afreq)}.
 
-If \code{mut} is a \code{\link[=mutationModel]{mutationModel()}}, the rate is calculated separately for the
-male and female matrices.
+If \code{mut} is a full \code{\link[=mutationModel]{mutationModel()}}, the rate is calculated separately for
+the male and female matrices.
 }
 \examples{
 m = mutationMatrix("stepwise", alleles = 1:4, afreq = c(.1,.2,.3,.4),

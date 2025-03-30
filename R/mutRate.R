@@ -5,10 +5,10 @@
 #'
 #' The mutation rate is found by the formula `1 - sum(diag(mut) * afreq)`.
 #'
-#' If `mut` is a [mutationModel()], the rate is calculated separately for the
-#' male and female matrices.
+#' If `mut` is a full [mutationModel()], the rate is calculated separately for
+#' the male and female matrices.
 #'
-#' @param mut A [mutationModel()] or [mutationMatrix()].
+#' @param mut A [mutationMatrix()] or [mutationModel()].
 #' @param afreq A vector of allele frequencies.
 #'
 #' @return A single number, or (if `mut` is a [mutationModel()] and the female
