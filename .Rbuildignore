@@ -6,3 +6,4 @@
 ^revdep$
 ^CRAN-SUBMISSION$
 ^Rprof.out$
+^.github$

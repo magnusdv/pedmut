@@ -1,8 +1,10 @@
 #' Dawid's reversible stepwise model
 #'
-#' A reversible stepwise mutation model is created following the approach of
-#' Dawid et al. (2002). NB: This function is now implemented in the
-#' `mutationMatrix()` function with the argument `model = "dawid"`.
+#' #' A reversible stepwise mutation model is created following the approach of
+#' Dawid et al. (2002).
+#'
+#' **NB: This function is deprecated: Use `mutationMatrix(model = "dawid", ...)`
+#' instead.**
 #'
 #' For the stepwise reversible model, the mutation rate \eqn{r_{i,j},\,  i\neq
 #' j} is proportional to the overall mutation rate \eqn{\lambda} for given

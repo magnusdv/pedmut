@@ -28,11 +28,13 @@ input. The latter (UB) is the maximum rate under the additional restraint
 that the model is bounded by \code{afreq}.
 }
 \description{
-A reversible stepwise mutation model is created following the approach of
-Dawid et al. (2002). NB: This function is now implemented in the
-\code{mutationMatrix()} function with the argument \code{model = "dawid"}.
+#' A reversible stepwise mutation model is created following the approach of
+Dawid et al. (2002).
 }
 \details{
+\strong{NB: This function is deprecated: Use \code{mutationMatrix(model = "dawid", ...)}
+instead.}
+
 For the stepwise reversible model, the mutation rate \eqn{r_{i,j},\,  i\neq
 j} is proportional to the overall mutation rate \eqn{\lambda} for given
 values of the range, the allele frequency \eqn{p_i} and n, the number of
