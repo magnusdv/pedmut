@@ -118,8 +118,9 @@ maxRate = function(alleles, afreq,  range){
     UB = min(afreq/maks))
 }
 
-# Faster version of maxRate
-maxRate2 = function(afreq, range){
+# Faster version of maxRate.
+# Not currently used.
+maxRateDawid = function(afreq, range){
   n = length(afreq)
   stepsize = outer(1:n, 1:n, function(i,j) abs(i-j))
 

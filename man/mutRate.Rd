@@ -4,15 +4,15 @@
 \alias{mutRate}
 \title{Overall mutation rate}
 \usage{
-mutRate(mut, afreq = NULL)
+mutRate(mutmat, afreq = NULL)
 }
 \arguments{
-\item{mut}{A \code{\link[=mutationMatrix]{mutationMatrix()}} or \code{\link[=mutationModel]{mutationModel()}}.}
+\item{mutmat}{A \code{\link[=mutationMatrix]{mutationMatrix()}} or \code{\link[=mutationModel]{mutationModel()}}.}
 
 \item{afreq}{A vector of allele frequencies.}
 }
 \value{
-A single number, or (if \code{mut} is a \code{\link[=mutationModel]{mutationModel()}} and the female
+A single number, or (if \code{mutmat} is a \code{\link[=mutationModel]{mutationModel()}} and the female
 and male rates differ) a list of two numbers, named "female" and "male".
 }
 \description{
@@ -20,9 +20,9 @@ Calculate the overall mutation rate at a locus, given a mutation model an a
 set of allele frequencies.
 }
 \details{
-The mutation rate is found by the formula \code{1 - sum(diag(mut) * afreq)}.
+The mutation rate is found by the formula \code{1 - sum(diag(mutmat) * afreq)}.
 
-If \code{mut} is a full \code{\link[=mutationModel]{mutationModel()}}, the rate is calculated separately for
+If \code{mutmat} is a full \code{\link[=mutationModel]{mutationModel()}}, the rate is calculated separately for
 the male and female matrices.
 }
 \examples{
