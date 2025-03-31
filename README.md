@@ -102,10 +102,11 @@ mutmod(x2, marker = 1)
 #> 1 0.9 0.1
 #> 2 0.1 0.9
 #> 
-#> Model: equal 
+#> Model: Equal 
 #> Rate: 0.1 
 #> Frequencies: 0.5, 0.5 
 #> 
+#> Bounded: Yes 
 #> Stationary: Yes 
 #> Reversible: Yes 
 #> Lumpable: Always
@@ -130,31 +131,40 @@ The mutation models currently implemented in **pedmut** are:
 - `proportional`: Mutation probabilities are proportional to the target
   allele frequencies. Parameters: `rate`, `afreq`.
 
-- `random`: This produces a matrix of random numbers, each row
-  normalised to have sum 1. Parameters: `seed`.
-
-- `custom`: Allows any valid mutation matrix to be provided by the user.
-  Parameters: `matrix`.
-
 - `onestep`: Applicable if all alleles are integers. Mutations are
   allowed only to the nearest integer neighbour. Parameters: `rate`.
 
-- `stepwise`: For this model alleles must be integers or decimal numbers
-  with a single decimal, such as ‘17.1’, indicating a microvariant.
-  Mutation rates depend on whether transitions are within the same group
-  or not, i.e., between integer alleles and microvariants in the latter
-  case. Mutations also depend on the size of the mutation as modelled by
-  the parameter `range`, the relative probability of mutating n+1 steps
-  versus mutating n steps. Parameters: `rate`, `rate2`, `range`.
+- `stepwise`: For this model alleles must be integers or single-decimal
+  microvariants (e.g. 17.1). Mutation rates depend on group (integer vs
+  microvariant), with `rate` for same-group and `rate2` for
+  between-group mutations. Mutations also depend on step size; the
+  `range` parameter gives the relative probability of mutating n+1 steps
+  versus n steps. Parameters: `rate`, `rate2`, `range`.
+
+- `dawid`: A reversible stepwise mutation model, following the approach
+  of Dawid et al. (2002). Parameters: `rate`, `range`.
+
+- `random`: Generates a random mutation matrix, optionally conditioned
+  on a fixed overall mutation rate. Parameters: `rate`, `seed` (both
+  optional).
 
 - `trivial`: Diagonal mutation matrix with 1 on the diagonal.
   Parameters: None.
+
+- `custom`: Any valid mutation matrix provided by the user. Parameters:
+  `matrix`.
 
 ## Model properties
 
 Several properties of mutation models are of interest (both theoretical
 and practical) for likelihood computations. The **pedmut** package
 provides utility functions for quickly checking these:
+
+- `isBounded(M, afreq)`: Checks if `M` is bounded by the allele
+  frequencies, meaning that the probability of mutating into an allele
+  never exceeds the population frequency of that allele. Unbounded
+  models may give counter-intuitive results, like LR \> 1 in a paternity
+  case where the alleged father and child have no alleles in common.
 
 - `isStationary(M, afreq)`: Checks if `afreq` is a right eigenvector of
   the mutation matrix `M`. Stationary models have the desirable property
@@ -183,7 +193,7 @@ mutationMatrix("equal", rate = 0.1, alleles = c("a", "b", "c"))
 #> b 0.05 0.90 0.05
 #> c 0.05 0.05 0.90
 #> 
-#> Model: equal 
+#> Model: Equal 
 #> Rate: 0.1 
 #> 
 #> Lumpable: Always
@@ -199,10 +209,11 @@ mutationMatrix("prop", rate = 0.1, alleles = c("a", "b", "c"), afreq = c(0.7, 0.
 #> b 0.15217391 0.82608696 0.02173913
 #> c 0.15217391 0.04347826 0.80434783
 #> 
-#> Model: proportional 
+#> Model: Proportional 
 #> Rate: 0.1 
 #> Frequencies: 0.7, 0.2, 0.1 
 #> 
+#> Bounded: Yes 
 #> Stationary: Yes 
 #> Reversible: Yes 
 #> Lumpable: Always
@@ -222,10 +233,8 @@ mutationMatrix(model = "stepwise", alleles = c("16", "17", "18", "16.1", "17.1")
 #> 16.1 0.0003333333 0.0003333333 0.0003333333 0.9960000000 0.0030000000
 #> 17.1 0.0003333333 0.0003333333 0.0003333333 0.0030000000 0.9960000000
 #> 
-#> Model: stepwise 
+#> Model: Stepwise 
 #> Rate: 0.003 
-#> Rate2: 0.001 
-#> Range: 0.5 
 #> 
 #> Lumpable: Not always
 ```
@@ -241,7 +250,7 @@ mutationMatrix(model = "onestep", alleles = c("16", "17", "18"), rate = 0.04)
 #> 17 0.02 0.96 0.02
 #> 18 0.00 0.04 0.96
 #> 
-#> Model: onestep 
+#> Model: Onestep 
 #> Rate: 0.04 
 #> 
 #> Lumpable: Not always
