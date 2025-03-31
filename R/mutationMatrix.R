@@ -4,20 +4,21 @@
 #'
 #' Descriptions of the models:
 #'
-#' * `custom` : Allows any mutation matrix to be provided by the user, in the
+#' * `custom`: Allows any mutation matrix to be provided by the user, in the
 #' `matrix` parameter.
 #'
-#' * `dawid` : A reversible model for integer-valued markers, proposed by Dawid
+#' * `dawid`: A reversible model for integer-valued markers, proposed by Dawid
 #' et al. (2002).
 #'
-#' * `equal` :  All mutations equally likely; probability \eqn{1-rate} of no
+#' * `equal`:  All mutations equally likely; probability \eqn{1-rate} of no
 #' mutation.
 #'
-#' * `proportional` : Mutation probabilities are proportional to the target
+#' * `proportional`: Mutation probabilities are proportional to the target
 #' allele frequencies.
 #'
-#' * `random` : This produces a matrix of random numbers, where each row is
-#' normalised so that it sums to 1.
+#' * `random`: This produces a matrix of random numbers, where each row is
+#' normalised so that it sums to 1. If `rate` (and `afreq`) is provided, the
+#' mutation matrix is conditional on the overall mutation rate.
 #'
 #' * `onestep`: A mutation model for microsatellite markers, allowing mutations
 #' only to the nearest neighbours in the allelic ladder. For example, '10' may
@@ -30,7 +31,7 @@
 #' "microvariants" like '9.3'). Mutations also depend on the size of the
 #' mutation if the parameter 'range' differs from 1.
 #'
-#' * `trivial` : The identity matrix; i.e. no mutations are possible.
+#' * `trivial`: The identity matrix, implying that no mutations are possible.
 #'
 #' @param model A string: either "custom", "dawid", "equal", "proportional",
 #'   "random", "stepwise" or "onestep".
@@ -55,7 +56,9 @@
 #'   entries in `[0, 1]`, and whose colnames and rownames are the allele labels.
 #'
 #' @examples
-#' mutationMatrix(alleles = 1:3, model = "equal", rate = 0.05)
+#' mutationMatrix("equal", alleles = 1:3, rate = 0.05)
+#'
+#' mutationMatrix("random", afreq = c(a=0.3, b=0.7), rate = 0.05, seed = 1)
 #'
 #' @importFrom stats runif
 #' @export
@@ -79,7 +82,7 @@ mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
     dawid = .dawid(alleles, afreq, rate, range),
     equal = .equal(alleles, rate),
     proportional = .proportional(alleles, afreq, rate),
-    random = .random(alleles, seed),
+    random = .random(alleles, afreq, rate, seed),
     stepwise = .stepwise(alleles, rate, rate2, range),
     onestep = .onestep(alleles, rate),
     trivial = .trivial(alleles)
@@ -261,15 +264,57 @@ toString.mutationMatrix = function(x, ...) {
   mutmat
 }
 
-.random = function(alleles, seed = NULL) {
+.random = function(alleles, afreq = NULL, rate = NULL, seed = NULL) {
+
   checkNullArg(alleles, "random")
   if(!is.null(seed))
     set.seed(seed)
 
-  nall = length(alleles)
-  m = runif(nall^2, min = 0, max = 1)
-  mutmat = matrix(m, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
-  mutmat / rowSums(mutmat)
+  n = length(alleles)
+
+  # Case 1: Unconditional random matrix -------------------------------------
+
+  if(is.null(rate)) {
+    m = runif(n^2, min = 0, max = 1)
+    mutmat = matrix(m, ncol = n, nrow = n, dimnames = list(alleles, alleles))
+    return(mutmat / rowSums(mutmat))
+  }
+
+  # Case 2: Conditional on rate ---------------------------------------------
+
+  checkRate(rate, "random")
+  if(is.null(afreq))
+    stop2("`afreq` is required when generating `random` model with fixed rate")
+
+  ### Step 1: Diagonal m such that m %*% afreq = 1-rate
+  s = 1 - rate
+
+  # Feasible starting point (inside [0,1]^n)
+  m0 = rep(s, n)  # sum(m0*afreq) = s*sum(afreq) = s
+
+  # Random vector orthogonal to afreq
+  u = runif(n)
+  v = u - sum(u * afreq)/sum(afreq*afreq) * afreq
+
+  # Range of k such that m0 + k*v is inside the unit cube: 0 < m0 + k*v < 1
+  k1 = (0 - m0) / v
+  k2 = (1 - m0) / v
+  kMin = max(pmin(k1, k2))
+  kMax = min(pmax(k1, k2))
+  k = runif(1, kMin, kMax)
+
+  # Diagonal vector
+  m = m0 + k*v
+  mutmat = diag(m)
+
+  ### Step 2: Fill rows randomly to sum 1
+  for(i in 1:n) {
+    y = runif(n - 1)
+    mutmat[i, -i] = y / sum(y) * (1 - mutmat[i, i])
+  }
+
+  dimnames(mutmat) = list(alleles, alleles)
+  mutmat
 }
 
 .stepwise = function(alleles, rate, rate2, range) {

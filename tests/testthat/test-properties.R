@@ -15,11 +15,12 @@ test_that("proportial model is stationary and reversible", {
   expect_true(isReversible(mutmat, afreq))
 })
 
-test_that("random model 3*3 is not stationary (nor reversible)", {
-  afreq = c(0.2, 0.3, 0.5)
-  mutmat = mutationMatrix(alleles = 1:3, model = "random", rate = 0.1)
-  expect_false(isStationary(mutmat, afreq))
-  expect_false(isReversible(mutmat, afreq))
+test_that("random model 3*3 has correct rate", {
+  afreq = c(a=0.2, b=0.3, c=0.5)
+  m1 = mutationMatrix(afreq = afreq, model = "random", rate = 0.001, seed = 1)
+  expect_equal(mutRate(m1), 0.001)
+  m2 = mutationMatrix(afreq = afreq, model = "random", rate = 0.999, seed = 1)
+  expect_equal(mutRate(m2), 0.999)
 })
 
 test_that("equal model is always lumpable", {
