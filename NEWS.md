@@ -1,3 +1,28 @@
+# pedmut 0.8.0
+
+## New features
+
+* New function `makeReversible()` implementing three transformations to reversibility.
+
+* New function `adjustRate()` for adjusting the overall mutation rate of a mutation matrix.
+
+* `mutationModel(model = "dawid", ...)` replaces the function `stepwiseReversible()`.
+
+* Random mutation models can now condition on a fixed overall mutation rate.
+
+* Include info on boundedness in the print method for mutation models.
+
+## Other
+
+* Refactored `mutationMatrix()` for better code maintainability.
+
+* Bug fix: Don't trivialise model name when there is only 1 alleles.
+
+* Several minor improvements in documentation and examples.
+
+* Use rhub v2.
+
+
 # pedmut 0.7.0
 
 ## New features
