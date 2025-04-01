@@ -194,8 +194,6 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
     substr(model, 1, 1) = toupper(substr(model, 1, 1))
 
     rate = attrs$rate
-    if(is.null(rate) && !is.null(afreq))
-      rate = mutRate(x, afreq)
     rate2 = attrs$rate2
     range = attrs$range
     seed = attrs$seed
@@ -221,6 +219,7 @@ print.mutationMatrix = function(x, includeMatrix = TRUE, includeAttrs = TRUE,
       cat("Reversible:", if(isReversible(x, afreq)) "Yes" else "No", "\n")
     }
     cat("Lumpable:", if(alwaysLumpable(x)) "Always" else "Not always", "\n")
+    cat("Overall rate:", if(is.null(afreq)) "NA" else round(mutRate(x, afreq), 5), "\n")
   }
 }
 
@@ -253,9 +252,14 @@ toString.mutationMatrix = function(x, ...) {
   checkNullArg(alleles, "equal")
   checkRate(rate, "equal")
 
-  nall = length(alleles)
-  m = rate/(nall - 1)
-  mutmat = matrix(m, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+  n = length(alleles)
+  if(n == 0)
+    stop2("No alleles given")
+  if(n == 1)
+    return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
+
+  m = rate/(n - 1)
+  mutmat = matrix(m, ncol = n, nrow = n, dimnames = list(alleles, alleles))
   diag(mutmat) = 1 - rate
   mutmat
 }
@@ -270,9 +274,14 @@ toString.mutationMatrix = function(x, ...) {
   if(rate > mxr)
     stop2("Model undefined: max `rate` for the given input is: ", mxr)
 
-  nall = length(alleles)
+  n = length(alleles)
+  if(n == 0)
+    stop2("No alleles given")
+  if(n == 1)
+    return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
+
   a = rate / sum(afreq * (1 - afreq))
-  mutmat = (1 - a) * diag(nall) + a * rep(afreq, each = nall)
+  mutmat = (1 - a) * diag(n) + a * rep(afreq, each = n)
 
   dimnames(mutmat) = list(alleles, alleles)
   mutmat
@@ -285,6 +294,10 @@ toString.mutationMatrix = function(x, ...) {
     set.seed(seed)
 
   n = length(alleles)
+  if(n == 0)
+    stop2("No alleles given")
+  if(n == 1)
+    return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
 
   # Case 1: Unconditional random matrix -------------------------------------
 
@@ -339,9 +352,11 @@ toString.mutationMatrix = function(x, ...) {
   if(rate + rate2 > 1)
     stop2("The total mutation rate `rate + rate2` must be in [0,1]: ", rate + rate2)
 
-  nall = length(alleles)
-  if(nall == 0)
-    return(NULL)
+  n = length(alleles)
+  if(n == 0)
+    stop2("No alleles given")
+  if(n == 1)
+    return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
 
   alsNum = checkNumericAlleles(alleles, "stepwise")
 
@@ -349,11 +364,11 @@ toString.mutationMatrix = function(x, ...) {
   microgroup = round((alsNum - round(alsNum))*10)
 
   # Initialise matrix
-  mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+  mutmat = matrix(0, ncol = n, nrow = n, dimnames = list(alleles, alleles))
 
-  for (i in 1:nall) {
+  for (i in 1:n) {
     microcompats = (microgroup == microgroup[i])
-    for (j in 1:nall) {
+    for (j in 1:n) {
       if (i == j) {
         if (all(microcompats)) mutmat[i,j] = 1 - rate
         else if (sum(microcompats) == 1) mutmat[i,j] = 1 - rate2
@@ -361,7 +376,7 @@ toString.mutationMatrix = function(x, ...) {
       } else if (microcompats[j])
         mutmat[i,j] = range^abs(alsNum[i] - alsNum[j])
       else
-        mutmat[i,j] = rate2/(nall - sum(microcompats))
+        mutmat[i,j] = rate2/(n - sum(microcompats))
     }
     microcompats[i] = FALSE
     if (any(microcompats))
@@ -376,8 +391,13 @@ toString.mutationMatrix = function(x, ...) {
   checkRate(rate, "onestep")
 
   # Initialise matrix
-  nall = length(alleles)
-  mutmat = matrix(0, ncol = nall, nrow = nall, dimnames = list(alleles, alleles))
+  n = length(alleles)
+  if(n == 0)
+    stop2("No alleles given")
+  if(n == 1)
+    return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
+
+  mutmat = matrix(0, ncol = n, nrow = n, dimnames = list(alleles, alleles))
 
   # Loop over rows
   for(i in seq_along(alsNum)) {
@@ -397,6 +417,11 @@ toString.mutationMatrix = function(x, ...) {
   checkRange(range, max = 1, "dawid")
 
   n = length(alleles)
+  if(n == 0)
+    stop2("No alleles given")
+  if(n == 1)
+    return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
+
   a = (1 - range^n)/(1 - range)
 
   stepsize = outer(1:n, 1:n, function(i,j) abs(i-j))
