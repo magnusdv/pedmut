@@ -4,6 +4,9 @@
 #' into a reversible one. All methods are based on Metropolis-Hastings proposal
 #' functions.
 #'
+#' These transformations may also be applied through the `transform` argument of
+#' [mutationMatrix()] and [mutationModel()].
+#'
 #' @param mutmat A [mutationMatrix()] or [mutationModel()].
 #' @param method A character indicating which transformation to use. Either "BA"
 #'   (Barker), "MH" (Metropolis-Hastings) or "PR" (preserved rate).

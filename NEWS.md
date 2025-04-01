@@ -4,6 +4,8 @@
 
 * New function `makeReversible()` implementing three transformations to reversibility.
 
+* `mutationMatrix()` and `mutationModel()` gain a `transform` argument for applying transformations to reversibility on the fly.
+
 * New function `adjustRate()` for adjusting the overall mutation rate of a mutation matrix.
 
 * `mutationModel(model = "dawid", ...)` replaces the function `stepwiseReversible()`.
@@ -16,7 +18,7 @@
 
 * Refactored `mutationMatrix()` for better code maintainability.
 
-* Bug fix: Don't trivialise model name when there is only 1 alleles.
+* Bug fix: Don't trivialise model name when there is only 1 allele.
 
 * Several minor improvements in documentation and examples.
 

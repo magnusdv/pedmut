@@ -32,6 +32,10 @@ This function implements three methods for transforming a mutation matrix
 into a reversible one. All methods are based on Metropolis-Hastings proposal
 functions.
 }
+\details{
+These transformations may also be applied through the \code{transform} argument of
+\code{\link[=mutationMatrix]{mutationMatrix()}} and \code{\link[=mutationModel]{mutationModel()}}.
+}
 \examples{
 m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
 makeReversible(m)
