@@ -12,18 +12,18 @@
 #'   (Barker), "MH" (Metropolis-Hastings) or "PR" (preserved rate).
 #' @param afreq A vector of allele frequencies. Extracted from `mutmat` if not
 #'   provided.
-#' @param adjust Logical. If TRUE, the overall mutation rate is adjusted to
-#'   preserve the original rate; see [adjustRate()]. Not relevant for the "PR"
-#'   method, which by construction always preserves the overall rate.
+#' @param adjust Logical. If TRUE (default), the overall mutation rate is
+#'   adjusted to preserve the original rate; see [adjustRate()]. Not relevant
+#'   for method "PR", which by construction always preserves the overall rate.
 #' @returns A reversible mutation matrix with the same allele frequencies.
 #'
 #' @examples
 #' m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
 #' makeReversible(m)
-#' makeReversible(m, adjust = TRUE)
+#' makeReversible(m, adjust = FALSE)  # rate differs!
 #'
-#' makeReversible(m, "MH", adjust = TRUE)
-#' # makeReversible(m, "PR") # not well-defined!
+#' makeReversible(m, "MH")
+#' # makeReversible(m, "PR") # not well-defined
 #'
 #' # Apply to full model with different female/male rates
 #' mod = mutationModel("equal", afreq = c(a=0.2, b=0.3, c=0.5),
@@ -31,7 +31,7 @@
 #' modR = makeReversible(mod)
 #'
 #' @export
-makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = FALSE,
+makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = TRUE,
                           afreq = NULL) {
 
   if(isMutationModel(mutmat)) {

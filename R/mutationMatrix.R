@@ -10,7 +10,7 @@
 #' * `dawid`: A reversible model for integer-valued markers, proposed by Dawid
 #' et al. (2002).
 #'
-#' * `equal`:  All mutations equally likely; probability \eqn{1-rate} of no
+#' * `equal`: All mutations equally likely; probability \eqn{1-rate} of no
 #' mutation.
 #'
 #' * `proportional`: Mutation probabilities are proportional to the target
@@ -20,11 +20,11 @@
 #' normalised so that it sums to 1. If `rate` (and `afreq`) is provided, the
 #' mutation matrix is conditional on the overall mutation rate.
 #'
-#' * `onestep`: A mutation model for microsatellite markers, allowing mutations
-#' only to the nearest neighbours in the allelic ladder. For example, '10' may
-#' mutate to either '9' or '11', unless '10' is the lowest allele, in which case
-#' '11' is the only option. This model is not applicable to loci with
-#' non-integral microvariants.
+#' * `onestep`: A mutation model for markers with integer alleles, allowing
+#' mutations only to the nearest neighbours in the allelic ladder. For example,
+#' '10' may mutate to either '9' or '11', unless '10' is the lowest allele, in
+#' which case '11' is the only option. This model is not applicable to loci with
+#' non-integer microvariants.
 #'
 #' * `stepwise`: A common model in forensic genetics, allowing different
 #' mutation rates between integer alleles (like '9') and non-integer
