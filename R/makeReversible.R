@@ -55,7 +55,7 @@ makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = FALSE,
     },
     PR = {
       # Check if the model is well-defined (formula from paper)
-      if(any(rowSums(pm) < afreq * (1 + diag(M))))
+      if(any(rowSums(pm) > afreq * (1 + diag(M))))
         stop2("The PR transformation is not well-defined for this model")
       R = (pm + pmT)/(2*afreq)
     }
