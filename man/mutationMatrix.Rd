@@ -14,7 +14,8 @@ mutationMatrix(
   rate = NULL,
   seed = NULL,
   rate2 = NULL,
-  range = NULL
+  range = NULL,
+  transform = NULL
 )
 
 validateMutationMatrix(mutmat, alleles = NULL)
@@ -45,11 +46,15 @@ alleles and microvariants. Required in the "stepwise" model.}
 steps versus mutating n steps. Required in the "stepwise" and "dawid"
 models. Must be in the interval (0,1) for the "dawid" model.}
 
+\item{transform}{Either NULL (default) or the name of a transformation to be
+applied to the mutation model. See \code{\link[=makeReversible]{makeReversible()}}.}
+
 \item{mutmat}{An object of class \code{mutationMatrix}.}
 }
 \value{
-An object of class \code{mutationMatrix}, essentially a square matrix with
-entries in \verb{[0, 1]}, and whose colnames and rownames are the allele labels.
+An object of class \code{mutationMatrix}, essentially a square numeric
+matrix with various attributes. The matrix has entries in \verb{[0, 1]} and all
+rows sum to 1. Both colnames and rownames are the allele labels.
 }
 \description{
 Construct mutation matrices for pedigree likelihood computations.
@@ -74,11 +79,16 @@ mutate to either '9' or '11', unless '10' is the lowest allele, in which case
 '11' is the only option. This model is not applicable to loci with
 non-integral microvariants.
 \item \code{stepwise}: A common model in forensic genetics, allowing different
-mutation rates between integer alleles (like '16') and non-integer
-"microvariants" like '9.3'). Mutations also depend on the size of the
-mutation if the parameter 'range' differs from 1.
+mutation rates between integer alleles (like '9') and non-integer
+microvariants (like '9.3'). Mutation rates also depend on step size, as
+controlled by the 'range' parameter.
 \item \code{trivial}: The identity matrix, implying that no mutations are possible.
 }
+
+If \code{transform} is non-NULL, the indicated transformation is applied to the
+matrix before returning. Currently, the available options are 3 different
+transformations to reversibility, basically performed with the call
+\code{makeReversible(m, method = transform, adjust = TRUE)}
 }
 \examples{
 mutationMatrix("equal", alleles = 1:3, rate = 0.05)

@@ -15,6 +15,7 @@ mutationModel(
   rate2 = NULL,
   range = NULL,
   seed = NULL,
+  transform = NULL,
   validate = TRUE
 )
 
@@ -51,6 +52,9 @@ details.}
 Required in the "stepwise" model; see \code{\link[=mutationMatrix]{mutationMatrix()}} for details.}
 
 \item{seed}{An integer, or a list of two (named "female" and "male").}
+
+\item{transform}{Either NULL (default) or the name of a transformation to be
+applied to the mutation model. See \code{\link[=makeReversible]{makeReversible()}}.}
 
 \item{validate}{A logical, by default TRUE.}
 

@@ -28,6 +28,8 @@
 #' @param range A positive number, or a list of two (named "female" and "male").
 #'   Required in the "stepwise" model; see [mutationMatrix()] for details.
 #' @param seed An integer, or a list of two (named "female" and "male").
+#' @param transform Either NULL (default) or the name of a transformation to be
+#'   applied to the mutation model. See [makeReversible()].
 #' @param validate A logical, by default TRUE.
 #' @param mutmod A `mutationModel` object.
 #'
@@ -67,7 +69,7 @@
 #' @export
 mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
                          rate = NULL, rate2 = NULL, range = NULL, seed = NULL,
-                         validate = TRUE) {
+                         transform = NULL, validate = TRUE) {
 
   if(isMutationModel(model)) {
     mod = enforceAlleleOrder(model, alleles)
@@ -94,13 +96,15 @@ mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
 
     female = mutationMatrix(model = model$female, alleles = alleles,
                             afreq = afreq, matrix = matrix$female,
-                            rate = rate$female, rate2 = rate2$female,
-                            range= range$female, seed = seed$female)
+                            rate  = rate$female, rate2 = rate2$female,
+                            range = range$female, seed = seed$female,
+                            transform = transform)
 
     male = mutationMatrix(model = model$male, alleles = alleles,
                           afreq = afreq, matrix = matrix$male,
-                          rate = rate$male, rate2 = rate2$male,
-                          range = range$male, seed = seed$male)
+                          rate  = rate$male, rate2 = rate2$male,
+                          range = range$male, seed = seed$male,
+                          transform = transform)
 
     mod = list(female = female, male = male)
   }

@@ -27,12 +27,17 @@
 #' non-integral microvariants.
 #'
 #' * `stepwise`: A common model in forensic genetics, allowing different
-#' mutation rates between integer alleles (like '16') and non-integer
-#' "microvariants" like '9.3'). Mutations also depend on the size of the
-#' mutation if the parameter 'range' differs from 1.
+#' mutation rates between integer alleles (like '9') and non-integer
+#' microvariants (like '9.3'). Mutation rates also depend on step size, as
+#' controlled by the 'range' parameter.
 #'
 #' * `trivial`: The identity matrix, implying that no mutations are possible.
 #'
+#' If `transform` is non-NULL, the indicated transformation is applied to the
+#' matrix before returning. Currently, the available options are 3 different
+#' transformations to reversibility, basically performed with the call
+#' `makeReversible(m, method = transform, adjust = TRUE)`
+
 #' @param model A string: either "custom", "dawid", "equal", "proportional",
 #'   "random", "stepwise" or "onestep".
 #' @param matrix When `model` is "custom", this must be a square matrix with
@@ -50,10 +55,13 @@
 #' @param range A positive number. The relative probability of mutating n+1
 #'   steps versus mutating n steps. Required in the "stepwise" and "dawid"
 #'   models. Must be in the interval (0,1) for the "dawid" model.
+#' @param transform Either NULL (default) or the name of a transformation to be
+#'   applied to the mutation model. See [makeReversible()].
 #' @param mutmat An object of class `mutationMatrix`.
 #'
-#' @return An object of class `mutationMatrix`, essentially a square matrix with
-#'   entries in `[0, 1]`, and whose colnames and rownames are the allele labels.
+#' @return An object of class `mutationMatrix`, essentially a square numeric
+#'   matrix with various attributes. The matrix has entries in `[0, 1]` and all
+#'   rows sum to 1. Both colnames and rownames are the allele labels.
 #'
 #' @examples
 #' mutationMatrix("equal", alleles = 1:3, rate = 0.05)
@@ -65,7 +73,8 @@
 mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
                                     "random", "onestep", "stepwise", "trivial"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
-                          rate = NULL, seed = NULL, rate2 = NULL, range = NULL) {
+                          rate = NULL, seed = NULL, rate2 = NULL, range = NULL,
+                          transform = NULL) {
 
   model = match.arg(model)
   alleles = if(!is.null(alleles)) as.character(alleles) else names(afreq)
@@ -88,8 +97,13 @@ mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
     trivial = .trivial(alleles)
   )
 
-  newMutationMatrix(mutmat, model = model, afreq = afreq, rate = rate,
-                    rate2 = rate2, range = range, seed = seed)
+  res = newMutationMatrix(mutmat, model = model, afreq = afreq, rate = rate,
+                          rate2 = rate2, range = range, seed = seed)
+
+  if(!is.null(transform))
+    res = makeReversible(res, method = transform, adjust = TRUE, afreq = afreq)
+
+  res
 }
 
 newMutationMatrix = function(mutmat, model = "custom", afreq = NULL,
