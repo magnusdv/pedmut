@@ -19,11 +19,11 @@
 #'
 #' @examples
 #' m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
-#' makeReversible(m)
-#' makeReversible(m, adjust = FALSE)  # rate differs!
-#'
+#' makeReversible(m, "BA")
 #' makeReversible(m, "MH")
-#' # makeReversible(m, "PR") # not well-defined
+#' makeReversible(m, "PR")
+#'
+#' makeReversible(m, "BA", adjust = FALSE)  # rate differs!
 #'
 #' # Apply to full model with different female/male rates
 #' mod = mutationModel("equal", afreq = c(a=0.2, b=0.3, c=0.5),
@@ -58,7 +58,7 @@ makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = TRUE,
     },
     PR = {
       # Check if the model is well-defined (formula from paper)
-      if(any(rowSums(pm) > afreq * (1 + diag(M))))
+      if(any(colSums(pm) > afreq * (1 + 2*diag(M))))
         stop2("The PR transformation is not well-defined for this model")
       R = (pm + pmT)/(2*afreq)
     }

@@ -38,11 +38,11 @@ These transformations may also be applied through the \code{transform} argument 
 }
 \examples{
 m = mutationMatrix("equal", afreq = c(a=0.2, b=0.3, c=0.5), rate = 0.2)
-makeReversible(m)
-makeReversible(m, adjust = FALSE)  # rate differs!
-
+makeReversible(m, "BA")
 makeReversible(m, "MH")
-# makeReversible(m, "PR") # not well-defined
+makeReversible(m, "PR")
+
+makeReversible(m, "BA", adjust = FALSE)  # rate differs!
 
 # Apply to full model with different female/male rates
 mod = mutationModel("equal", afreq = c(a=0.2, b=0.3, c=0.5),
