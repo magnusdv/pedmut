@@ -34,13 +34,13 @@ adjustRate = function(mutmat, newrate, afreq = NULL, rate = NULL) {
     stop2("Cannot adjust rate for a model with rate 0")
 
   M = as.matrix(mutmat)
-  a = newrate / rate
 
   # Check if within theoretical limit
-  dg = diag(M)
-  if(a > 1/(1 - min(dg)))
-     stop2("Maximum adjusted rate is ", rate/(1 - min(dg)))
+  mxr = rate/(1 - min(diag(M)))
+  if(newrate > mxr)
+     stop2(sprintf("Cannot adjust rate to %g; maximum is %g", newrate, mxr))
 
+  a = newrate / rate
   newM = a * M + (1-a) * diag(length(afreq))
   newMutationMatrix(newM, model = "custom", afreq = afreq)
 }
