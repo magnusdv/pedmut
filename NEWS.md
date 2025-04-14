@@ -1,3 +1,16 @@
+# dev version
+
+## New features
+
+* New function `makeStationary()` replaces the previous `stabilize()` for PM-transformation to stationarity. 
+
+* As an alternative to `makeStationary()`, the PM transformation may be applied directly with `mutationMatrix(..., transform = "PM")` and `mutationModel(..., transform = "PM")` 
+
+## Bug fixes
+
+* Fixed a bug in `makeReversible(..., method = "PR")` failing to catch non-reversible inputs.
+
+
 # pedmut 0.8.0
 
 ## New features
