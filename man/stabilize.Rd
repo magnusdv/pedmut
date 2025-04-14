@@ -20,10 +20,10 @@ An object of the same class the input \code{mutmat}; either a matrix, a
 \code{mutationMatrix} or a \code{mutationModel}.
 }
 \description{
-Produces a mutation matrix close to the input \code{mutmat}, for which the given
-frequency vector is the stationary distribution. Several methods for doing
-this are described by Simonsson and Mostad (2016); only the "PM" method is
-included here.
+NB: REPLACED BY \link{makeStationary}. Produces a mutation matrix close to the
+input \code{mutmat}, for which the given frequency vector is the stationary
+distribution. Several methods for doing this are described by Simonsson and
+Mostad (2016); only the "PM" method is included here.
 }
 \details{
 This function is based on, and reuses code from, the \code{stabilize()} method of

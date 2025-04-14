@@ -1,10 +1,9 @@
-
 #' Stabilization of mutation matrix
 #'
-#' Produces a mutation matrix close to the input `mutmat`, for which the given
-#' frequency vector is the stationary distribution. Several methods for doing
-#' this are described by Simonsson and Mostad (2016); only the "PM" method is
-#' included here.
+#' NB: REPLACED BY [makeStationary]. Produces a mutation matrix close to the
+#' input `mutmat`, for which the given frequency vector is the stationary
+#' distribution. Several methods for doing this are described by Simonsson and
+#' Mostad (2016); only the "PM" method is included here.
 #'
 #' This function is based on, and reuses code from, the `stabilize()` method of
 #' the Familias R package.
