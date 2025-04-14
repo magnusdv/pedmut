@@ -53,8 +53,8 @@ Required in the "stepwise" model; see \code{\link[=mutationMatrix]{mutationMatri
 
 \item{seed}{An integer, or a list of two (named "female" and "male").}
 
-\item{transform}{Either NULL (default) or the name of a transformation to be
-applied to the mutation model. See \code{\link[=makeReversible]{makeReversible()}}.}
+\item{transform}{Either NULL (default) or one of the strings "MH", "BA",
+"PR", "PM". See \code{\link[=mutationMatrix]{mutationMatrix()}}.}
 
 \item{validate}{A logical, by default TRUE.}
 

@@ -34,10 +34,11 @@
 #' * `trivial`: The identity matrix, implying that no mutations are possible.
 #'
 #' If `transform` is non-NULL, the indicated transformation is applied to the
-#' matrix before returning. Currently, the available options are 3 different
-#' transformations to reversibility, basically performed with the call
-#' `makeReversible(m, method = transform, adjust = TRUE)`
-
+#' matrix before returning. Currently, there are 4 available options:
+#'
+#' * `MH`, `BA`, `PR`: See [makeReversible()]
+#' * `PM`: See [makeStationary()]
+#'
 #' @param model A string: either "custom", "dawid", "equal", "proportional",
 #'   "random", "stepwise" or "onestep".
 #' @param matrix When `model` is "custom", this must be a square matrix with
@@ -55,8 +56,8 @@
 #' @param range A positive number. The relative probability of mutating n+1
 #'   steps versus mutating n steps. Required in the "stepwise" and "dawid"
 #'   models. Must be in the interval (0,1) for the "dawid" model.
-#' @param transform Either NULL (default) or the name of a transformation to be
-#'   applied to the mutation model. See [makeReversible()].
+#' @param transform Either NULL (default) or one of the strings "MH", "BA",
+#'   "PR", "PM". See Details.
 #' @param mutmat An object of class `mutationMatrix`.
 #'
 #' @return An object of class `mutationMatrix`, essentially a square numeric
@@ -100,8 +101,12 @@ mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
   res = newMutationMatrix(mutmat, model = model, afreq = afreq, rate = rate,
                           rate2 = rate2, range = range, seed = seed)
 
-  if(!is.null(transform))
-    res = makeReversible(res, method = transform, adjust = TRUE, afreq = afreq)
+  if(!is.null(transform)) {
+    if(transform == "PM")
+      res = makeStationary(res, afreq = afreq)
+    else
+      res = makeReversible(res, method = transform, adjust = TRUE, afreq = afreq)
+  }
 
   res
 }

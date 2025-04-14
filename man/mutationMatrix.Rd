@@ -46,8 +46,8 @@ alleles and microvariants. Required in the "stepwise" model.}
 steps versus mutating n steps. Required in the "stepwise" and "dawid"
 models. Must be in the interval (0,1) for the "dawid" model.}
 
-\item{transform}{Either NULL (default) or the name of a transformation to be
-applied to the mutation model. See \code{\link[=makeReversible]{makeReversible()}}.}
+\item{transform}{Either NULL (default) or one of the strings "MH", "BA",
+"PR", "PM". See Details.}
 
 \item{mutmat}{An object of class \code{mutationMatrix}.}
 }
@@ -86,9 +86,11 @@ controlled by the 'range' parameter.
 }
 
 If \code{transform} is non-NULL, the indicated transformation is applied to the
-matrix before returning. Currently, the available options are 3 different
-transformations to reversibility, basically performed with the call
-\code{makeReversible(m, method = transform, adjust = TRUE)}
+matrix before returning. Currently, there are 4 available options:
+\itemize{
+\item \code{MH}, \code{BA}, \code{PR}: See \code{\link[=makeReversible]{makeReversible()}}
+\item \code{PM}: See \code{\link[=makeStationary]{makeStationary()}}
+}
 }
 \examples{
 mutationMatrix("equal", alleles = 1:3, rate = 0.05)

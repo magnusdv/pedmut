@@ -28,8 +28,8 @@
 #' @param range A positive number, or a list of two (named "female" and "male").
 #'   Required in the "stepwise" model; see [mutationMatrix()] for details.
 #' @param seed An integer, or a list of two (named "female" and "male").
-#' @param transform Either NULL (default) or the name of a transformation to be
-#'   applied to the mutation model. See [makeReversible()].
+#' @param transform  Either NULL (default) or one of the strings "MH", "BA",
+#'   "PR", "PM". See [mutationMatrix()].
 #' @param validate A logical, by default TRUE.
 #' @param mutmod A `mutationModel` object.
 #'
