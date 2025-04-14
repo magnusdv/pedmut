@@ -28,9 +28,9 @@ provided.}
 A reversible mutation matrix with the same allele frequencies.
 }
 \description{
-This function implements three methods for transforming a mutation matrix
-into a reversible one. All methods are based on Metropolis-Hastings proposal
-functions.
+This function implements three methods for transforming a mutation model
+\verb{(M,p)} into a reversible one, \verb{(R,p)}. All methods are based on Metropolis-
+Hastings proposal functions.
 }
 \details{
 These transformations may also be applied through the \code{transform} argument of

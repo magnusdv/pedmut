@@ -1,8 +1,8 @@
 #' Transformations to reversibility
 #'
-#' This function implements three methods for transforming a mutation matrix
-#' into a reversible one. All methods are based on Metropolis-Hastings proposal
-#' functions.
+#' This function implements three methods for transforming a mutation model
+#' `(M,p)` into a reversible one, `(R,p)`. All methods are based on Metropolis-
+#' Hastings proposal functions.
 #'
 #' These transformations may also be applied through the `transform` argument of
 #' [mutationMatrix()] and [mutationModel()].
@@ -15,6 +15,7 @@
 #' @param adjust Logical. If TRUE (default), the overall mutation rate is
 #'   adjusted to preserve the original rate; see [adjustRate()]. Not relevant
 #'   for method "PR", which by construction always preserves the overall rate.
+#'
 #' @returns A reversible mutation matrix with the same allele frequencies.
 #'
 #' @examples
