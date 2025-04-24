@@ -15,7 +15,8 @@ mutationMatrix(
   seed = NULL,
   rate2 = NULL,
   range = NULL,
-  transform = NULL
+  transform = NULL,
+  validate = TRUE
 )
 
 validateMutationMatrix(mutmat, alleles = NULL)
@@ -48,6 +49,9 @@ models. Must be in the interval (0,1) for the "dawid" model.}
 
 \item{transform}{Either NULL (default) or one of the strings "MH", "BA",
 "PR", "PM". See Details.}
+
+\item{validate}{A logical (default: TRUE) indicating whether to validate
+custom models.}
 
 \item{mutmat}{An object of class \code{mutationMatrix}.}
 }

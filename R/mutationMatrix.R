@@ -58,6 +58,8 @@
 #'   models. Must be in the interval (0,1) for the "dawid" model.
 #' @param transform Either NULL (default) or one of the strings "MH", "BA",
 #'   "PR", "PM". See Details.
+#' @param validate A logical (default: TRUE) indicating whether to validate
+#'   custom models.
 #' @param mutmat An object of class `mutationMatrix`.
 #'
 #' @return An object of class `mutationMatrix`, essentially a square numeric
@@ -75,7 +77,7 @@ mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
                                     "random", "onestep", "stepwise", "trivial"),
                           matrix = NULL, alleles = NULL, afreq = NULL,
                           rate = NULL, seed = NULL, rate2 = NULL, range = NULL,
-                          transform = NULL) {
+                          transform = NULL, validate = TRUE) {
 
   model = match.arg(model)
   alleles = if(!is.null(alleles)) as.character(alleles) else names(afreq)
@@ -88,7 +90,7 @@ mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
     stop2(sprintf("`matrix` cannot be used with the `%s` model", model))
 
   mutmat = switch(model,
-    custom = .custom(matrix, alleles) |> validateMutationMatrix(),
+    custom = .custom(matrix, alleles, validate = validate),
     dawid = .dawid(alleles, afreq, rate, range),
     equal = .equal(alleles, rate),
     proportional = .proportional(alleles, afreq, rate),
@@ -235,7 +237,8 @@ toString.mutationMatrix = function(x, ...) {
   param = switch(mod,
                  equal =, proportional =, onestep = paste("rate =", attrs$rate),
                  random = paste("seed =", attrs$seed %||% "NULL"),
-                 stepwise = sprintf("rate = %g, rate2 = %g, range = %g", attrs$rate, attrs$rate2, attrs$range),
+                 stepwise = sprintf("rate = %g, rate2 = %g, range = %g",
+                                    attrs$rate, attrs$rate2, attrs$range),
                  NULL)
   if(!is.null(param))
     mod = sprintf("%s, %s", mod, param)
@@ -447,7 +450,7 @@ toString.mutationMatrix = function(x, ...) {
   R
 }
 
-.custom = function(matrix, alleles) {
+.custom = function(matrix, alleles, validate = TRUE) {
   checkNullArg(matrix, "custom")
 
   if(!is.matrix(matrix))
@@ -477,7 +480,7 @@ toString.mutationMatrix = function(x, ...) {
   else if(is.null(dmn) && nullAls)
     stop2("When custom matrix lacks names, the argument `alleles` cannot be NULL")
 
-  matrix
+  if(validate) validateMutationMatrix(matrix) else matrix
 }
 
 
