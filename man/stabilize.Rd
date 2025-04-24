@@ -9,7 +9,7 @@ stabilize(mutmat, afreq = NULL, method = "PM", details = FALSE)
 \arguments{
 \item{mutmat}{A mutation matrix.}
 
-\item{afreq}{A vector of allele frequencies}
+\item{afreq}{A vector of allele frequencies.}
 
 \item{method}{Either "DP", "RM" or "PM". Currently only "PM" is implemented.}
 
@@ -31,11 +31,11 @@ the Familias R package.
 }
 \examples{
 
-afreq = c(.2, .3, .5)
-m = mutationMatrix("stepwise", alleles = 1:3, afreq = afreq,
+afreq = c(`1` = .2, `2` = .3, `3` = .5)
+m = mutationMatrix("stepwise", afreq = afreq,
                    rate = 0.1, rate2 = 0.01, range = 0.1)
 m
-stabilize(m, afreq = c(.3,.3,.4))
+stabilize(m)
 
 
 ### Example with full model (i.e., male and female)

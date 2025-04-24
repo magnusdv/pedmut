@@ -101,6 +101,7 @@ isBounded = function(mutmat, afreq = NULL) {
 #' @rdname model_properties
 #' @export
 isLumpable = function(mutmat, lump) {
+
   if(isMutationModel(mutmat)) {
 
     if(isTRUE(attr(mutmat, 'alwaysLumpable')))
@@ -109,16 +110,21 @@ isLumpable = function(mutmat, lump) {
     test = isLumpable(mutmat$female, lump)
     if(!sexEqual(mutmat))
       test = test || isLumpable(mutmat$male, lump)
+
     return(test)
   }
+
+  if(is.null(mutmat))
+    return(TRUE)
 
   als = colnames(mutmat)
   lump = prepLump(lump, als)
   N = length(lump)
-  tol = sqrt(.Machine$double.eps)
 
   if(N == 0)
     return(TRUE)
+
+  tol = sqrt(.Machine$double.eps)
 
   if(N == 1) {
     lump = lump[[1]]
@@ -163,14 +169,15 @@ isLumpable = function(mutmat, lump) {
 #' @rdname model_properties
 #' @export
 alwaysLumpable = function(mutmat) {
+
   if(isMutationModel(mutmat)) {
     alwaysF = alwaysLumpable(mutmat$female)
     return(alwaysF && (sexEqual(mutmat) || alwaysLumpable(mutmat$male)))
   }
 
-  N = dim(mutmat)[1L]
+  N = dim(mutmat)[1L] %||% 0L  # allows NULL input
 
-  # 2*2 trivially lumpable
+  # 2*2 and smaller: trivially lumpable
   if(N <= 2)
     return(TRUE)
 

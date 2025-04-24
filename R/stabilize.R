@@ -9,7 +9,7 @@
 #' the Familias R package.
 #'
 #' @param mutmat A mutation matrix.
-#' @param afreq A vector of allele frequencies
+#' @param afreq A vector of allele frequencies.
 #' @param method Either "DP", "RM" or "PM". Currently only "PM" is implemented.
 #' @param details A logical. If TRUE, the complete Familias output is included.
 #'
@@ -22,11 +22,11 @@
 #'
 #' @examples
 #'
-#' afreq = c(.2, .3, .5)
-#' m = mutationMatrix("stepwise", alleles = 1:3, afreq = afreq,
+#' afreq = c(`1` = .2, `2` = .3, `3` = .5)
+#' m = mutationMatrix("stepwise", afreq = afreq,
 #'                    rate = 0.1, rate2 = 0.01, range = 0.1)
 #' m
-#' stabilize(m, afreq = c(.3,.3,.4))
+#' stabilize(m)
 #'
 #'
 #' ### Example with full model (i.e., male and female)
