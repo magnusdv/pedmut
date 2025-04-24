@@ -7,17 +7,17 @@
 \usage{
 lumpedMatrix(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NULL)
 
-lumpedModel(mutmod, lump, afreq = NULL, check = TRUE)
+lumpedModel(mutmod, lump, afreq = attr(mutmod, "afreq"), check = TRUE)
 }
 \arguments{
 \item{mutmat}{A \code{mutationMatrix} object, typically made with
 \code{\link[=mutationMatrix]{mutationMatrix()}}.}
 
-\item{lump}{A nonempty subset of the alleles (i.e., the column names of
-\code{mutmat}), or a list of several such subsets.}
+\item{lump}{A vector containing the alleles to be lumped together, or a list
+of several such vectors.}
 
-\item{afreq}{A vector with frequency vector, of the same length as the size
-of \code{mutmat}. If not given, the \code{afreq} attribute of the matrix is used.}
+\item{afreq}{A vector with allele frequencies, of the same length as the size
+of \code{mutmat}. Extracted from the model if not given.}
 
 \item{check}{A logical indicating if lumpability should be checked before
 lumping. Default: TRUE.}

@@ -35,10 +35,8 @@
 makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = TRUE,
                           afreq = NULL) {
 
-  if(isMutationModel(mutmat)) {
-    r = .makeRevModel(mutmat, method = method, adjust = adjust, afreq = afreq)
-    return(r)
-  }
+  if(isMutationModel(mutmat))
+    return(mapFullModel(mutmat, makeReversible, method = method, adjust = adjust, afreq = afreq))
 
   method = match.arg(method)
   afreq = afreq %||% attr(mutmat, "afreq") %||% stop2("`afreq` must be provided")
@@ -85,19 +83,3 @@ makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = TRUE,
   newMutationMatrix(R, "custom", afreq = afreq, rate = newrate)
 }
 
-
-
-# Extend `makeReversible()` to full models --------------------------------
-
-.makeRevModel = function(mutmod, ...) {
-  revF = makeReversible(mutmod$female, ...)
-
-  sexeq = sexEqual(mutmod)
-  revM = if(sexeq) revF else makeReversible(mutmod$male, ...)
-
-  lumpable = alwaysLumpable(revF) && (sexeq || alwaysLumpable(revM))
-
-  # Return model object
-  structure(list(female = revF, male = revM), sexEqual = sexeq,
-            alwaysLumpable = lumpable, class = "mutationModel")
-}

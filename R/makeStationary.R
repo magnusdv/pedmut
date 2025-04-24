@@ -43,10 +43,8 @@
 #' @export
 makeStationary = function(mutmat, afreq = NULL, method = "PM") {
 
-  if(isMutationModel(mutmat)) {
-    s = .makeStatModel(mutmat, method = method, afreq = afreq)
-    return(s)
-  }
+  if(isMutationModel(mutmat))
+    return(mapFullModel(mutmat, makeStationary, afreq = afreq, method = method))
 
   if(!is.matrix(mutmat))
     stop2("Argument `mutmat` must be either a `matrix`, a `mutationMatrix()` or a `mutationModel()`: ", class(mutmat)[1])
@@ -60,18 +58,6 @@ makeStationary = function(mutmat, afreq = NULL, method = "PM") {
   newMutationMatrix(S, "custom", afreq = afreq, rate = newrate)
 }
 
-.makeStatModel = function(mutmod, ...) {
-  statF = makeStationary(mutmod$female, ...)
-
-  sexeq = sexEqual(mutmod)
-  statM = if(sexeq) statF else makeStationary(mutmod$male, ...)
-
-  lumpable = alwaysLumpable(statF) && (sexeq || alwaysLumpable(statM))
-
-  # Return model object
-  structure(list(female = statF, male = statM), sexEqual = sexeq,
-            alwaysLumpable = lumpable, class = "mutationModel")
-}
 
 # Based on Familias::stabilize
 .stabilizePM = function(M, p) {

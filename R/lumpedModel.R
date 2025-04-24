@@ -10,10 +10,10 @@
 #'   [mutationModel()].
 #' @param mutmat A `mutationMatrix` object, typically made with
 #'   [mutationMatrix()].
-#' @param afreq A vector with frequency vector, of the same length as the size
-#'   of `mutmat`. If not given, the `afreq` attribute of the matrix is used.
-#' @param lump A nonempty subset of the alleles (i.e., the column names of
-#'   `mutmat`), or a list of several such subsets.
+#' @param afreq A vector with allele frequencies, of the same length as the size
+#'   of `mutmat`. Extracted from the model if not given.
+#' @param lump A vector containing the alleles to be lumped together, or a list
+#'   of several such vectors.
 #' @param check A logical indicating if lumpability should be checked before
 #'   lumping. Default: TRUE.
 #' @param labelSep ((For debugging) A character used to name lumps by pasting
@@ -67,24 +67,21 @@ lumpedMatrix = function(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NUL
   if(check && !isLumpable(mutmat, lump))
     stop2("The model is not lumpable for this set of alleles")
 
-  lumpedFreq = NULL
   afreq = if(is.null(afreq)) attr(mutmat, 'afreq') else checkAfreq(afreq, alleles = als)
+  lumpedFreq = NULL
 
   if(length(lump) == 1) {
     lump = lump[[1]]
     keep = .mysetdiff(als, lump)
+    newAls = c(keep, lumpName)
     N = length(keep) + 1
 
-    newM = mutmat[c(keep, lump[1]), c(keep, lump[1]), drop = FALSE]
-    newM[, N] = 1 - .rowSums(newM[, seq_len(N-1), drop = FALSE], N, N-1)
-    colnames(newM)[N] = rownames(newM)[N] = lumpName
+    newM = matrix(0, N, N, dimnames = list(newAls, newAls))
+    newM[, -N] = mutmat[c(keep, lump[1]), keep]
+    newM[, N] = 1 - .rowSums(newM, N, N)
 
-    if(!is.null(afreq)) {
-      lump_idx = match(lump, als)
-      keep_idx = match(keep, als)
-      lumpedFreq = c(afreq[keep_idx], sum(afreq[lump_idx]))
-      names(lumpedFreq) = colnames(newM)
-    }
+    if(!is.null(afreq))
+      lumpedFreq = c(afreq[keep], lump = sum(afreq[lump]))
   }
   else {
     # Multiple nontrivial lumps!
@@ -116,28 +113,8 @@ lumpedMatrix = function(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NUL
 
 #' @rdname lumpedMatrix
 #' @export
-lumpedModel = function(mutmod, lump, afreq = NULL, check = TRUE) {
-
-  if(!inherits(mutmod, "mutationModel"))
-    stop2(sprintf("Expected the input to be a `mutationModel`, but got a: `%s`", class(mutmod)[1]))
-
-  if(is.null(afreq))
-    afreq = attr(mutmod$female, "afreq")
-
-  lumpedF = lumpedMatrix(mutmod$female, lump = lump, afreq = afreq, check = check)
-
-  sexeq = sexEqual(mutmod)
-  if(sexeq)
-    lumpedM = lumpedF
-  else
-    lumpedM = lumpedMatrix(mutmod$male, lump = lump, afreq = afreq, check = check)
-
-  # Still lumpable?
-  alwaysLmp = alwaysLumpable(lumpedF) && (sexeq || alwaysLumpable(lumpedM))
-
-  # Create model object
-  structure(list(female = lumpedF, male = lumpedM), sexEqual = sexeq,
-            alwaysLumpable = alwaysLmp, class = "mutationModel")
+lumpedModel = function(mutmod, lump, afreq = attr(mutmod, "afreq"), check = TRUE) {
+  mapFullModel(mutmod, lumpedMatrix, lump = lump, afreq = afreq, check = check)
 }
 
 
@@ -147,6 +124,9 @@ prepLump = function(lump, alleles = NULL, labelSep = NULL) {
 
   # Remove empty and trivial lumps
   lump[lengths(lump) < 2] = NULL
+
+  if(!length(lump))
+    return(lump)
 
   # Convert each lump to character vector
   lump = lapply(lump, as.character)
