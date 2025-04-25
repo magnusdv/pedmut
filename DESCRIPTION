@@ -18,6 +18,8 @@ License: GPL-3
 URL: https://github.com/magnusdv/pedmut
 Depends: 
     R (>= 4.2.0)
+Imports: 
+    lpSolve
 Suggests: 
     testthat
 Encoding: UTF-8
