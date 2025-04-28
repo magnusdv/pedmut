@@ -7,6 +7,13 @@
 #' allele frequencies, i.e., that `mutmat[i,j] <= afreq[j]` whenever `i` is not
 #' equal to `j`.
 #'
+#' Lumpability is a property of a mutation model that allows aggregating alleles
+#' into groups, or *lumps*, without changing the overall mutation process. The
+#' functions `isLumpable()` and `alwaysLumpable()` checks lumpability using the
+#' row-sum criterion given by Kemeny & Snell (1976). Note that lumping may be
+#' possible even if the model is not generally lumpable; see [lumpMutSpecial()]
+#' for details.
+#'
 #' For each of these functions, if `mutmat` is a `mutationModel` object, i.e.,
 #' with male and female components, the output is TRUE if and only if both
 #' components satisfy the property in question.

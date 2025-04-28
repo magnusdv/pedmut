@@ -1,10 +1,10 @@
 #' Special lumping of mutation models
 #'
 #' This function implements methods for special, or pedigree-aware, allele
-#' lumping. This is typically attempted if the model does not allow regular
-#' lumping. Note that the resulting lumped model is tailor-made for a specific
-#' likelihood calculation, and may violate the properties of a well-defined
-#' mutation model.
+#' lumping. This is typically attempted if the model is not generally lumpable
+#' as determined by [alwaysLumpable]. Note that the resulting lumped model is
+#' tailor-made for a specific likelihood calculation, and may violate the
+#' properties of a well-defined mutation model.
 #'
 #' The lumping procedure depend on the location of untyped individuals in the
 #' pedigree, summarised by the so-called U-signature:

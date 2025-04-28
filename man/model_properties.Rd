@@ -40,6 +40,13 @@ The function \code{isBounded()} checks that a mutation model is \emph{bounded} b
 allele frequencies, i.e., that \code{mutmat[i,j] <= afreq[j]} whenever \code{i} is not
 equal to \code{j}.
 
+Lumpability is a property of a mutation model that allows aggregating alleles
+into groups, or \emph{lumps}, without changing the overall mutation process. The
+functions \code{isLumpable()} and \code{alwaysLumpable()} checks lumpability using the
+row-sum criterion given by Kemeny & Snell (1976). Note that lumping may be
+possible even if the model is not generally lumpable; see \code{\link[=lumpMutSpecial]{lumpMutSpecial()}}
+for details.
+
 For each of these functions, if \code{mutmat} is a \code{mutationModel} object, i.e.,
 with male and female components, the output is TRUE if and only if both
 components satisfy the property in question.
