@@ -2,7 +2,7 @@
 
 ## New features
 
-* New function `lumpMutSpecial()` implementing special lumping of mutation models. Only a few cases are implemented so far, more may be added in the future.
+* New function `lumpMutSpecial()` implementing special lumping of mutation models. Only some cases are implemented so far, more may be added in the future.
 
 * `mutationMatrix()` gains argument `validate`.
 

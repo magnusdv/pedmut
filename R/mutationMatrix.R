@@ -22,14 +22,14 @@
 #'
 #' * `onestep`: A mutation model for markers with integer alleles, allowing
 #' mutations only to the nearest neighbours in the allelic ladder. For example,
-#' '10' may mutate to either '9' or '11', unless '10' is the lowest allele, in
-#' which case '11' is the only option. This model is not applicable to loci with
+#' `10` may mutate to either `9` or `11`, unless `10` is the lowest allele, in
+#' which case `11` is the only option. This model is not applicable to loci with
 #' non-integer microvariants.
 #'
 #' * `stepwise`: A common model in forensic genetics, allowing different
-#' mutation rates between integer alleles (like '9') and non-integer
-#' microvariants (like '9.3'). Mutation rates also depend on step size, as
-#' controlled by the 'range' parameter.
+#' mutation rates between integer alleles (like `9`) and non-integer
+#' microvariants (like `9.3`). Mutation rates also depend on step size, as
+#' controlled by the `range` parameter.
 #'
 #' * `trivial`: The identity matrix, implying that no mutations are possible.
 #'
@@ -40,7 +40,7 @@
 #' * `PM`: See [makeStationary()]
 #'
 #' @param model A string: either "custom", "dawid", "equal", "proportional",
-#'   "random", "stepwise" or "onestep".
+#'   "random", "onestep", "stepwise" or "trivial".
 #' @param matrix When `model` is "custom", this must be a square matrix with
 #'   nonnegative real entries and row sums equal to 1.
 #' @param alleles A character vector (or coercible to character) with allele
@@ -64,7 +64,7 @@
 #'
 #' @return An object of class `mutationMatrix`, essentially a square numeric
 #'   matrix with various attributes. The matrix has entries in `[0, 1]` and all
-#'   rows sum to 1. Both colnames and rownames are the allele labels.
+#'   rows sum to 1. Both row names and column names are the allele labels.
 #'
 #' @examples
 #' mutationMatrix("equal", alleles = 1:3, rate = 0.05)

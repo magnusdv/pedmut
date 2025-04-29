@@ -27,12 +27,12 @@ original model is returned unchanged.
 \description{
 This function implements methods for special, or pedigree-aware, allele
 lumping. This is typically attempted if the model is not generally lumpable
-as determined by \link{alwaysLumpable}. Note that the resulting lumped model is
+as determined by \code{\link[=alwaysLumpable]{alwaysLumpable()}}. Note that the resulting lumped model is
 tailor-made for a specific likelihood calculation, and may violate the
 properties of a well-defined mutation model.
 }
 \details{
-The lumping procedure depend on the location of untyped individuals in the
+The lumping procedure depends on the location of untyped individuals in the
 pedigree, summarised by the so-called U-signature:
 \itemize{
 \item F-depth: The length of the longest chain of untyped, starting with a founder

@@ -23,7 +23,7 @@ validateMutationMatrix(mutmat, alleles = NULL)
 }
 \arguments{
 \item{model}{A string: either "custom", "dawid", "equal", "proportional",
-"random", "stepwise" or "onestep".}
+"random", "onestep", "stepwise" or "trivial".}
 
 \item{matrix}{When \code{model} is "custom", this must be a square matrix with
 nonnegative real entries and row sums equal to 1.}
@@ -58,7 +58,7 @@ custom models.}
 \value{
 An object of class \code{mutationMatrix}, essentially a square numeric
 matrix with various attributes. The matrix has entries in \verb{[0, 1]} and all
-rows sum to 1. Both colnames and rownames are the allele labels.
+rows sum to 1. Both row names and column names are the allele labels.
 }
 \description{
 Construct mutation matrices for pedigree likelihood computations.
@@ -79,13 +79,13 @@ normalised so that it sums to 1. If \code{rate} (and \code{afreq}) is provided, 
 mutation matrix is conditional on the overall mutation rate.
 \item \code{onestep}: A mutation model for markers with integer alleles, allowing
 mutations only to the nearest neighbours in the allelic ladder. For example,
-'10' may mutate to either '9' or '11', unless '10' is the lowest allele, in
-which case '11' is the only option. This model is not applicable to loci with
+\code{10} may mutate to either \code{9} or \code{11}, unless \code{10} is the lowest allele, in
+which case \code{11} is the only option. This model is not applicable to loci with
 non-integer microvariants.
 \item \code{stepwise}: A common model in forensic genetics, allowing different
-mutation rates between integer alleles (like '9') and non-integer
-microvariants (like '9.3'). Mutation rates also depend on step size, as
-controlled by the 'range' parameter.
+mutation rates between integer alleles (like \code{9}) and non-integer
+microvariants (like \code{9.3}). Mutation rates also depend on step size, as
+controlled by the \code{range} parameter.
 \item \code{trivial}: The identity matrix, implying that no mutations are possible.
 }
 

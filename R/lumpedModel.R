@@ -1,51 +1,56 @@
 #' Combine alleles in a mutation matrix
 #'
-#' Reduce a mutation matrix by combining a set of alleles into one "lump", if
+#' Reduce a mutation matrix by combining a set of alleles into one *lump*, if
 #' this can be done without distorting the mutation process of the remaining
-#' alleles. Such "allele lumping" can give dramatic efficiency improvements in
+#' alleles. Such allele lumping can give dramatic efficiency improvements in
 #' likelihood computations with multi-allelic markers, in cases where only some
 #' of the alleles are observed in the pedigree.
 #'
-#' @param mutmod A `mutationModel` object, typically made with
-#'   [mutationModel()].
+#' The lumping implemented in this function is based on the Markov chain lumping
+#' theory by Kemeny & Snell (1976). For other, specialised lumping, see
+#' [lumpMutSpecial()].
+#'
 #' @param mutmat A `mutationMatrix` object, typically made with
 #'   [mutationMatrix()].
+#' @param mutmod A `mutationModel` object, typically made with
+#'   [mutationModel()].
 #' @param afreq A vector with allele frequencies, of the same length as the size
 #'   of `mutmat`. Extracted from the model if not given.
 #' @param lump A vector containing the alleles to be lumped together, or a list
 #'   of several such vectors.
-#' @param check A logical indicating if lumpability should be checked before
-#'   lumping. Default: TRUE.
-#' @param labelSep ((For debugging) A character used to name lumps by pasting
-#'   allele labels.
+#' @param check A logical indicating if lumpability (i.e., the row-sum criterium
+#'   of Kemeny & Snell) should be checked before lumping. Default: TRUE.
+#' @param labelSep A character used to name lumps by pasting allele labels. (For
+#'   debugging.)
 #'
 #' @return A reduced mutation model. If the original matrix has dimensions
 #'   \eqn{n\times n}{n*n}, the result will be \eqn{k\times k}{k*k}, where \eqn{k
 #'   = n - length(lump) + 1}.
 #'
-#' @seealso [mutationModel()], [mutationMatrix()]
+#' @seealso [lumpMutSpecial()].
 #'
+#' @references Kemeny & Snell (1976). \emph{Finite Markov Chains}. Springer.
+
 #' @examples
 #'
+#' af = c(.1, .2, .3, .4)
+#' names(af) = 1:4
 #'
 #' ### Example 1: Lumping a mutation matrix
-#' mat = mutationMatrix("eq", alleles = 1:5,
-#'                      afreq = rep(0.2, 5), rate = 0.1)
+#' mat = mutationMatrix("eq", afreq = af, rate = 0.1)
 #' mat
 #'
-#' # Lump alleles 3, 4 and 5
-#' mat2 = lumpedMatrix(mat, lump = 3:5)
-#' mat2
+#' # Lump
+#' lumpedMatrix(mat, lump = 3:4)
+#' lumpedMatrix(mat, lump = 2:4)
 #'
 #' # Example 2: Full model, proportional
 #' mutrate = list(male = 0.1, female = 0.2)
-#' mod = mutationModel("prop", alleles = 1:4,
-#'                     rate = mutrate, afreq = c(.1,.2,.3,.4))
+#' mod = mutationModel("prop", afreq = af, rate = mutrate)
 #' mod
 #'
-#' # Lump alleles 3 and 4
-#' mod2 = lumpedModel(mod, lump = 3:4)
-#' mod2
+#' # Lump
+#' lumpedModel(mod, lump = 2:4)
 #'
 #' @export
 lumpedMatrix = function(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NULL) {

@@ -2,11 +2,11 @@
 #'
 #' This function implements methods for special, or pedigree-aware, allele
 #' lumping. This is typically attempted if the model is not generally lumpable
-#' as determined by [alwaysLumpable]. Note that the resulting lumped model is
+#' as determined by [alwaysLumpable()]. Note that the resulting lumped model is
 #' tailor-made for a specific likelihood calculation, and may violate the
 #' properties of a well-defined mutation model.
 #'
-#' The lumping procedure depend on the location of untyped individuals in the
+#' The lumping procedure depends on the location of untyped individuals in the
 #' pedigree, summarised by the so-called U-signature:
 #'
 #' * F-depth: The length of the longest chain of untyped, starting with a founder

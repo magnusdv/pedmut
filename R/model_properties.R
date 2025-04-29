@@ -1,6 +1,6 @@
 #' Mutation model properties
 #'
-#' Functions for checking various properties of a mutation model, including
+#' Functions that check various properties of a mutation model, including
 #' stationarity, reversibility and lumpability.
 #'
 #' The function `isBounded()` checks that a mutation model is *bounded* by the
@@ -21,10 +21,12 @@
 #' @param mutmat A [mutationMatrix()] or a [mutationModel()].
 #' @param afreq A vector with allele frequencies, of the same length as the size
 #'   of `mutmat`.
-#' @param lump A nonempty subset of the colnames of `mutmat` (i.e. the allele
-#'   labels).
+#' @param lump A character vector containing a nonempty set of allele labels.
 #'
 #' @return Each of these functions returns TRUE of FALSE.
+#'
+#' @references
+#' Kemeny & Snell (1976). \emph{Finite Markov Chains}. Springer.
 #'
 #' @examples
 #'

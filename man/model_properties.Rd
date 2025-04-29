@@ -25,14 +25,13 @@ alwaysLumpable(mutmat)
 \item{afreq}{A vector with allele frequencies, of the same length as the size
 of \code{mutmat}.}
 
-\item{lump}{A nonempty subset of the colnames of \code{mutmat} (i.e. the allele
-labels).}
+\item{lump}{A character vector containing a nonempty set of allele labels.}
 }
 \value{
 Each of these functions returns TRUE of FALSE.
 }
 \description{
-Functions for checking various properties of a mutation model, including
+Functions that check various properties of a mutation model, including
 stationarity, reversibility and lumpability.
 }
 \details{
@@ -70,4 +69,7 @@ stopifnot(isLumpable(m_prop, lump = 1:2))
 # In fact lumpable for any allele subset
 stopifnot(alwaysLumpable(m_eq), alwaysLumpable(m_prop))
 
+}
+\references{
+Kemeny & Snell (1976). \emph{Finite Markov Chains}. Springer.
 }
