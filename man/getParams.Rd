@@ -19,18 +19,18 @@ included.}
 Ignored unless \code{format = 3}.}
 }
 \value{
-When \code{mut} is a \code{mutationModel} with different male/female
-parameters, the output format is dictated by the \code{format} option, with the
-following possibilities:
+When \code{mut} is a \code{mutationModel}, the output format is dictated by the \code{format}
+option, with the following possibilities:
 \enumerate{
 \item A data frame with 2 rows labelled 'female' and 'male'.
 \item A data frame with 1 row and female/male columns suffixed by .F/.M
 respectively.
 \item A data frame with 1 row, in which female/male values are pasted together
 (separated with \code{sep}) if different.
+\item A list version of format 1, suitable for programmatic use with \code{mutationModel()}.
 }
 
-If \code{mut} is a \code{mutationMatrix} the output always has 1 row.
+If \code{mut} is a \code{mutationMatrix} the output is always a data frame with 1 row.
 }
 \description{
 Extract model parameters of a mutation matrix/model.
@@ -41,5 +41,10 @@ getParams(M)
 getParams(M, format = 2)
 getParams(M, format = 3)
 getParams(M, format = 3, sep = "|")
+
+pars = getParams(M, format = 4)
+pars$alleles = 1:2  # Not part of the parameters, but needed to reconstruct the model.
+M2 = do.call(mutationModel, pars)
+stopifnot(identical(M, M2))
 
 }
