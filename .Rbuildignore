@@ -7,3 +7,5 @@
 ^CRAN-SUBMISSION$
 ^Rprof.out$
 ^.github$
+^\.positai$
+^\.claude$
