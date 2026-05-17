@@ -34,12 +34,12 @@ For the theoretical background of mutation models and their properties (stationa
 # The easiest way to get `pedmut` is to install the entire `pedsuite`:
 install.packages("pedsuite")
 
-# Alternatively, you can install just `pedmut`:
+# Alternatively, install just `pedmut`:
 install.packages("pedmut")
 
-# If you need the latest development version, install it from GitHub:
-# install.packages("devtools")
-devtools::install_github("magnusdv/pedmut")
+# For the latest development version, install from GitHub:
+# install.packages("remotes")
+remotes::install_github("magnusdv/pedmut")
 ```
 
 ## A simple likelihood example
@@ -107,6 +107,8 @@ The mutation models currently implemented in **pedmut** are:
 
 ## Model properties
 Several properties of mutation models are of interest (both theoretical and practical) for likelihood computations. The **pedmut** package provides utility functions for quickly checking these:
+
+* `mutRate(M, afreq)`: Computes the overall mutation rate, given by the formula `1 - sum p_i m_ii`, where `p_i` is the population frequency of allele `i` and `m_ii` is the non-mutation probability for allele `i`.
 
 * `isBounded(M, afreq)`: Checks if `M` is bounded by the allele frequencies, meaning that the probability of mutating into an allele never exceeds the population frequency of that allele. Unbounded models may give counter-intuitive results, like LR > 1 in a paternity case where the alleged father and child have no alleles in common.
 

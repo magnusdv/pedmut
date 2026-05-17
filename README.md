@@ -37,12 +37,12 @@ and the references therein.
 # The easiest way to get `pedmut` is to install the entire `pedsuite`:
 install.packages("pedsuite")
 
-# Alternatively, you can install just `pedmut`:
+# Alternatively, install just `pedmut`:
 install.packages("pedmut")
 
-# If you need the latest development version, install it from GitHub:
-# install.packages("devtools")
-devtools::install_github("magnusdv/pedmut")
+# For the latest development version, install from GitHub:
+# install.packages("remotes")
+remotes::install_github("magnusdv/pedmut")
 ```
 
 ## A simple likelihood example
@@ -71,7 +71,7 @@ x = addMarker(x, fa = "1/1", boy = "2/2")
 plot(x, marker = 1)
 ```
 
-<img src="man/figures/README-ex1-ped-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-ex1-ped-1.png" alt="" style="display: block; margin: auto;" />
 
 The data clearly constitutes a *Mendelian error*, and gives a likelihood
 of 0 without mutation modelling:
@@ -109,7 +109,8 @@ mutmod(x2, marker = 1)
 #> Bounded: Yes 
 #> Stationary: Yes 
 #> Reversible: Yes 
-#> Lumpable: Always
+#> Lumpable: Always 
+#> Overall rate: 0.1
 ```
 
 ## Mutation models
@@ -160,6 +161,10 @@ Several properties of mutation models are of interest (both theoretical
 and practical) for likelihood computations. The **pedmut** package
 provides utility functions for quickly checking these:
 
+- `mutRate(M, afreq)`: Computes the overall mutation rate, given by the
+  formula `1 - sum p_i m_ii`, where `p_i` is the population frequency of
+  allele `i` and `m_ii` is the non-mutation probability for allele `i`.
+
 - `isBounded(M, afreq)`: Checks if `M` is bounded by the allele
   frequencies, meaning that the probability of mutating into an allele
   never exceeds the population frequency of that allele. Unbounded
@@ -196,7 +201,8 @@ mutationMatrix("equal", rate = 0.1, alleles = c("a", "b", "c"))
 #> Model: Equal 
 #> Rate: 0.1 
 #> 
-#> Lumpable: Always
+#> Lumpable: Always 
+#> Overall rate: NA
 ```
 
 Next, a `proportional` model with rate 0.1. Note that this model depends
@@ -216,7 +222,8 @@ mutationMatrix("prop", rate = 0.1, alleles = c("a", "b", "c"), afreq = c(0.7, 0.
 #> Bounded: Yes 
 #> Stationary: Yes 
 #> Reversible: Yes 
-#> Lumpable: Always
+#> Lumpable: Always 
+#> Overall rate: 0.1
 ```
 
 To illustrate the `stepwise` model, we recreate the mutation matrix in
@@ -236,7 +243,8 @@ mutationMatrix(model = "stepwise", alleles = c("16", "17", "18", "16.1", "17.1")
 #> Model: Stepwise 
 #> Rate: 0.003 
 #> 
-#> Lumpable: Not always
+#> Lumpable: Not always 
+#> Overall rate: NA
 ```
 
 A simpler version of the `stepwise` model above, is the `onestep` model,
@@ -253,5 +261,6 @@ mutationMatrix(model = "onestep", alleles = c("16", "17", "18"), rate = 0.04)
 #> Model: Onestep 
 #> Rate: 0.04 
 #> 
-#> Lumpable: Not always
+#> Lumpable: Not always 
+#> Overall rate: NA
 ```
