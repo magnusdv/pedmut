@@ -1,3 +1,10 @@
+# pedmut 0.9.1
+
+## New features
+
+* New output format (`format = 4`) in `getParams()`. This produces a list of lists, suitable for programmatic use.
+
+
 # pedmut 0.9.0
 
 ## New features
