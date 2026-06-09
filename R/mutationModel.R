@@ -70,7 +70,7 @@ mutationModel = function(model, alleles = NULL, afreq = NULL, matrix = NULL,
   }
   else if(is.list(model) &&
           length(model) == 2 &&
-          setequal(names(model), c("female", "male")) &&
+          .mysetequal(names(model), c("female", "male")) &&
           all(sapply(model, isMutationMatrix))) {
     mod = list(female = enforceAlleleOrder(model$female, alleles),
                male = enforceAlleleOrder(model$male, alleles))
@@ -132,7 +132,7 @@ validateSingleInput = function(x, mode) {
   if(is.vector(x, mode = mode) && length(x) == 1)
     return(list(female = x, male = x))
 
-  if(is.list(x) && length(x) == 2 && setequal(names(x), c("female", "male")))
+  if(is.list(x) && length(x) == 2 && .mysetequal(names(x), c("female", "male")))
     return(x)
 
   stop2("Argument `", deparse(substitute(x)), '` must be either\n',
@@ -147,7 +147,7 @@ validateMatrixInput = function(x) {
   if(is.matrix(x))
     return(list(female = x, male = x))
 
-  if(is.list(x) && length(x) == 2 && setequal(names(x), c("female", "male")))
+  if(is.list(x) && length(x) == 2 && .mysetequal(names(x), c("female", "male")))
     return(x)
 
   stop2("Argument `", deparse(substitute(x)), '` must be either\n',
@@ -158,7 +158,7 @@ validateMatrixInput = function(x) {
 #' @rdname mutationModel
 #' @export
 validateMutationModel = function(mutmod, alleles = NULL) {
-  if(!is.list(mutmod) || length(mutmod) != 2 || !setequal(names(mutmod), c("male", "female"))) {
+  if(!is.list(mutmod) || length(mutmod) != 2 || !.mysetequal(names(mutmod), c("male", "female"))) {
     stop2("`mutmod` must be a list with elements 'male' and 'female'")
   }
 
@@ -234,7 +234,7 @@ enforceAlleleOrder = function(m, alleles) {
   if(identical(alleles, nms[[1]]))
     return(m)
 
-  if(!setequal(alleles, nms[[1]]) || !setequal(alleles, nms[[2]]))
+  if(!.mysetequal(alleles, nms[[1]]) || !.mysetequal(alleles, nms[[2]]))
     stop2("Alleles differ from names of mutation matrix")
 
   if(length(alleles) > length(nms[[1]]))

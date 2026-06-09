@@ -63,7 +63,7 @@ lumpedMatrix = function(mutmat, lump, afreq = NULL, check = TRUE, labelSep = NUL
   lumpName = names(lump)
 
   # If exhaustive lumped, return trivial mutationModel
-  if(setequal(lump[[1]], als)) {
+  if(.mysetequal(lump[[1]], als)) {
     newM = matrix(1, ncol=1, nrow=1, dimnames=list("lump", "lump"))
     mod = newMutationMatrix(newM, model = "trivial")
     return(mod)
@@ -140,10 +140,10 @@ prepLump = function(lump, alleles = NULL, labelSep = NULL) {
   unl = unlist(lump, use.names = FALSE)
 
   # Checks
-  if(dup <- anyDuplicated(unl))
+  if(dup <- anyDuplicated.default(unl))
     stop2("Duplicated entry in `lump`: ", unl[dup])
 
-  if(!is.null(alleles) && !all(unl %in% alleles))
+  if(!is.null(alleles) && anyNA(match(unl, alleles)))
     stop2("Alleles not found in mutation matrix: ", .mysetdiff(unl, alleles))
 
   # Name lumps

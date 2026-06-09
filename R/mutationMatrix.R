@@ -465,7 +465,7 @@ toString.mutationMatrix = function(x, ...) {
 
   # If both dimnames and `alleles` are given: Check match and use to permute matrix
   if(!is.null(dmn <- dimnames(matrix)) && !nullAls) {
-    chck = setequal(alleles, dmn[[1L]]) && setequal(alleles, dmn[[2L]])
+    chck = .mysetequal(alleles, dmn[[1L]]) && .mysetequal(alleles, dmn[[2L]])
     if(!chck)
       stop2("Custom matrix names don't match the `alleles` argument")
 
@@ -541,8 +541,8 @@ checkAfreq = function(afreq, alleles = NULL, len = NULL, checkNULL = FALSE, mode
       stop2(sprintf("Frequency vector does not match the number of alleles (%d)", length(alleles)))
 
     if(!is.null(nms <- names(afreq))) {
-      if(!setequal(nms, alleles))
-        stop2("Names of frequency vectors do not match alleles: ", setdiff(nms, alleles))
+      if(!.mysetequal(nms, alleles))
+        stop2("Names of frequency vectors do not match alleles: ", .mysetdiff(nms, alleles))
 
       # Sort
       afreq = afreq[alleles]
