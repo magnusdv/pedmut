@@ -26,10 +26,10 @@
 #' which case `11` is the only option. This model is not applicable to loci with
 #' non-integer microvariants.
 #'
-#' * `stepwise`: A common model in forensic genetics, allowing different
-#' mutation rates between integer alleles (like `9`) and non-integer
-#' microvariants (like `9.3`). Mutation rates also depend on step size, as
-#' controlled by the `range` parameter.
+#' * `stepwise`: The extended stepwise model of Simonsson & Mostad (2016).
+#' Alleles are grouped by fractional part. Mutations within a group have total
+#' rate `rate`, while mutations changing group have total rate `rate2`.
+#' Within-group probabilities depend on step size, controlled by `range`.
 #'
 #' * `trivial`: The identity matrix, implying that no mutations are possible.
 #'
@@ -51,11 +51,11 @@
 #'   "proportional", "stepwise" and "onestep".
 #' @param seed A single number. Optional parameter in the "random" model, passed
 #'   on to `set.seed()`.
-#' @param rate2 A number between 0 and 1. The mutation rate between integer
-#'   alleles and microvariants. Required in the "stepwise" model.
+#' @param rate2 A number between 0 and 1. In the stepwise model, the mutation
+#'   rate for mutations changing microvariant group.
 #' @param range A positive number. The relative probability of mutating n+1
-#'   steps versus mutating n steps. Required in the "stepwise" and "dawid"
-#'   models. Must be in the interval (0,1) for the "dawid" model.
+#'   steps versus n steps within a microvariant group. Required in the
+#'   "stepwise" and "dawid" models. Must be in the interval (0,1) for "dawid".
 #' @param transform Either NULL (default) or one of the strings "MH", "BA",
 #'   "PR", "PM". See Details.
 #' @param validate A logical (default: TRUE) indicating whether to validate
@@ -81,6 +81,8 @@ mutationMatrix = function(model = c("custom", "dawid", "equal", "proportional",
 
   model = match.arg(model)
   alleles = if(!is.null(alleles)) as.character(alleles) else names(afreq)
+  if(anyDuplicated.default(alleles))
+    stop2("Duplicated allele labels: ", alleles[duplicated(alleles)])
   afreq = checkAfreq(afreq, alleles)
 
   # A few ad hocs for custom models
@@ -277,16 +279,16 @@ toString.mutationMatrix = function(x, ...) {
   checkRate(rate, "proportional")
   afreq = checkAfreq(afreq, alleles, checkNULL = TRUE, model = "proportional")
 
-  # Check if mutation rate is too large
-  mxr = (1 - sum(afreq^2)) / (1 - min(afreq))
-  if(rate > mxr)
-    stop2("Model undefined: max `rate` for the given input is: ", mxr)
-
   n = length(alleles)
   if(n == 0)
     stop2("No alleles given")
   if(n == 1)
     return(matrix(1, 1L, 1L, dimnames = list(alleles, alleles)))
+
+  # Check if mutation rate is too large
+  mxr = (1 - sum(afreq^2)) / (1 - min(afreq))
+  if(rate > mxr)
+    stop2("Model undefined: max `rate` for the given input is: ", mxr)
 
   a = rate / sum(afreq * (1 - afreq))
   mutmat = (1 - a) * diag(n) + a * rep(afreq, each = n)
@@ -334,8 +336,8 @@ toString.mutationMatrix = function(x, ...) {
   # Range of k such that m0 + k*v is inside the unit cube: 0 < m0 + k*v < 1
   k1 = (0 - m0) / v
   k2 = (1 - m0) / v
-  kMin = max(pmin(k1, k2))
-  kMax = min(pmax(k1, k2))
+  kMin = max(pmin.int(k1, k2))
+  kMax = min(pmax.int(k1, k2))
   k = runif(1, kMin, kMax)
 
   # Diagonal vector
@@ -369,7 +371,7 @@ toString.mutationMatrix = function(x, ...) {
   alsNum = checkNumericAlleles(alleles, "stepwise")
 
   # Bug fix: round these!
-  microgroup = round((alsNum - round(alsNum))*10)
+  microgroup = round(alsNum * 10) %% 10
 
   # Initialise matrix
   mutmat = matrix(0, ncol = n, nrow = n, dimnames = list(alleles, alleles))
@@ -455,10 +457,11 @@ toString.mutationMatrix = function(x, ...) {
 
   if(!is.matrix(matrix))
     stop2("Custom matrix must be a matrix, not a ", class(matrix))
-  if(typeof(matrix) != "double")
-    stop2("Custom matrix must be numeric, not ", typeof(matrix))
   if(nrow(matrix) != ncol(matrix))
     stop2("Custom matrix must be square, not ", nrow(matrix), "*", ncol(matrix))
+  if(!is.numeric(matrix))
+    stop2("Custom matrix must be numeric, not ", typeof(matrix))
+  storage.mode(matrix) = "double"
 
   nullAls = is.null(alleles)
   if(!nullAls) alleles = as.character(alleles)
@@ -528,6 +531,9 @@ checkAfreq = function(afreq, alleles = NULL, len = NULL, checkNULL = FALSE, mode
 
   if(!is.numeric(afreq))
     stop2("Expected frequency vector to be a numeric, not ", class(afreq))
+
+  if(anyNA(afreq) || any(!is.finite(afreq)) || any(afreq < 0))
+    stop2("Allele frequencies must be finite and nonnegative")
 
   if(!is.null(len) && length(afreq) != len)
     stop2(sprintf("Expected frequency vector to have length %d, not %d", len, length(afreq)))

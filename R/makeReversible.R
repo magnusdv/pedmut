@@ -48,7 +48,7 @@ makeReversible = function(mutmat, method = c("BA", "MH", "PR"), adjust = TRUE,
   # Transform the matrix
   switch(method,
     MH = {
-      R = M * pmin(1, pmT/pm)
+      R = M * pmin.int(1, pmT/pm)
       R[M == 0] = 0
     },
     BA = {

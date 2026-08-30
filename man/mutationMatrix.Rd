@@ -40,12 +40,12 @@ labels. Required in all models, except "custom" if \code{matrix} has dimnames.}
 \item{seed}{A single number. Optional parameter in the "random" model, passed
 on to \code{set.seed()}.}
 
-\item{rate2}{A number between 0 and 1. The mutation rate between integer
-alleles and microvariants. Required in the "stepwise" model.}
+\item{rate2}{A number between 0 and 1. In the stepwise model, the mutation
+rate for mutations changing microvariant group.}
 
 \item{range}{A positive number. The relative probability of mutating n+1
-steps versus mutating n steps. Required in the "stepwise" and "dawid"
-models. Must be in the interval (0,1) for the "dawid" model.}
+steps versus n steps within a microvariant group. Required in the
+"stepwise" and "dawid" models. Must be in the interval (0,1) for "dawid".}
 
 \item{transform}{Either NULL (default) or one of the strings "MH", "BA",
 "PR", "PM". See Details.}
@@ -82,10 +82,10 @@ mutations only to the nearest neighbours in the allelic ladder. For example,
 \code{10} may mutate to either \code{9} or \code{11}, unless \code{10} is the lowest allele, in
 which case \code{11} is the only option. This model is not applicable to loci with
 non-integer microvariants.
-\item \code{stepwise}: A common model in forensic genetics, allowing different
-mutation rates between integer alleles (like \code{9}) and non-integer
-microvariants (like \code{9.3}). Mutation rates also depend on step size, as
-controlled by the \code{range} parameter.
+\item \code{stepwise}: The extended stepwise model of Simonsson & Mostad (2016).
+Alleles are grouped by fractional part. Mutations within a group have total
+rate \code{rate}, while mutations changing group have total rate \code{rate2}.
+Within-group probabilities depend on step size, controlled by \code{range}.
 \item \code{trivial}: The identity matrix, implying that no mutations are possible.
 }
 
